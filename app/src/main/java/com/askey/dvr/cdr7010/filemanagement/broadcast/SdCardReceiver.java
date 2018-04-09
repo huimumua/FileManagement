@@ -4,12 +4,38 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
+import com.askey.dvr.cdr7010.filemanagement.util.Logg;
+
 public class SdCardReceiver extends BroadcastReceiver {
+
+    private static final String TAG = SdCardReceiver.class.getSimpleName();
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // TODO: This method is called when the BroadcastReceiver is receiving
-        // an Intent broadcast.
-        throw new UnsupportedOperationException("Not yet implemented");
+        String action = intent.getAction();
+        if (action.equals("android.intent.action.MEDIA_MOUNTED"))// SD
+        // 卡已经成功挂载
+        {
+            Logg.i(TAG, "我的卡已经成功挂载");
+
+        } else if (action.equals("android.intent.action.MEDIA_REMOVED")// 各种未挂载状态
+                || action.equals("android.intent.action.ACTION_MEDIA_UNMOUNTED")
+                || action.equals("android.intent.action.ACTION_MEDIA_BAD_REMOVAL")) {
+
+            Logg.i(TAG, "我的各种未挂载状态");
+        }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描
+
+            Logg.i(TAG, "开始扫描...");
+        }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_FINISHED)){//扫描完成
+
+            Logg.i(TAG, "扫描完成...");
+        }else if (action.equals(Intent.ACTION_MEDIA_SHARED)){//扩展介质的挂载被解除 (unmount)。因为它已经作为 USB 大容量存储被共享
+
+            Logg.i(TAG, "USB 大容量存储被共享...");
+        }else {
+
+            Logg.i(TAG, "其他状态...");
+        }
     }
 }

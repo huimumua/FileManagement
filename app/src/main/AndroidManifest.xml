@@ -2,29 +2,44 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.askey.dvr.cdr7010.filemanagement">
 
+    <!-- 在SDCard中创建与删除文件权限 -->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <!-- 往SDCard写入数据权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
+        android:name="com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <receiver
             android:name=".broadcast.SdCardReceiver"
             android:enabled="true"
             android:exported="true" />
 
+        <!-- 注册服务 -->
         <service
-            android:name=".service.FileManagerIntentService"
-            android:exported="false"></service>
+            android:name=".service.SdcardService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.askey.sdcardservice.action" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.FileManagerService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.askey.filemanagerservice.action" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
