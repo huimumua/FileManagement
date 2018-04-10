@@ -33,7 +33,7 @@ interface IFileManagerAidlInterface {
     /**
     * pathList : files Absolute Path
     * */
-//    boolean deleteFileByFolder(ArrayList pathList);
+    boolean deleteFileByFolder(String path);
 
 
 }

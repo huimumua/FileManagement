@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import com.askey.dvr.cdr7010.filemanagement.IFileManagerAidlInterface;
+import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 
 import java.util.List;
@@ -45,14 +46,21 @@ public class FileManagerService extends Service {
         @Override
         public List<String> getAllFilesByType(String type) throws RemoteException {
 
-            return null;
+            return MediaScanner.getAllFileList(type);
         }
 
         @Override
         public boolean deleteFile(String path) throws RemoteException {
 
-            return false;
+            return MediaScanner.deleteFile(path);
         }
+
+        @Override
+        public boolean deleteFileByFolder(String path) throws RemoteException {
+
+            return MediaScanner.deleteDirectory(path);
+        }
+
     }
 
     @Override

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
+import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
+import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 
 public class SdCardReceiver extends BroadcastReceiver {
@@ -23,10 +25,16 @@ public class SdCardReceiver extends BroadcastReceiver {
                 || action.equals("android.intent.action.ACTION_MEDIA_UNMOUNTED")
                 || action.equals("android.intent.action.ACTION_MEDIA_BAD_REMOVAL")) {
 
+            Logg.i(TAG,"==Const.SDCARD_PATH=="+Const.SDCARD_PATH);
+            MediaScanner.scanDirAsync(FileManagerApplication.getAppContext(),Const.SDCARD_PATH);
             Logg.i(TAG, "我的各种未挂载状态");
+
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描
 
+            Logg.i(TAG,"==Const.SDCARD_PATH=="+Const.SDCARD_PATH);
+            MediaScanner.scanDirAsync(FileManagerApplication.getAppContext(),Const.SDCARD_PATH);
             Logg.i(TAG, "开始扫描...");
+
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_FINISHED)){//扫描完成
 
             Logg.i(TAG, "扫描完成...");
@@ -38,4 +46,6 @@ public class SdCardReceiver extends BroadcastReceiver {
             Logg.i(TAG, "其他状态...");
         }
     }
+
+
 }

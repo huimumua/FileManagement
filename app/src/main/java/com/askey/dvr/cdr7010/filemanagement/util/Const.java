@@ -1,6 +1,8 @@
 package com.askey.dvr.cdr7010.filemanagement.util;
 
 
+import android.os.Environment;
+
 /***
  * 常量配置类
  * Company: Chengdu Skysoft Info&Tech Co., Ltd.
@@ -17,6 +19,6 @@ public class Const {
      */
     public static final boolean DEBUG = true;
 
-
+    public static final String SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
 
 }
