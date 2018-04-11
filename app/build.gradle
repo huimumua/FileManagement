@@ -1,6 +1,22 @@
 apply plugin: 'com.android.application'
 
+
+def getTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getDefault());
+}
+
+
 android {
+
+    signingConfigs {
+        singnedconfig {
+            keyAlias 'kenwood'
+            keyPassword 'android'
+            storeFile file('../tools/debug.keystore')
+            storePassword 'android'
+        }
+    }
+
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.askey.dvr.cdr7010.filemanagement"
@@ -8,6 +24,7 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
+        project.archivesBaseName = "FileManagement";
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -16,9 +33,25 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    //打包后应用名称
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def outputFile = output.outputFile
+            def fileName
+            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                fileName = "FileManagement.${defaultConfig.versionName}.${getTime()}.apk"
+                outputFileName  = fileName
+            }
+
+        }
+    }
+
     sourceSets { main { aidl.srcDirs = ['src/main/aidl', 'src/main/aidl/'] } }
+
     productFlavors {
     }
+
 }
 
 dependencies {
