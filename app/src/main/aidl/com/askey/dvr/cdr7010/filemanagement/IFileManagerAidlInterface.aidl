@@ -36,4 +36,5 @@ interface IFileManagerAidlInterface {
     boolean deleteFileByFolder(String path);
 
 
+
 }

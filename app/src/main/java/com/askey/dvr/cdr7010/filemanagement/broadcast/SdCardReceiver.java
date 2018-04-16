@@ -16,24 +16,29 @@ public class SdCardReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        Logg.i(TAG,"===action==="+action);
         if (action.equals("android.intent.action.MEDIA_MOUNTED"))// SD
         // 卡已经成功挂载
         {
+            Const.SDCARD_IS_EXIST = true;
             Logg.i(TAG, "我的卡已经成功挂载");
 
         } else if (action.equals("android.intent.action.MEDIA_REMOVED")// 各种未挂载状态
-                || action.equals("android.intent.action.ACTION_MEDIA_UNMOUNTED")
-                || action.equals("android.intent.action.ACTION_MEDIA_BAD_REMOVAL")) {
+                || action.equals("android.intent.action.MEDIA_UNMOUNTED")
+                || action.equals("android.intent.action.MEDIA_BAD_REMOVAL")) {
+            Const.SDCARD_IS_EXIST = false;
 
-            Logg.i(TAG,"==Const.SDCARD_PATH=="+Const.SDCARD_PATH);
-            MediaScanner.scanDirAsync(FileManagerApplication.getAppContext(),Const.SDCARD_PATH);
             Logg.i(TAG, "我的各种未挂载状态");
 
-        }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描
+//            Logg.i(TAG,"==Const.SDCARD_PATH=="+Const.SDCARD_PATH);
+//            MediaScanner.scanDirAsync(FileManagerApplication.getAppContext(),Const.SDCARD_PATH);
 
-            Logg.i(TAG,"==Const.SDCARD_PATH=="+Const.SDCARD_PATH);
-            MediaScanner.scanDirAsync(FileManagerApplication.getAppContext(),Const.SDCARD_PATH);
+
+        }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描
             Logg.i(TAG, "开始扫描...");
+//            Logg.i(TAG,"==Const.SDCARD_PATH=="+Const.SDCARD_PATH);
+//            MediaScanner.scanDirAsync(FileManagerApplication.getAppContext(),Const.SDCARD_PATH);
+
 
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_FINISHED)){//扫描完成
 

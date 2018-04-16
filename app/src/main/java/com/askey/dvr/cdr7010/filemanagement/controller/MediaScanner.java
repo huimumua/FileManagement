@@ -6,8 +6,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 
+import com.askey.dvr.cdr7010.filemanagement.BuildConfig;
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
+import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 
 import java.io.File;
@@ -33,18 +36,25 @@ public class MediaScanner {
      * */
     public static void scanFileAsync(Context ctx, String filePath) {
         Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        scanIntent.setData(Uri.fromFile(new File(filePath)));
+        File file = new File(filePath);
+        Uri uri = Uri.fromFile(file);
+//        Uri uri = FileProvider.getUriForFile(ctx, BuildConfig.APPLICATION_ID, file);
+        scanIntent.setData(uri);
         ctx.sendBroadcast(scanIntent);
     }
 
     public static final String ACTION_MEDIA_SCANNER_SCAN_DIR = "android.intent.action.MEDIA_SCANNER_SCAN_DIR";
+
     /**
      * android.intent.action.MEDIA_SCANNER_SCAN_DIR
      * 扫描指定目录
      * */
     public static void scanDirAsync(Context ctx, String dir) {
         Intent scanIntent = new Intent(ACTION_MEDIA_SCANNER_SCAN_DIR);
-        scanIntent.setData(Uri.fromFile(new File(dir)));
+        File file = new File(dir);
+        Uri uri = Uri.fromFile(file);
+//        Uri uri = FileProvider.getUriForFile(ctx, BuildConfig.APPLICATION_ID, file);
+        scanIntent.setData(uri);
         ctx.sendBroadcast(scanIntent);
     }
 
@@ -53,7 +63,7 @@ public class MediaScanner {
      * NORMAL EVENT PARKING
      * */
     public static List<String> getAllFileList(String type) {
-        if( "PICTURE".equals(type) ){
+        if(Const.PICTURE_DIR.equals(type) ){
             return getPictureList();
         }else{
             return getVideoList(type);
@@ -61,16 +71,20 @@ public class MediaScanner {
     }
 
     public static ArrayList <String> getVideoList(String type){
-        ArrayList <String> fileList = getAllVideoList(type);
-        for (String path : fileList ){
+        ArrayList <String> fileList = new ArrayList<String>();
+        ArrayList <String> list = getAllVideoList();
+        Logg.i(TAG,"====list.size()===="+list.size());
+        Logg.i(TAG,"====type===="+type);
+        for (String path : list ){
             if( path.contains(type) ){
+                Logg.i(TAG,"====path===="+path);
                 fileList.add(path);
             }
         }
         return fileList;
     }
 
-    public static ArrayList <String> getAllVideoList(String type){
+    public static ArrayList <String> getAllVideoList(){
         ArrayList <String> fileList = new ArrayList<String>();
         //使用content provider查询所有的视频信息
         ContentResolver resolver= FileManagerApplication.getAppContext().getContentResolver();
@@ -78,7 +92,7 @@ public class MediaScanner {
                 MediaStore.Video.Media.DISPLAY_NAME,
                 MediaStore.Video.Media.SIZE,
                 MediaStore.Video.Media.DATA};
-        String orderBy = MediaStore.Video.Media.DATE_ADDED;
+        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
         Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor=resolver.query(uri, null, null, null, orderBy);
 
@@ -88,11 +102,19 @@ public class MediaScanner {
             String name=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME));
             //获取视频的大小
             String size=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.SIZE));
+            //视频修改时间
+            String DATE_MODIFIED=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED));
+            //视频创建时间
+            String DATE_ADDED=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED));
             //获取视频的路径
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
-            Logg.i(TAG,"====name===="+name);
-            Logg.i(TAG,"====size===="+size);
-            Logg.i(TAG,"====path===="+path);
+            //视频时长
+            String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
+            Logg.i(TAG,"DISPLAY_NAME==="+name);
+            Logg.i(TAG,"SIZE==="+size);
+            Logg.i(TAG,"DATE_MODIFIED==="+DATE_MODIFIED);
+            Logg.i(TAG,"DATE_ADDED==="+DATE_ADDED);
+            Logg.i(TAG,"DURATION==="+DURATION);
             fileList.add(path);
         }
         return fileList;
@@ -121,10 +143,7 @@ public class MediaScanner {
             String size=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.SIZE));
             //获取图片的路径
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            Logg.i(TAG,"====name===="+name);
-            Logg.i(TAG,"====size===="+size);
-            Logg.i(TAG,"====path===="+path);
-            if( "PICTURE".equals(path) ){
+            if( Const.PICTURE_DIR.equals(path) ){
                 fileList.add(path);
             }
 
