@@ -20,13 +20,29 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.askey.dvr.cdr7010.filemanagement"
-        minSdkVersion 24
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         project.archivesBaseName = "FileManagement";
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=gcc"
+                cppFlags "-fexceptions"
+            }
+        }
+
+        ndk {
+            moduleName "hello_jni"
+            stl "stlport_static"
+            ldLibs =["log"]
+            abiFilters "armeabi", "armeabi-v7a"
+        }
+
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -47,11 +63,21 @@ android {
         }
     }
 
-    sourceSets { main { aidl.srcDirs = ['src/main/aidl', 'src/main/aidl/'] } }
+    sourceSets {
+        main {
+            aidl.srcDirs = ['src/main/aidl', 'src/main/aidl/']
+            jni.srcDirs = ['src/main/jni']
+        }
+    }
 
     productFlavors {
     }
 
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
 }
 
 dependencies {

@@ -21,4 +21,13 @@ public class Const {
 
     public static final String SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
 
+    public static boolean SDCARD_IS_EXIST = false;
+
+    public static final String NORMAL_DIR = "NORMAL";
+    public static final String EVENT_DIR = "EVENT";
+    public static final String PARKING_DIR = "PARKING";
+    public static final String PICTURE_DIR = "PICTURE";
+    public static final String MANUAL_DIR = "MANUAL";
+    public static final String SYSTEM_DIR = "SYSTEM";
+
 }
