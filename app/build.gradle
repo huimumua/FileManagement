@@ -56,7 +56,8 @@ android {
             def outputFile = output.outputFile
             def fileName
             if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                fileName = "FileManagement.${defaultConfig.versionName}.${getTime()}.apk"
+//                fileName = "FileManagement.${defaultConfig.versionName}.${getTime()}.apk"
+                fileName = "FileManagement.apk"
                 outputFileName  = fileName
             }
 
