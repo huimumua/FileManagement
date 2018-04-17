@@ -15,7 +15,6 @@ import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FileManagerService extends Service {
@@ -102,7 +101,7 @@ public class FileManagerService extends Service {
         @Override
         public List<SdcardInfo> getSdcardInfo() throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
-                
+
                 return SdcardManager.getSingInstance().getSdcardInfo();
             }
             return null;
