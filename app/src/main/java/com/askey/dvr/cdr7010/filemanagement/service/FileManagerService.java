@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import com.askey.dvr.cdr7010.filemanagement.IFileManagerAidlInterface;
+import com.askey.dvr.cdr7010.filemanagement.ItemData;
 import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
@@ -58,6 +59,16 @@ public class FileManagerService extends Service {
             }
             return null;
         }
+
+
+        @Override
+        public List<ItemData> getAllFileByType(String type) throws RemoteException {
+            if(Const.SDCARD_IS_EXIST){
+                return MediaScanner.getAllFiles(type);
+            }
+            return null;
+        }
+
 
         @Override
         public boolean deleteFile(String path) throws RemoteException {

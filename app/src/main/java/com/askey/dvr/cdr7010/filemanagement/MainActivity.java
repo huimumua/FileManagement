@@ -24,6 +24,7 @@ import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 项目名称：filemanagement
@@ -54,6 +55,11 @@ public class MainActivity extends Activity{
 
         Logg.i(LOG_TAG,"==Const.SDCARD_PATH===="+Const.SDCARD_PATH+"/DVR/");
 //        MediaScanner.scanDirAsync(mContext,"/storage/7EDC-0FBC/DVR/");
+
+        List<ItemData> list = MediaScanner.getAllFiles("NORMAL");
+        for (ItemData ItemData : list){
+            Logg.i(LOG_TAG,"ItemData.getFilePath()====="+ItemData.getFilePath());
+        }
 
         new Thread(new Runnable() {
             @Override

@@ -6,9 +6,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 
-import com.askey.dvr.cdr7010.filemanagement.BuildConfig;
+import com.askey.dvr.cdr7010.filemanagement.ItemData;
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
@@ -70,6 +69,15 @@ public class MediaScanner {
         }
     }
 
+    public static List<ItemData> getAllFiles(String type) {
+        if(Const.PICTURE_DIR.equals(type) ){
+            return getPictures();
+        }else{
+            return getVideos(type);
+        }
+    }
+
+
     public static ArrayList <String> getVideoList(String type){
         ArrayList <String> fileList = new ArrayList<String>();
         ArrayList <String> list = getAllVideoList();
@@ -77,6 +85,20 @@ public class MediaScanner {
         Logg.i(TAG,"====type===="+type);
         for (String path : list ){
             if( path.contains(type) ){
+                Logg.i(TAG,"====path===="+path);
+                fileList.add(path);
+            }
+        }
+        return fileList;
+    }
+
+    public static ArrayList <ItemData> getVideos(String type){
+        ArrayList <ItemData> fileList = new ArrayList<ItemData>();
+        ArrayList <ItemData> list = getVideos();
+        Logg.i(TAG,"====list.size()===="+list.size());
+        Logg.i(TAG,"====type===="+type);
+        for (ItemData path : list ){
+            if( path.getFilePath().contains(type) ){
                 Logg.i(TAG,"====path===="+path);
                 fileList.add(path);
             }
@@ -120,6 +142,49 @@ public class MediaScanner {
         return fileList;
     }
 
+    public static ArrayList <ItemData> getVideos(){
+        ArrayList <ItemData> fileList = new ArrayList<ItemData>();
+        //使用content provider查询所有的视频信息
+        ContentResolver resolver= FileManagerApplication.getAppContext().getContentResolver();
+        String []projection = { MediaStore.Video.Media._ID,
+                MediaStore.Video.Media.DISPLAY_NAME,
+                MediaStore.Video.Media.SIZE,
+                MediaStore.Video.Media.DATA};
+        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
+        Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor=resolver.query(uri, null, null, null, orderBy);
+
+        while(cursor.moveToNext())
+        {
+            //获取视频的名称
+            String name=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME));
+            //获取视频的大小
+            String size=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.SIZE));
+            //视频修改时间
+            String DATE_MODIFIED=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED));
+            //视频创建时间
+            String DATE_ADDED=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED));
+            //获取视频的路径
+            String path=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
+            //视频时长
+            String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
+            Logg.i(TAG,"DISPLAY_NAME==="+name);
+            Logg.i(TAG,"SIZE==="+size);
+            Logg.i(TAG,"DATE_MODIFIED==="+DATE_MODIFIED);
+            Logg.i(TAG,"DATE_ADDED==="+DATE_ADDED);
+            Logg.i(TAG,"DURATION==="+DURATION);
+
+            ItemData itemData= new ItemData();
+            itemData.setFileTime(Long.valueOf(DATE_ADDED));
+            itemData.setFilePath(path);
+            itemData.setFileName(name);
+            itemData.setDir(false);
+            fileList.add(itemData);
+        }
+        return fileList;
+    }
+
+
     /**
      * 根据类型获取图片文件列表
      * */
@@ -147,6 +212,39 @@ public class MediaScanner {
                 fileList.add(path);
             }
 
+        }
+        return fileList;
+    }
+
+    public static ArrayList <ItemData> getPictures(){
+        ArrayList <ItemData> fileList = new ArrayList<ItemData>();
+        //使用content provider查询所有的图片信息
+        ContentResolver resolver= FileManagerApplication.getAppContext().getContentResolver();
+        String []projection = { MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.SIZE,
+                MediaStore.Images.Media.DATA};
+        String orderBy = MediaStore.Images.Media.DATE_ADDED;
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor=resolver.query(uri, null, null, null, orderBy);
+
+        while(cursor.moveToNext())
+        {
+            //获取图片的名称
+            String name=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
+            //获取图片的大小
+            String size=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.SIZE));
+            //获取图片的路径
+            String path=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            String time=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED));
+            if( Const.PICTURE_DIR.equals(path) ){
+                ItemData itemData = new  ItemData();
+                itemData.setDir(false);
+                itemData.setFileName(name);
+                itemData.setFilePath(path);
+                itemData.setFileTime(Long.valueOf(time));
+                fileList.add(itemData);
+            }
         }
         return fileList;
     }

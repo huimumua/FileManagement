@@ -1,6 +1,8 @@
 // IFileManagerAidlInterface.aidl
 package com.askey.dvr.cdr7010.filemanagement;
 
+import com.askey.dvr.cdr7010.filemanagement.ItemData;
+
 // Declare any non-default types here with import statements
 
 interface IFileManagerAidlInterface {
@@ -18,7 +20,12 @@ interface IFileManagerAidlInterface {
     /**
     * Type : NORMAL EVENT PARKING PICTURE SYSTEM
     * */
-    List <String> getAllFilesByType(String type);
+   List <String> getAllFilesByType(String type);
+
+    /**
+    * Type : NORMAL EVENT PARKING PICTURE SYSTEM
+    * */
+   List <ItemData> getAllFileByType(String type);
 
     /**
     * path : file Absolute Path
