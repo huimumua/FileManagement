@@ -2,7 +2,7 @@
 package com.askey.dvr.cdr7010.filemanagement;
 
 import com.askey.dvr.cdr7010.filemanagement.ItemData;
-
+import com.askey.dvr.cdr7010.filemanagement.SdcardInfo;
 // Declare any non-default types here with import statements
 
 interface IFileManagerAidlInterface {
@@ -49,6 +49,10 @@ interface IFileManagerAidlInterface {
     * */
     boolean deleteFileByFolder(String path);
 
+    /**
+    * 为setting界面提供sdcardInfo信息
+    * */
+     List <SdcardInfo> getSdcardInfo();
 
 
 }

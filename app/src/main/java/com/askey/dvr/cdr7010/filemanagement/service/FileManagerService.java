@@ -7,8 +7,10 @@ import android.os.RemoteException;
 
 import com.askey.dvr.cdr7010.filemanagement.IFileManagerAidlInterface;
 import com.askey.dvr.cdr7010.filemanagement.ItemData;
+import com.askey.dvr.cdr7010.filemanagement.SdcardInfo;
 import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
+import com.askey.dvr.cdr7010.filemanagement.controller.SdcardManager;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
@@ -95,6 +97,15 @@ public class FileManagerService extends Service {
                 return MediaScanner.deleteDirectory(path);
             }
             return false;
+        }
+
+        @Override
+        public List<SdcardInfo> getSdcardInfo() throws RemoteException {
+            if(Const.SDCARD_IS_EXIST){
+                
+                return SdcardManager.getSingInstance().getSdcardInfo();
+            }
+            return null;
         }
 
     }
