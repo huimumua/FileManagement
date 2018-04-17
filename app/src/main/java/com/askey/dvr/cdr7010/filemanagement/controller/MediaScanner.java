@@ -114,7 +114,7 @@ public class MediaScanner {
                 MediaStore.Video.Media.DISPLAY_NAME,
                 MediaStore.Video.Media.SIZE,
                 MediaStore.Video.Media.DATA};
-        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
+        String orderBy = MediaStore.Video.Media.DISPLAY_NAME+ " DESC";
         Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor=resolver.query(uri, null, null, null, orderBy);
 
@@ -150,7 +150,7 @@ public class MediaScanner {
                 MediaStore.Video.Media.DISPLAY_NAME,
                 MediaStore.Video.Media.SIZE,
                 MediaStore.Video.Media.DATA};
-        String orderBy = MediaStore.Video.Media.DATE_MODIFIED;
+        String orderBy = MediaStore.Video.Media.DISPLAY_NAME+ " DESC";
         Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor=resolver.query(uri, null, null, null, orderBy);
 
@@ -196,7 +196,7 @@ public class MediaScanner {
                 MediaStore.Images.Media.DISPLAY_NAME,
                 MediaStore.Images.Media.SIZE,
                 MediaStore.Images.Media.DATA};
-        String orderBy = MediaStore.Images.Media.DATE_ADDED;
+        String orderBy = MediaStore.Images.Media.DISPLAY_NAME+ " DESC";
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor=resolver.query(uri, null, null, null, orderBy);
 
@@ -224,7 +224,7 @@ public class MediaScanner {
                 MediaStore.Images.Media.DISPLAY_NAME,
                 MediaStore.Images.Media.SIZE,
                 MediaStore.Images.Media.DATA};
-        String orderBy = MediaStore.Images.Media.DATE_ADDED;
+        String orderBy = MediaStore.Images.Media.DISPLAY_NAME + " DESC";
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor=resolver.query(uri, null, null, null, orderBy);
 
