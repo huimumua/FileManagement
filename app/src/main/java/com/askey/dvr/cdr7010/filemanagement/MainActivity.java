@@ -92,10 +92,11 @@ public class MainActivity extends Activity{
         registerReceiver(sdCardReceiver, intentFilter);// 注册监听函数
     }
 
-    public void onDestroy() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         unregisterReceiver(sdCardReceiver);//取消注册
-    };
-
+    }
 
     private int SDCARD_REQUEST_CODE = 10001;//SD卡读写
     @TargetApi(Build.VERSION_CODES.M)
