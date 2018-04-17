@@ -53,20 +53,25 @@ public class MainActivity extends Activity{
         registerReceiver();
 
 
-        Logg.i(LOG_TAG,"==Const.SDCARD_PATH===="+Const.SDCARD_PATH+"/DVR/");
-//        MediaScanner.scanDirAsync(mContext,"/storage/7EDC-0FBC/DVR/");
-
-        List<ItemData> list = MediaScanner.getAllFiles("NORMAL");
-        for (ItemData ItemData : list){
-            Logg.i(LOG_TAG,"ItemData.getFilePath()====="+ItemData.getFilePath());
-        }
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 FileManager mFileManager =FileManager.getSingInstance();
-                boolean result = mFileManager.FH_Init(Const.SDCARD_PATH+"/DVR/");
+                String str = "/home/harvey/sdcardAlgorithm/mount_test";
+                boolean result = mFileManager.FH_Init(str);
                 Logg.i(LOG_TAG,"==FH_Init==result=="+result);
+                long resultOpen =mFileManager.FH_Open("/home/harvey/sdcardAlgorithm/mount_test", "h1.code", "Event");
+                Logg.i(LOG_TAG,"==FH_Init==resultOpen=="+resultOpen);
+                boolean resultClose = mFileManager.FH_Close(resultOpen);
+                Logg.i(LOG_TAG,"==FH_Init==resultClose=="+resultClose);
+                boolean resultSync = mFileManager.FH_Sync(resultOpen);
+                Logg.i(LOG_TAG,"==FH_Init==resultSync=="+resultSync);
+                String resultLastfile = mFileManager.FH_FindOldest("/home/harvey/sdcardAlgorithm/mount_test/Manual");
+                Logg.i(LOG_TAG,"==FH_Init==resultLastfile=="+resultLastfile);
+                boolean resultDelete = mFileManager.FH_Delete("/home/harvey/sdcardAlgorithm/mount_test", resultLastfile);
+                Logg.i(LOG_TAG,"==FH_Init==resultDelete=="+resultDelete);
+
             }
         }).start();
 

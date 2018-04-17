@@ -99,7 +99,7 @@ public class MediaScanner {
         Logg.i(TAG,"====type===="+type);
         for (ItemData path : list ){
             if( path.getFilePath().contains(type) ){
-                Logg.i(TAG,"====path===="+path);
+                Logg.i(TAG,"====path===="+path.getFilePath());
                 fileList.add(path);
             }
         }
@@ -132,11 +132,7 @@ public class MediaScanner {
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
             //视频时长
             String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
-            Logg.i(TAG,"DISPLAY_NAME==="+name);
-            Logg.i(TAG,"SIZE==="+size);
-            Logg.i(TAG,"DATE_MODIFIED==="+DATE_MODIFIED);
-            Logg.i(TAG,"DATE_ADDED==="+DATE_ADDED);
-            Logg.i(TAG,"DURATION==="+DURATION);
+
             fileList.add(path);
         }
         return fileList;
@@ -168,11 +164,6 @@ public class MediaScanner {
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
             //视频时长
             String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
-            Logg.i(TAG,"DISPLAY_NAME==="+name);
-            Logg.i(TAG,"SIZE==="+size);
-            Logg.i(TAG,"DATE_MODIFIED==="+DATE_MODIFIED);
-            Logg.i(TAG,"DATE_ADDED==="+DATE_ADDED);
-            Logg.i(TAG,"DURATION==="+DURATION);
 
             ItemData itemData= new ItemData();
             itemData.setFileTime(Long.valueOf(DATE_ADDED));
@@ -280,6 +271,8 @@ public class MediaScanner {
         File file = new File(fileName);
         // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
         if (file.exists() && file.isFile()) {
+            boolean result = FileManager.getSingInstance().FH_Delete("",fileName);;
+            Logg.i(TAG,"-->deleteFile --> FH_Delete "+result+" result =="+result);
             if (file.delete()) {
                 Logg.i(TAG,"-->deleteFile --> delete "+fileName+" success");
                 //这里清除ContentProvader数据库

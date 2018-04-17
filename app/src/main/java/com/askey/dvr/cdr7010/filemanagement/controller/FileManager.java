@@ -66,7 +66,7 @@ public class FileManager {
 // Output: bool, true = 1, false = 0;
 
 //    public native boolean FH_Close(File file);
-    public native boolean FH_Close(long file);
+    public native boolean FH_Close(long filePointer);
 
     //
 // Purpose: Move the data from cache to disc
@@ -74,7 +74,7 @@ public class FileManager {
 // Output: bool, true = 1, false = 0;
 
 //    public native boolean FH_Sync(File file);
-    public native boolean FH_Sync(long file);
+    public native boolean FH_Sync(long filePointer);
 
     //
 // Purpose: 1.Compare absolute_filepath, if have folderType String, rename file to Free folder
@@ -96,11 +96,11 @@ public class FileManager {
 // Return ture
 
 //    public native boolean FH_lock(File file);
-    public native boolean FH_lock(long file);
+    public native boolean FH_lock(long filePointer);
 
 // not implement
 // Return ture
 //    public native boolean FH_unlock(File file);
-    public native boolean FH_unlock(long file);
+    public native boolean FH_unlock(long filePointer);
 
 }

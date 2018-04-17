@@ -7,11 +7,13 @@ import android.os.RemoteException;
 
 import com.askey.dvr.cdr7010.filemanagement.IFileManagerAidlInterface;
 import com.askey.dvr.cdr7010.filemanagement.ItemData;
+import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileManagerService extends Service {
@@ -36,24 +38,26 @@ public class FileManagerService extends Service {
     class MyBinder extends IFileManagerAidlInterface.Stub{
 
         @Override
-        public boolean openSdcard() throws RemoteException {
-
+        public long openSdcard(String mount_path, String filename, String folderType) throws RemoteException {
+            long result = 0;
             if(Const.SDCARD_IS_EXIST){
-
+                result = FileManager.getSingInstance().FH_Open(mount_path,filename,folderType);
             }
-            return false;
+            return result;
         }
 
         @Override
-        public boolean closeSdcard() throws RemoteException {
+        public boolean closeSdcard(long filePointer) throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
-
+                boolean result = FileManager.getSingInstance().FH_Close(filePointer);
+                return result;
             }
             return false;
         }
 
         @Override
         public List<String> getAllFilesByType(String type) throws RemoteException {
+            Logg.i(LOG_TAG,"====getAllFilesByType==="+type);
             if(Const.SDCARD_IS_EXIST){
                 return MediaScanner.getAllFileList(type);
             }
@@ -63,8 +67,14 @@ public class FileManagerService extends Service {
 
         @Override
         public List<ItemData> getAllFileByType(String type) throws RemoteException {
+            Logg.i(LOG_TAG,"====getAllFileByType==="+type);
             if(Const.SDCARD_IS_EXIST){
-                return MediaScanner.getAllFiles(type);
+                List <ItemData>list =MediaScanner.getAllFiles(type);
+                Logg.i(LOG_TAG,"list.size()==="+list.size());
+                for (ItemData item :list){
+                    Logg.i(LOG_TAG,"item.getFileName()=="+item.getFileName());
+                }
+                return list;
             }
             return null;
         }
@@ -73,6 +83,7 @@ public class FileManagerService extends Service {
         @Override
         public boolean deleteFile(String path) throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
+                //jni提供的删除方法
                 return MediaScanner.deleteFile(path);
             }
             return false;

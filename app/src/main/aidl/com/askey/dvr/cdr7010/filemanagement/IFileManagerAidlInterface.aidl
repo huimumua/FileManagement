@@ -7,15 +7,22 @@ import com.askey.dvr.cdr7010.filemanagement.ItemData;
 
 interface IFileManagerAidlInterface {
 
-     /**
-     * openSdcard
-     * */
-     boolean openSdcard();
+      /**
+      *  Purpose: 1.Choice folderType to openfile
+                  2.Get file_num from "Table.config"
+                  3.If "Free" folder have extension for folderType, use it to open file.
+         Input:  mount path, open filename,
+                 folderType: Event, Manual, Normal, Parking, Picture, System
+         Output: FILE Pointer
+        ** If file number > folderType file_num, return NULL; ***/
+     long openSdcard(String mount_path, String filename, String folderType);
 
      /**
-     * closeSdcard
+     *  Purpose: Close opened file
+       Input: Opened FILE Pointer
+       Output: bool, true = 1, false = 0;
      * */
-     boolean closeSdcard();
+     boolean closeSdcard(long filePointer);
 
     /**
     * Type : NORMAL EVENT PARKING PICTURE SYSTEM
