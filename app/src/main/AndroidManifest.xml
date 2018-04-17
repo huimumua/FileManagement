@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.askey.dvr.cdr7010.filemanagement"
+    android:sharedUserId="android.uid.system"
     >
 
     <!-- 在SDCard中创建与删除文件权限 -->
