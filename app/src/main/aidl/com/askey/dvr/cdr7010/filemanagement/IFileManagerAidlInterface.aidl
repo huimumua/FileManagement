@@ -41,8 +41,11 @@ interface IFileManagerAidlInterface {
 
     /**
     * pathList : files Absolute Path
+    *     //in表明是由客户端到服务端
+          //out表明是由服务端到客户端
+          //inout表明可以双向通信
     * */
-//    boolean deleteFileByGroup(ArrayList pathList);
+    boolean deleteFileByGroup(inout List<String> pathArray);
 
     /**
     * pathList : files Absolute Path

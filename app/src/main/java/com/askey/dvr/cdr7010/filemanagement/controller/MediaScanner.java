@@ -261,6 +261,18 @@ public class MediaScanner {
     }
 
     /**
+     * 删除一组数据
+     * **/
+    public static boolean deleteFileByGroup(List <String> pathArray) {
+        if(pathArray.size()>0){
+            for (String path : pathArray){
+              return delete(path);
+            }
+        }
+        return false;
+    }
+
+    /**
      * 删除单个文件
      *
      * @param fileName
@@ -383,6 +395,7 @@ public class MediaScanner {
             Logg.e(TAG,"-->renameFile --> The new file name is the same as the old file name....");
         }
     }
+
 
 
 }

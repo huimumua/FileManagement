@@ -65,7 +65,6 @@ public class FileManagerService extends Service {
             return null;
         }
 
-
         @Override
         public List<ItemData> getAllFileByType(String type) throws RemoteException {
             Logg.i(LOG_TAG,"====getAllFileByType==="+type);
@@ -86,6 +85,15 @@ public class FileManagerService extends Service {
             if(Const.SDCARD_IS_EXIST){
                 //jni提供的删除方法
                 return MediaScanner.deleteFile(path);
+            }
+            return false;
+        }
+
+        @Override
+        public boolean deleteFileByGroup(List<String> pathArray) throws RemoteException {
+            if(Const.SDCARD_IS_EXIST){
+                //jni提供的删除方法
+                return MediaScanner.deleteFileByGroup(pathArray);
             }
             return false;
         }

@@ -23,8 +23,10 @@ import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 项目名称：filemanagement
@@ -49,6 +51,7 @@ public class MainActivity extends Activity{
         mContext = this;
 
         requestSdcardPermission();
+
 
         registerReceiver();
 
