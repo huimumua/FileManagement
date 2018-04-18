@@ -72,7 +72,11 @@ public class FileManagerService extends Service {
                 List <ItemData>list =MediaScanner.getAllFiles(type);
                 Logg.i(LOG_TAG,"list.size()==="+list.size());
                 for (ItemData item :list){
-                    Logg.i(LOG_TAG,"item.getFileName()=="+item.getFileName());
+                    List <ItemData>group= item.getDirFileItem();
+                    Logg.i(LOG_TAG,"group.size()==="+group.size());
+                    for (ItemData roupItem :group){
+                        Logg.i(LOG_TAG,"roupItem.getFileName()=="+roupItem.getFileName());
+                    }
                 }
                 return list;
             }

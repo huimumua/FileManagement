@@ -92,20 +92,6 @@ public class MediaScanner {
         return fileList;
     }
 
-    public static ArrayList <ItemData> getVideos(String type){
-        ArrayList <ItemData> fileList = new ArrayList<ItemData>();
-        ArrayList <ItemData> list = getVideos();
-        Logg.i(TAG,"====list.size()===="+list.size());
-        Logg.i(TAG,"====type===="+type);
-        for (ItemData path : list ){
-            if( path.getFilePath().contains(type) ){
-                Logg.i(TAG,"====path===="+path.getFilePath());
-                fileList.add(path);
-            }
-        }
-        return fileList;
-    }
-
     public static ArrayList <String> getAllVideoList(){
         ArrayList <String> fileList = new ArrayList<String>();
         //使用content provider查询所有的视频信息
@@ -138,7 +124,7 @@ public class MediaScanner {
         return fileList;
     }
 
-    public static ArrayList <ItemData> getVideos(){
+    public static ArrayList <ItemData> getVideos(String type){
         ArrayList <ItemData> fileList = new ArrayList<ItemData>();
         //使用content provider查询所有的视频信息
         ContentResolver resolver= FileManagerApplication.getAppContext().getContentResolver();
@@ -150,6 +136,8 @@ public class MediaScanner {
         Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor=resolver.query(uri, null, null, null, orderBy);
 
+        String currentYYYYMMDD = "1970";
+        List<ItemData> group = new ArrayList<ItemData>();
         while(cursor.moveToNext())
         {
             //获取视频的名称
@@ -164,13 +152,41 @@ public class MediaScanner {
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
             //视频时长
             String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
+            if( path.contains(type) ){
+                Logg.i(TAG,"==name=="+name);
+                String yyyyMMDD = name.substring(0,8);
 
-            ItemData itemData= new ItemData();
-            itemData.setFileTime(Long.valueOf(DATE_ADDED));
-            itemData.setFilePath(path);
-            itemData.setFileName(name);
-            itemData.setDir(false);
-            fileList.add(itemData);
+                if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
+                    Logg.i(TAG,"==currentYYYYMMDD=="+currentYYYYMMDD);
+                    Logg.i(TAG,"==yyyyMMDD=="+yyyyMMDD);
+                    ItemData groupitem = new ItemData();
+                    groupitem.setFileTime(Long.valueOf(DATE_ADDED));
+                    groupitem.setFilePath(path);
+                    groupitem.setFileName(name);
+                    groupitem.setDir(false);
+                    group.add(groupitem);
+                }else{
+                    currentYYYYMMDD = yyyyMMDD;
+                    group= new ArrayList<ItemData>();
+                    ItemData groupitem = new ItemData();
+                    groupitem.setFileTime(Long.valueOf(DATE_ADDED));
+                    groupitem.setFilePath(path);
+                    groupitem.setFileName(name);
+                    groupitem.setDir(false);
+                    group.add(groupitem);
+
+                    ItemData itemData= new ItemData();
+                    itemData.setFileTime(Long.valueOf(DATE_ADDED));
+                    itemData.setFilePath(path);
+                    itemData.setFileName(name);
+                    itemData.setDir(true);
+                    itemData.setDirFileItem(group);
+                    fileList.add(itemData);
+
+                }
+
+            }
+
         }
         return fileList;
     }
@@ -218,7 +234,8 @@ public class MediaScanner {
         String orderBy = MediaStore.Images.Media.DISPLAY_NAME + " DESC";
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor=resolver.query(uri, null, null, null, orderBy);
-
+        String currentYYYYMMDD = "1970";
+        List<ItemData> group = new ArrayList<ItemData>();
         while(cursor.moveToNext())
         {
             //获取图片的名称
@@ -227,14 +244,38 @@ public class MediaScanner {
             String size=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.SIZE));
             //获取图片的路径
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            String time=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED));
-            if( Const.PICTURE_DIR.equals(path) ){
-                ItemData itemData = new  ItemData();
-                itemData.setDir(false);
-                itemData.setFileName(name);
-                itemData.setFilePath(path);
-                itemData.setFileTime(Long.valueOf(time));
-                fileList.add(itemData);
+            String DATE_ADDED=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED));
+            if( path.contains(Const.PICTURE_DIR) ){
+                Logg.i(TAG,"==name=="+name);
+                String yyyyMMDD = name.substring(0,8);
+
+                if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
+                    Logg.i(TAG,"==currentYYYYMMDD=="+currentYYYYMMDD);
+                    Logg.i(TAG,"==yyyyMMDD=="+yyyyMMDD);
+                    ItemData groupitem = new ItemData();
+                    groupitem.setFileTime(Long.valueOf(DATE_ADDED));
+                    groupitem.setFilePath(path);
+                    groupitem.setFileName(name);
+                    groupitem.setDir(false);
+                    group.add(groupitem);
+                }else{
+                    currentYYYYMMDD = yyyyMMDD;
+                    group= new ArrayList<ItemData>();
+                    ItemData groupitem = new ItemData();
+                    groupitem.setFileTime(Long.valueOf(DATE_ADDED));
+                    groupitem.setFilePath(path);
+                    groupitem.setFileName(name);
+                    groupitem.setDir(false);
+                    group.add(groupitem);
+
+                    ItemData itemData= new ItemData();
+                    itemData.setFileTime(Long.valueOf(DATE_ADDED));
+                    itemData.setFilePath(path);
+                    itemData.setFileName(name);
+                    itemData.setDir(true);
+                    itemData.setDirFileItem(group);
+                    fileList.add(itemData);
+                }
             }
         }
         return fileList;

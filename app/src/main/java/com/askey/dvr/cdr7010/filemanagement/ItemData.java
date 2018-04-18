@@ -74,6 +74,10 @@ public class ItemData implements Parcelable {
         return dirFileItem;
     }
 
+    public void setDirFileItem(List<ItemData> dirFileItem) {
+        this.dirFileItem = dirFileItem;
+    }
+
     /**
      * Parcelable
      */

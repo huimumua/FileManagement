@@ -120,8 +120,15 @@ public class MainActivity extends Activity{
             //NORMAL EVENT PARKING PICTURE
             if(SdcardUtil.checkSdcardExist()){
                 Logg.i(LOG_TAG,"====findFileByType====");
-                ArrayList fileList = (ArrayList) MediaScanner.getAllFileList("NORMAL");
-                Logg.i(LOG_TAG,"====fileList.size()=="+fileList.size());
+                List <ItemData> fileList = MediaScanner.getAllFiles(Const.NORMAL_DIR);
+                Logg.i(LOG_TAG,"fileList.size()==="+fileList.size());
+                for (ItemData item :fileList){
+                    List <ItemData>group= item.getDirFileItem();
+                    Logg.i(LOG_TAG,"group.size()==="+group.size());
+                    for (ItemData roupItem :group){
+                        Logg.i(LOG_TAG,"roupItem.getFileName()=="+roupItem.getFileName());
+                    }
+                }
             }else{
                 Logg.i(LOG_TAG, "SdcardUtil.checkSdcardExist()=false");
             }
