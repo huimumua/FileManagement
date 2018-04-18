@@ -1,6 +1,9 @@
 package com.askey.dvr.cdr7010.filemanagement.util;
 
+import android.content.Context;
 import android.os.Environment;
+import android.os.StatFs;
+import android.text.format.Formatter;
 
 import java.io.File;
 
@@ -35,5 +38,56 @@ public class SdcardUtil {
         }
         return false;
     }
+
+    public static String formatSize(Context context ,String target_size) {
+        return Formatter.formatFileSize(context, Long.valueOf(target_size));
+    }
+
+    public static int getCurentSdcardInfo(Context context ) {
+        //找到sdcard的位置
+        File directory = Environment.getExternalStorageDirectory();
+        //硬盘的描述类
+        StatFs statFs = new StatFs(directory.getAbsolutePath());
+        //获取硬盘分的块的数量
+        int blockCount = statFs.getBlockCount();
+        Logg.i(TAG,"==blockCount=="+blockCount);
+        //每块的大小
+        long blockSize = statFs.getBlockSize();
+        Logg.i(TAG,"==blockSize=="+blockSize);
+        //可用块的数量
+        int availableBlocks = statFs.getAvailableBlocks();
+        Logg.i(TAG,"==availableBlocks=="+availableBlocks);
+        //sdcard的总容量   以字节为单位
+        long sdcardSize = blockCount*blockSize;
+        String currentSdcardSize = SdcardUtil.formatSize(context, String.valueOf(sdcardSize));
+        Logg.i(TAG,"==currentSdcardSize=="+ currentSdcardSize);
+        //可用空间      以字节为单位
+        long availableSdcardSize = blockSize*availableBlocks;
+        String availableSize = SdcardUtil.formatSize(context, String.valueOf(availableSdcardSize));
+        Logg.i(TAG,"==availableSdcardSize==" + availableSize );
+
+        int totalSize = 0;
+        float totalSdcardSize = Float.parseFloat(currentSdcardSize.substring(0,currentSdcardSize.length()-3));
+        if(totalSdcardSize>3 && totalSdcardSize<4){
+            totalSize = 4;
+        }else if(totalSdcardSize>7 && totalSdcardSize<8){
+            totalSize = 8;
+        }else if(totalSdcardSize>15 && totalSdcardSize<16){
+            totalSize = 16;
+        }else if(totalSdcardSize>31 && totalSdcardSize<32){
+            totalSize = 32;
+        }else if(totalSdcardSize>63 && totalSdcardSize<64){
+            totalSize = 64;
+        }else if(totalSdcardSize>127 && totalSdcardSize<128){
+            totalSize = 128;
+        }else if(totalSdcardSize>255 && totalSdcardSize<256){
+            totalSize = 256;
+        }else if(totalSdcardSize>511 && totalSdcardSize<512){
+            totalSize = 512;
+        }
+        return totalSize;
+    }
+
+
 
 }

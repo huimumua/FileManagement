@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.askey.dvr.cdr7010.filemanagement.broadcast.SdCardReceiver;
 import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
+import com.askey.dvr.cdr7010.filemanagement.controller.SdcardManager;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
@@ -60,6 +61,10 @@ public class MainActivity extends Activity{
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Const.SDCARD_IS_EXIST = SdcardUtil.checkSdcardExist();
+
+                Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(mContext);
+
                 FileManager mFileManager =FileManager.getSingInstance();
                 String str = "/home/harvey/sdcardAlgorithm/mount_test";
                 boolean result = mFileManager.FH_Init(str);
@@ -74,6 +79,15 @@ public class MainActivity extends Activity{
                 Logg.i(LOG_TAG,"==FH_Init==resultLastfile=="+resultLastfile);
                 boolean resultDelete = mFileManager.FH_Delete("/home/harvey/sdcardAlgorithm/mount_test", resultLastfile);
                 Logg.i(LOG_TAG,"==FH_Init==resultDelete=="+resultDelete);
+
+
+                List<SdcardInfo> sdcardInfoList = SdcardManager.getSingInstance().getSdcardInfo();
+                if(sdcardInfoList!=null && sdcardInfoList.size()>0){
+                    Logg.i(LOG_TAG,"==getNormalCurrentSize=="+sdcardInfoList.get(0).getNormalCurrentSize());
+                    Logg.i(LOG_TAG,"==getEventCurrentSize=="+sdcardInfoList.get(0).getEventCurrentSize());
+                    Logg.i(LOG_TAG,"==getParkingCurrentSize=="+sdcardInfoList.get(0).getParkingCurrentSize());
+                    Logg.i(LOG_TAG,"==getPictureCurrentSize=="+sdcardInfoList.get(0).getPictureCurrentSize());
+                }
 
             }
         }).start();

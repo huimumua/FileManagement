@@ -15,7 +15,9 @@ import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 项目名称：filemanagement
@@ -78,6 +80,24 @@ public class MediaScanner {
         }
     }
 
+    public static Map getAllFileCount() {
+        ArrayList <String> list = getAllVideoList();
+        int normalCount = 0,eventCount = 0,parkingCount = 0;
+        for (String path : list ){
+            if(path.contains(Const.NORMAL_DIR)){
+                normalCount ++ ;
+            }else if(path.contains(Const.EVENT_DIR)){
+                eventCount ++ ;
+            }else if(path.contains(Const.PARKING_DIR)){
+                parkingCount ++ ;
+            }
+        }
+        Map fileCountMap =new HashMap();
+        fileCountMap.put(Const.NORMAL_DIR,normalCount);
+        fileCountMap.put(Const.EVENT_DIR,eventCount);
+        fileCountMap.put(Const.PARKING_DIR,parkingCount);
+        return fileCountMap;
+    }
 
     public static ArrayList <String> getVideoList(String type){
         ArrayList <String> fileList = new ArrayList<String>();
@@ -424,7 +444,6 @@ public class MediaScanner {
             Logg.e(TAG,"-->renameFile --> The new file name is the same as the old file name....");
         }
     }
-
 
 
 }

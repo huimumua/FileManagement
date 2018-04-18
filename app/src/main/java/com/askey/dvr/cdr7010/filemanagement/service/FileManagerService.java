@@ -8,6 +8,7 @@ import android.os.RemoteException;
 import com.askey.dvr.cdr7010.filemanagement.IFileManagerAidlInterface;
 import com.askey.dvr.cdr7010.filemanagement.ItemData;
 import com.askey.dvr.cdr7010.filemanagement.SdcardInfo;
+import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
 import com.askey.dvr.cdr7010.filemanagement.controller.SdcardManager;
@@ -15,6 +16,7 @@ import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
 
+import java.io.File;
 import java.util.List;
 
 public class FileManagerService extends Service {
@@ -29,10 +31,14 @@ public class FileManagerService extends Service {
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
 
+        Const.SDCARD_IS_EXIST = SdcardUtil.checkSdcardExist();
+
+        Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(FileManagerApplication.getAppContext());
+
         Intent startIntent = new Intent(this, SdcardService.class);
         startService(startIntent);
 
-        Const.SDCARD_IS_EXIST = SdcardUtil.checkSdcardExist();
+
         return new MyBinder();
     }
 
