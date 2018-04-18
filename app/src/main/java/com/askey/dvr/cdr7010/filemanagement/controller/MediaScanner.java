@@ -10,11 +10,17 @@ import android.provider.MediaStore;
 import com.askey.dvr.cdr7010.filemanagement.ItemData;
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
+import com.askey.dvr.cdr7010.filemanagement.util.DateUtil;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import static com.askey.dvr.cdr7010.filemanagement.util.DateUtil.dateToStamp;
 
 /**
  * 项目名称：filemanagement
@@ -153,36 +159,35 @@ public class MediaScanner {
             //视频时长
             String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
             if( path.contains(type) ){
-                Logg.i(TAG,"==name=="+name);
                 String yyyyMMDD = name.substring(0,8);
 
+                long fileCreateTime = DateUtil.getFileCreateTime(name);
+
                 if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
-                    Logg.i(TAG,"==currentYYYYMMDD=="+currentYYYYMMDD);
-                    Logg.i(TAG,"==yyyyMMDD=="+yyyyMMDD);
                     ItemData groupitem = new ItemData();
-                    groupitem.setFileTime(Long.valueOf(DATE_ADDED));
+                    groupitem.setFileTime(fileCreateTime);
                     groupitem.setFilePath(path);
                     groupitem.setFileName(name);
                     groupitem.setDir(false);
                     group.add(groupitem);
                 }else{
                     currentYYYYMMDD = yyyyMMDD;
+
                     group= new ArrayList<ItemData>();
                     ItemData groupitem = new ItemData();
-                    groupitem.setFileTime(Long.valueOf(DATE_ADDED));
+                    groupitem.setFileTime(fileCreateTime);
                     groupitem.setFilePath(path);
                     groupitem.setFileName(name);
                     groupitem.setDir(false);
                     group.add(groupitem);
 
                     ItemData itemData= new ItemData();
-                    itemData.setFileTime(Long.valueOf(DATE_ADDED));
+                    itemData.setFileTime(fileCreateTime);
                     itemData.setFilePath(path);
                     itemData.setFileName(name);
                     itemData.setDir(true);
                     itemData.setDirFileItem(group);
                     fileList.add(itemData);
-
                 }
 
             }
@@ -190,6 +195,7 @@ public class MediaScanner {
         }
         return fileList;
     }
+
 
 
     /**
@@ -249,11 +255,13 @@ public class MediaScanner {
                 Logg.i(TAG,"==name=="+name);
                 String yyyyMMDD = name.substring(0,8);
 
+                long fileCreateTime = DateUtil.getFileCreateTime(name);
+
                 if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
                     Logg.i(TAG,"==currentYYYYMMDD=="+currentYYYYMMDD);
                     Logg.i(TAG,"==yyyyMMDD=="+yyyyMMDD);
                     ItemData groupitem = new ItemData();
-                    groupitem.setFileTime(Long.valueOf(DATE_ADDED));
+                    groupitem.setFileTime(fileCreateTime);
                     groupitem.setFilePath(path);
                     groupitem.setFileName(name);
                     groupitem.setDir(false);
@@ -262,14 +270,14 @@ public class MediaScanner {
                     currentYYYYMMDD = yyyyMMDD;
                     group= new ArrayList<ItemData>();
                     ItemData groupitem = new ItemData();
-                    groupitem.setFileTime(Long.valueOf(DATE_ADDED));
+                    groupitem.setFileTime(fileCreateTime);
                     groupitem.setFilePath(path);
                     groupitem.setFileName(name);
                     groupitem.setDir(false);
                     group.add(groupitem);
 
                     ItemData itemData= new ItemData();
-                    itemData.setFileTime(Long.valueOf(DATE_ADDED));
+                    itemData.setFileTime(fileCreateTime);
                     itemData.setFilePath(path);
                     itemData.setFileName(name);
                     itemData.setDir(true);
