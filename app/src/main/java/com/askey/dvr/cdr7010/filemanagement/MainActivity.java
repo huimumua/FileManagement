@@ -63,7 +63,9 @@ public class MainActivity extends Activity{
             public void run() {
                 Const.SDCARD_IS_EXIST = SdcardUtil.checkSdcardExist();
 
-                Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(mContext);
+                if( Const.SDCARD_IS_EXIST){
+                    Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(mContext);
+                }
 
                 FileManager mFileManager =FileManager.getSingInstance();
                 String str = "/home/harvey/sdcardAlgorithm/mount_test";
@@ -79,7 +81,6 @@ public class MainActivity extends Activity{
                 Logg.i(LOG_TAG,"==FH_Init==resultLastfile=="+resultLastfile);
                 boolean resultDelete = mFileManager.FH_Delete("/home/harvey/sdcardAlgorithm/mount_test", resultLastfile);
                 Logg.i(LOG_TAG,"==FH_Init==resultDelete=="+resultDelete);
-
 
                 List<SdcardInfo> sdcardInfoList = SdcardManager.getSingInstance().getSdcardInfo();
                 if(sdcardInfoList!=null && sdcardInfoList.size()>0){

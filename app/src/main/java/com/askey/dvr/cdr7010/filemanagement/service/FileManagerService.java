@@ -33,7 +33,9 @@ public class FileManagerService extends Service {
 
         Const.SDCARD_IS_EXIST = SdcardUtil.checkSdcardExist();
 
-        Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(FileManagerApplication.getAppContext());
+        if(Const.SDCARD_IS_EXIST){
+            Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(FileManagerApplication.getAppContext());
+        }
 
         Intent startIntent = new Intent(this, SdcardService.class);
         startService(startIntent);
