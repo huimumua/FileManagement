@@ -50,7 +50,7 @@ interface IFileManagerAidlInterface {
     /**
     * pathList : files Absolute Path
     * */
-    boolean deleteFileByFolder(String path);
+    boolean deleteFileByFolder(String type);
 
     /**
     * 为setting界面提供sdcardInfo信息

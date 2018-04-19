@@ -23,6 +23,7 @@ public class Const {
 
     public static boolean SDCARD_IS_EXIST = false;
 
+    public static final String DVR_DIR = "DVR";
     public static final String NORMAL_DIR = "NORMAL";
     public static final String EVENT_DIR = "EVENT";
     public static final String PARKING_DIR = "PARKING";
@@ -32,6 +33,7 @@ public class Const {
 
     public static int CURRENT_SDCARD_SIZE = 0; // unit GB
     public static final String SDCARD_SIZE_UNIT ="GB" ;
+    public static final String BACK_SLASH_1= "/";
 
     public static final int SDCARD_SIZE_4Gb = 4; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_4Gb = 1000; // unit 个文件

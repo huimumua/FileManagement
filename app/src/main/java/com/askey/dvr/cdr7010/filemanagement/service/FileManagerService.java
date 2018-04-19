@@ -40,7 +40,6 @@ public class FileManagerService extends Service {
         Intent startIntent = new Intent(this, SdcardService.class);
         startService(startIntent);
 
-
         return new MyBinder();
     }
 
@@ -111,9 +110,9 @@ public class FileManagerService extends Service {
         }
 
         @Override
-        public boolean deleteFileByFolder(String path) throws RemoteException {
+        public boolean deleteFileByFolder(String type) throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
-                return MediaScanner.deleteDirectory(path);
+                return MediaScanner.deleteFileByFolder(type);
             }
             return false;
         }
