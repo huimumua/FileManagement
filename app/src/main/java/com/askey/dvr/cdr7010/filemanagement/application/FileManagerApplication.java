@@ -23,6 +23,7 @@ public class FileManagerApplication extends Application {
         super.onCreate();
         setInstance(this);
         setAppContext(this);
+
     }
 
     public static FileManagerApplication getInstance() {

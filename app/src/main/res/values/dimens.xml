@@ -1,0 +1,27 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="title_size">20sp</dimen>
+    <dimen name="content_size">20sp</dimen>
+    <dimen name="logo_content_size">28sp</dimen>
+    <dimen name="logo_title_size">40sp</dimen>
+    <dimen name="logo_small_content_size">15sp</dimen>
+    <!--<dimen name="content_size">26sp</dimen>-->
+    <dimen name="high_size">40dp</dimen>
+    <!--<dimen name="high_size">60dp</dimen>-->
+    <dimen name="left_dis">10dp</dimen>
+    <dimen name="left_radiobutton">20dp</dimen>
+    <dimen name="notification_setting">20dp</dimen>
+    <dimen name="notification_setting_item">60dp</dimen>
+    <dimen name="main_activity_sd">22sp</dimen>
+    <dimen name="top_dis">10dp</dimen>
+    <dimen name="lv_system_item">5dp</dimen>
+    <dimen name="img_with">30dp</dimen>
+    <dimen name="img_height">30dp</dimen>
+    <dimen name="img_marginbottom">15dp</dimen>
+    <dimen name="img_marginright">60dp</dimen>
+    <dimen name="main_manual_calibration_status_margin_right">15dp</dimen>
+    <dimen name="main_manual_calibration_status_margin_top">40dp</dimen>
+    <dimen name="main_manual_calibration_status_text_size">16sp</dimen>
+</resources>

@@ -8,4 +8,17 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="radioStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/high_size</item>
+        <item name="android:button">@null</item>
+        <item name="android:textSize">@dimen/content_size</item>
+        <item name="android:background">@drawable/menu_radiobutton</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingLeft">@dimen/left_radiobutton</item>
+        <item name="android:paddingRight">@dimen/left_radiobutton</item>
+    </style>
+
+
 </resources>
