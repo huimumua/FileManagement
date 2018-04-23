@@ -1,8 +1,14 @@
+#include <android/log.h>
 #include <jni.h>
 #include "sdcardDefragmentAlg.h"
 
-/*extern "C"
-JNIEXPORT jstring JNICALL*/
+#define LOG_TAG "sdcardDefragmentAlg.cpp"
+
+#define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#define ALOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
+
 
 struct file_struct FH_Event   = {0.2, 100*MEGABYTE, 0,0};
 struct file_struct FH_Manual  = {0.1, 100*MEGABYTE, 0,0};
@@ -195,6 +201,18 @@ int SDA_read_table_file_num_from_config(char* mount_path, char* folderType){
 	return fileNum;
 }
 
+int SDA_file_exists(char* filename)
+{
+        struct stat buf;
+        int i = stat(filename, &buf);
+	/* find file */
+        if (i == 0)
+        {
+                return 1;
+        }
+        return -1;
+}
+
 // true = 1, false = 0;
 bool FH_Init(char* mount_path){
 
@@ -202,10 +220,19 @@ bool FH_Init(char* mount_path){
 	char mount_type[] = "exfat";
 	char mount_command[80];
 
+	/* If mount_path have "table.config", return true */
+	char config_file_path[100];
+	snprintf(config_file_path, sizeof(config_file_path), "%s/table.config", mount_path);
+	rc = SDA_file_exists(config_file_path);
+	if(rc == 1){
+		return true;
+	}
+
 	/* If sdcard not clear, return false */
 	int fileNumber = SDA_get_path_file_num(mount_path);
 	if(fileNumber != 0){
-		cout << "sdcard not clear. " <<fileNumber << endl;
+		cout << "Error: SDCARD not clear... Exist file number: " <<fileNumber << endl;
+		ALOGE("Error: SDCARD not clear... Exist file number: %d",fileNumber);
 		return false;
 	}
 
