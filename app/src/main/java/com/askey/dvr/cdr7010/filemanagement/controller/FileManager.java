@@ -1,8 +1,13 @@
 package com.askey.dvr.cdr7010.filemanagement.controller;
 
 import android.content.Context;
+import android.os.storage.DiskInfo;
+import android.os.storage.StorageManager;
+import android.view.View;
 
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
+import com.askey.dvr.cdr7010.filemanagement.util.Const;
+import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 
 import java.io.File;
 
@@ -19,9 +24,10 @@ public class FileManager {
 
     private static final String LOG_TAG = FileManager.class.getSimpleName();
     private static FileManager instance;
+    private Context mContext;
 
     public FileManager(Context context){
-
+        mContext = context;
     }
 
     public static FileManager getSingInstance() {
@@ -102,5 +108,34 @@ public class FileManager {
 // Return ture
 //    public native boolean FH_unlock(File file);
     public native boolean FH_unlock(long filePointer);
+
+    public boolean sdcardInit() {
+        boolean result = FH_Init(Const.SDCARD_PATH);
+        if(!result){
+            boolean ret = MediaScanner.deleteDirectory(Const.SDCARD_PATH);
+            if(ret){
+                result = FH_Init(Const.SDCARD_PATH);
+            }
+        }
+        return result;
+    }
+
+    public long openSdcard(String filename, String folderType) {
+        long result = FH_Open(Const.SDCARD_PATH,filename,folderType);
+        if(result == -1){
+            // 参数错误, sdcard满或者文件夹个数达到最大限制
+            String finding_path = Const.SDCARD_PATH+Const.BACK_SLASH_1+folderType;
+            String oldestPath = FH_FindOldest(finding_path);
+           boolean deleteResult = MediaScanner.delete(oldestPath);
+           if(deleteResult){
+               result = FH_Open(Const.SDCARD_PATH,filename,folderType);
+           }
+        }
+        return result;
+    }
+
+    public boolean closeSdcard(long filePointer) {
+        return FH_Close(filePointer);
+    }
 
 }

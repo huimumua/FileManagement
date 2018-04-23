@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 
+import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.broadcast.SdCardReceiver;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
+import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtils;
 
 public class SdcardService extends Service {
 
@@ -30,6 +32,7 @@ public class SdcardService extends Service {
         super.onCreate();
         Logg.i(TAG, "service onCreate ...");
         // 在IntentFilter中选择你要监听的行为
+        SdcardUtils.registerStorageEventListener(FileManagerApplication.getAppContext());
         registerReceiver();
         Logg.i(TAG, "sd status");
     }
@@ -49,6 +52,7 @@ public class SdcardService extends Service {
     }
 
     public void onDestroy() {
+        SdcardUtils.unRegisterStorageEventListener(FileManagerApplication.getAppContext());
         unregisterReceiver(sdCardReceiver);//取消注册
     };
 

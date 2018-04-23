@@ -46,10 +46,10 @@ public class FileManagerService extends Service {
     class MyBinder extends IFileManagerAidlInterface.Stub{
 
         @Override
-        public long openSdcard(String mount_path, String filename, String folderType) throws RemoteException {
+        public long openSdcard(String filename, String folderType) throws RemoteException {
             long result = 0;
             if(Const.SDCARD_IS_EXIST){
-                result = FileManager.getSingInstance().FH_Open(mount_path,filename,folderType);
+                result = FileManager.getSingInstance().openSdcard(filename,folderType);
             }
             return result;
         }
@@ -57,7 +57,7 @@ public class FileManagerService extends Service {
         @Override
         public boolean closeSdcard(long filePointer) throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
-                boolean result = FileManager.getSingInstance().FH_Close(filePointer);
+                boolean result = FileManager.getSingInstance().closeSdcard(filePointer);
                 return result;
             }
             return false;

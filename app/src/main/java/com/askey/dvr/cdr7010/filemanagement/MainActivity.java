@@ -23,6 +23,7 @@ import com.askey.dvr.cdr7010.filemanagement.controller.SdcardManager;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
+import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtils;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class MainActivity extends Activity{
 
         requestSdcardPermission();
 
+        SdcardUtils.registerStorageEventListener(mContext);
 
         registerReceiver();
 
@@ -68,18 +70,17 @@ public class MainActivity extends Activity{
                 }
 
                 FileManager mFileManager =FileManager.getSingInstance();
-                String str = "/home/harvey/sdcardAlgorithm/mount_test";
-                boolean result = mFileManager.FH_Init(str);
+                boolean result = mFileManager.sdcardInit();
                 Logg.i(LOG_TAG,"==FH_Init==result=="+result);
-                long resultOpen =mFileManager.FH_Open("/home/harvey/sdcardAlgorithm/mount_test", "h1.code", "Event");
+                long resultOpen =mFileManager.FH_Open(Const.SDCARD_PATH, "h1.code", "Event");
                 Logg.i(LOG_TAG,"==FH_Init==resultOpen=="+resultOpen);
                 boolean resultClose = mFileManager.FH_Close(resultOpen);
                 Logg.i(LOG_TAG,"==FH_Init==resultClose=="+resultClose);
                 boolean resultSync = mFileManager.FH_Sync(resultOpen);
                 Logg.i(LOG_TAG,"==FH_Init==resultSync=="+resultSync);
-                String resultLastfile = mFileManager.FH_FindOldest("/home/harvey/sdcardAlgorithm/mount_test/Manual");
+                String resultLastfile = mFileManager.FH_FindOldest(Const.SDCARD_PATH+"/Normal");
                 Logg.i(LOG_TAG,"==FH_Init==resultLastfile=="+resultLastfile);
-                boolean resultDelete = mFileManager.FH_Delete("/home/harvey/sdcardAlgorithm/mount_test", resultLastfile);
+                boolean resultDelete = mFileManager.FH_Delete(Const.SDCARD_PATH, resultLastfile);
                 Logg.i(LOG_TAG,"==FH_Init==resultDelete=="+resultDelete);
 
                 List<SdcardInfo> sdcardInfoList = SdcardManager.getSingInstance().getSdcardInfo();
@@ -113,6 +114,7 @@ public class MainActivity extends Activity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        SdcardUtils.unRegisterStorageEventListener(mContext);
         unregisterReceiver(sdCardReceiver);//取消注册
     }
 

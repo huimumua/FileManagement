@@ -332,9 +332,10 @@ public class MediaScanner {
         File file = new File(fileName);
         // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
         if (file.exists() && file.isFile()) {
-            boolean result = FileManager.getSingInstance().FH_Delete("",fileName);;
-            Logg.i(TAG,"-->deleteFile --> FH_Delete "+result+" result =="+result);
-            if (file.delete()) {
+            boolean result = FileManager.getSingInstance().FH_Delete(Const.SDCARD_PATH,fileName);;
+            Logg.i(TAG,"-->deleteFile --> FH_Delete "+fileName+" result =="+result);
+            //之后会使用底层提供的方法进行删除
+            if (file.delete()/*result*/) {
                 Logg.i(TAG,"-->deleteFile --> delete "+fileName+" success");
                 //这里清除ContentProvader数据库
                 syncDeleteFile(file);
@@ -422,7 +423,17 @@ public class MediaScanner {
                         .getAbsolutePath());
                 if (!flag)
                     break;
+            }else{
+                String str = files[i].getAbsolutePath();
+                        File dirFile1 = new File(str);
+                Logg.i(TAG,"=====files.length==222=="+str);
+                try {
+                    Logg.i(TAG,"=====files.length==222=="+dirFile1.delete());
+                }catch (Exception e){
+                    Logg.e(TAG,"=====files.length==222=="+e.getMessage());
+                }
             }
+
         }
         if (!flag) {
             Logg.e(TAG,"-->deleteDirectory --> delete "+dir+" failed");
@@ -433,6 +444,7 @@ public class MediaScanner {
             Logg.i(TAG,"-->deleteDirectory --> delete "+dir+" success");
             return true;
         } else {
+            Logg.e(TAG,"=====dirFile.delete()==false==");
             return false;
         }
     }

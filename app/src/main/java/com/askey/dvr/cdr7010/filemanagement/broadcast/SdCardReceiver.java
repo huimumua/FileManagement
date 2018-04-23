@@ -8,6 +8,7 @@ import android.os.StatFs;
 import android.text.format.Formatter;
 
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
+import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
@@ -48,7 +49,7 @@ public class SdCardReceiver extends BroadcastReceiver {
 
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_FINISHED)){//扫描完成
             Logg.i(TAG, "扫描完成...");
-            Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(context);
+            initSdcard(context);
 
         }else if (action.equals(Intent.ACTION_MEDIA_SHARED)){//扩展介质的挂载被解除 (unmount)。因为它已经作为 USB 大容量存储被共享
 
@@ -57,6 +58,17 @@ public class SdCardReceiver extends BroadcastReceiver {
 
             Logg.i(TAG, "其他状态...");
         }
+    }
+
+    private void initSdcard(final Context context) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(context);
+                boolean result = FileManager.getSingInstance().sdcardInit();
+                Logg.i(TAG,"==result=="+result);
+            }
+        }).start();
     }
 
 
