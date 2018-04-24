@@ -111,12 +111,12 @@ public class FileManager {
 
     public boolean sdcardInit() {
         boolean result = FH_Init(Const.SDCARD_PATH);
-        if(!result){
+/*        if(!result){
             boolean ret = MediaScanner.deleteDirectory(Const.SDCARD_PATH);
             if(ret){
                 result = FH_Init(Const.SDCARD_PATH);
             }
-        }
+        }*/
         return result;
     }
 
