@@ -83,5 +83,10 @@ public class Const {
     public static final int SDCARD_MAX_PARKING_FILE_SIZE_512Gb = 1000; // unit 个文件
     public static final int SDCARD_MAX_PICTURE_FILE_SIZE_512Gb = 1000; // unit 个文件
 
-
+    public static final String ACTION_SDCARD_NORMAL_MAX_FILE = "action_sdcard_normal_max_file";
+    public static final String ACTION_SDCARD_EVENT_MAX_FILE = "action_sdcard_event_max_file";
+    public static final String ACTION_SDCARD_PARKING_MAX_FILE = "action_sdcard_parking_max_file";
+    public static final String ACTION_SDCARD_PICTURE_MAX_FILE = "action_sdcard_picture_max_file";
+    public static final String ACTION_SDCARD_FULL_MAX_FILE = "action_sdcard_full";
+    
 }

@@ -10,6 +10,7 @@ import android.text.format.Formatter;
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
+import com.askey.dvr.cdr7010.filemanagement.util.BroadcastUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
@@ -37,9 +38,7 @@ public class SdCardReceiver extends BroadcastReceiver {
 
             Logg.i(TAG, "我的各种未挂载状态");
 
-//            Logg.i(TAG,"==Const.SDCARD_PATH=="+Const.SDCARD_PATH);
-//            MediaScanner.scanDirAsync(FileManagerApplication.getAppContext(),Const.SDCARD_PATH);
-
+//            BroadcastUtils.sendMyBroadcast(context,Const.ACTION_SDCARD_NORMAL_MAX_FILE);
 
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描
             Logg.i(TAG, "开始扫描...");
@@ -66,7 +65,7 @@ public class SdCardReceiver extends BroadcastReceiver {
             public void run() {
                 Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(context);
                 boolean result = FileManager.getSingInstance().sdcardInit();
-                Logg.i(TAG,"==result=="+result);
+                Logg.i(TAG,"=sdcardInit=result=="+result);
             }
         }).start();
     }
