@@ -58,7 +58,7 @@ public class FileManager {
 // ** If file number > folderType file_num, return NULL; **
 
 //   public native File FH_Open(String mount_path, String filename, String folderType);
-    public native long FH_Open(String mount_path, String filename, String folderType);
+    public native String FH_Open(String filename, int type);
 
     //
 // Purpose: Close opened file
@@ -66,7 +66,7 @@ public class FileManager {
 // Output: bool, true = 1, false = 0;
 
 //    public native boolean FH_Close(File file);
-    public native boolean FH_Close(long filePointer);
+    public native boolean FH_Close();
 
     //
 // Purpose: Move the data from cache to disc
@@ -74,14 +74,14 @@ public class FileManager {
 // Output: bool, true = 1, false = 0;
 
 //    public native boolean FH_Sync(File file);
-    public native boolean FH_Sync(long filePointer);
+    public native boolean FH_Sync();
 
     //
 // Purpose: 1.Compare absolute_filepath, if have folderType String, rename file to Free folder
 //          2.The file will be change to (number) + folderType extension
 // Input:  mount path, Delete file absolute path
 // Output: bool, true = 1, false = 0;
-    public native boolean FH_Delete(String mount_path,String absolute_filepath);
+    public native boolean FH_Delete(String absolute_filepath);
 
     //
 // Purpose: Finding the path oldest file ,and return absolute_filepath string
@@ -89,7 +89,7 @@ public class FileManager {
 // Output: oldest_filepath, ""
 // ** Oldest file, means the file which is earliest modification time **
 
-    public native String FH_FindOldest(String finding_path);
+    public native String FH_FindOldest(int type);
 
     //
 // not implement
@@ -114,22 +114,32 @@ public class FileManager {
         return result;
     }
 
-    public long openSdcard(String filename, String folderType) {
-        long result = FH_Open(Const.SDCARD_PATH,filename,folderType);
-        if(result == -1){
+    public String openSdcard(String filename, String folderType) {
+        int type = -1;
+        if(folderType.equals(Const.EVENT_DIR)){
+            type = Const.TYPE_EVENT_DIR;
+        }else if(folderType.equals(Const.MANUAL_DIR)){
+            type = Const.TYPE_MANUAL_DIR;
+        }else if(folderType.equals(Const.NORMAL_DIR)){
+            type = Const.TYPE_NORMAL_DIR;
+        }else if(folderType.equals(Const.PARKING_DIR)){
+            type = Const.TYPE_PARKING_DIR;
+        }else if(folderType.equals(Const.PICTURE_DIR)){
+            type = Const.TYPE_PICTURE_DIR;
+        }else if(folderType.equals(Const.SYSTEM_DIR)){
+            type = Const.TYPE_SYSTEM_DIR;
+        }
+        String result = FH_Open(filename,type);
+        if(result == null || result.endsWith("")){
             // 参数错误, sdcard满或者文件夹个数达到最大限制
-            String finding_path = Const.SDCARD_PATH+Const.BACK_SLASH_1+folderType;
-            String oldestPath = FH_FindOldest(finding_path);
+            String oldestPath = FH_FindOldest(type);
            boolean deleteResult = MediaScanner.delete(oldestPath);
            if(deleteResult){
-               result = FH_Open(Const.SDCARD_PATH,filename,folderType);
+               result = FH_Open(filename,type);
            }
         }
         return result;
     }
 
-    public boolean closeSdcard(long filePointer) {
-        return FH_Close(filePointer);
-    }
 
 }

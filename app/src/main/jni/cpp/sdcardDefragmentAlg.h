@@ -22,7 +22,18 @@ using namespace std;
 #define KILOBYTE (1 << 10)
 #define MEGABYTE (1 << 20)
 
+enum eFolderType{
+	e_Event=0,
+	e_Manual,
+	e_Normal,
+	e_Parking,
+	e_Picture,
+	e_System
+};
+
 struct file_struct{
+	char* folder_type;
+	char* folder_extension;
 	float percent;
 	uint64_t every_block_space;
 	int max_file_num;
@@ -31,7 +42,7 @@ struct file_struct{
 
 //
 // Purpose: 1.Create Event,Manual,Normal,Parking,Picture,System folder
-//          2.Use SDCARD space to calculate every folder can use file
+//          2.Use SDCARD space to calculate every folder can use file number
 //          3.every file struct save in "Table.config"
 // Input:  mount path
 // Output: bool, true = 1, false = 0;
@@ -39,48 +50,48 @@ struct file_struct{
 bool FH_Init(char* mount_path);
 
 //
-// Purpose: 1.Choice folderType to openfile
+// Purpose: 1.Choice enum folderType to openfile
 //          2.Get file_num from "Table.config"
 //          3.If "Free" folder have extension for folderType, use it to open file.
-// Input:  mount path, open filename,    
-//         folderType: Event, Manual, Normal, Parking, Picture, System
+// Input:  filename,    
+//         folderType: eunm eFolderType
 // Output: FILE Pointer
-// ** If file number > folderType file_num, return NULL; **
-FILE* FH_Open(char* mount_path, char* filename, char *folderType);
+// ** If file number > Table.config file_num, return NULL; **
+char* FH_Open(char* filename, eFolderType folderType);
 
 //
 // Purpose: Close opened file
 // Input: Opened FILE Pointer
 // Output: bool, true = 1, false = 0;
-bool FH_Close(FILE* fp);
+bool FH_Close(void);
 
 //
 // Purpose: Move the data from cache to disc
 // Input:  Opened FILE Pointer
 // Output: bool, true = 1, false = 0;
-bool FH_Sync(FILE* fp);
+bool FH_Sync(void);
 
 //
 // Purpose: 1.Compare absolute_filepath, if have folderType String, rename file to Free folder
 //          2.The file will be change to (number) + folderType extension
-// Input:  mount path, Delete file absolute path
+// Input:  Delete file absolute path
 // Output: bool, true = 1, false = 0;
-bool FH_Delete(char* mount_path, const char* absolute_filepath);
+bool FH_Delete(const char* absolute_filepath);
 
 //
 // Purpose: Finding the path oldest file ,and return absolute_filepath string
-// Input:  finding folder path
+// Input:  enum eFolderType
 // Output: oldest_filepath, ""
 // ** Oldest file, means the file which is earliest modification time **
-string FH_FindOldest(char* finding_path);
+string FH_FindOldest(eFolderType folderType);
 
 //
-// not implement
+// not use
 // Return ture
 bool FH_lock(FILE* fp);
 
 //
-// not implement
+// not use
 // Return ture
 bool FH_unlock(FILE* fp);
 

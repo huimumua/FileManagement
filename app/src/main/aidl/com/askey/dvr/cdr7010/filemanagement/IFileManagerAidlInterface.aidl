@@ -15,14 +15,14 @@ interface IFileManagerAidlInterface {
                  folderType: Event, Manual, Normal, Parking, Picture, System
          Output: FILE Pointer
         ** If file number > folderType file_num, return NULL; ***/
-     long openSdcard(String filename, String folderType);
+     String openSdcard(String filename, String folderType);
 
      /**
      *  Purpose: Close opened file
        Input: Opened FILE Pointer
        Output: bool, true = 1, false = 0;
      * */
-     boolean closeSdcard(long filePointer);
+     boolean closeSdcard();
 
     /**
     * Type : NORMAL EVENT PARKING PICTURE SYSTEM

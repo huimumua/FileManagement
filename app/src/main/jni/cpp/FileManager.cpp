@@ -31,42 +31,34 @@ static context_t sVMContext = {NULL};
      return (jboolean)FH_Init(infoPath);
 }
 
- jlong FileManager_FH_Open(JNIEnv *env, jclass object,jstring mount_path, jstring file_name, jstring folder_type){
+jstring FileManager_FH_Open(JNIEnv *env, jclass object, jstring file_name, int type){
      ALOGE("this is jni call1-->FileManager_FH_Open");
-     char *mountpath = (char *) env->GetStringUTFChars(mount_path, 0);
-     env->ReleaseStringUTFChars(mount_path, mountpath);
      char *filename = (char *) env->GetStringUTFChars(file_name, 0);
      env->ReleaseStringUTFChars(file_name, filename);
-     char *folderType = (char *) env->GetStringUTFChars(folder_type, 0);
-     env->ReleaseStringUTFChars(folder_type, folderType);
 
-     return (jlong)FH_Open(mountpath,filename,folderType);
+     return (jstring)FH_Open(filename,(eFolderType)type);
  }
 
-jboolean FileManager_FH_Close(JNIEnv *env, jclass object,jlong file_pointer){
+jboolean FileManager_FH_Close(JNIEnv *env, jclass object){
     ALOGE("this is jni call1-->FileManager_FH_Close");
-    return (jboolean)FH_Close((FILE*)file_pointer);
+    return (jboolean)FH_Close();
 }
 
-jboolean  FileManager_FH_Sync(JNIEnv *env, jclass object,jlong file_pointer){
+jboolean  FileManager_FH_Sync(JNIEnv *env, jclass object){
     ALOGE("this is jni call1-->FileManager_FH_Sync");
-    return (jboolean)FH_Sync((FILE*)file_pointer);
+    return (jboolean)FH_Sync();
 }
 
-jboolean  FileManager_FH_Delete(JNIEnv *env, jclass object,jstring mount_path,jstring absolute_filepath){
+jboolean  FileManager_FH_Delete(JNIEnv *env, jclass object,jstring absolute_filepath){
     ALOGE("this is jni call1-->FileManager_FH_Delete");
-    char *mountPath = (char *) env->GetStringUTFChars(mount_path, 0);
-    env->ReleaseStringUTFChars(mount_path, mountPath);
     char *absoluteFilePath = (char *) env->GetStringUTFChars(absolute_filepath, 0);
     env->ReleaseStringUTFChars(absolute_filepath, absoluteFilePath);
-    return (jboolean)FH_Delete(mountPath,absoluteFilePath);
+    return (jboolean)FH_Delete(absoluteFilePath);
 }
 
-jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,jstring finding_path){
+jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,int type){
     ALOGE("this is jni call1-->FileManager_FH_FindOldest");
-    char *findingPath = (char *) env->GetStringUTFChars(finding_path, 0);
-    env->ReleaseStringUTFChars(finding_path, findingPath);
-    string result = FH_FindOldest(findingPath);
+    string result = FH_FindOldest((eFolderType)type);
     return env->NewStringUTF(result.c_str());
 }
 
@@ -99,11 +91,11 @@ static void FileManager_native_init(JNIEnv *env, jobject thiz) {
 static const JNINativeMethod gMethods[] = {
         { "init_native", "()V", (void *)FileManager_init_native },
         { "FH_Init", "(Ljava/lang/String;)Z", (void *)FileManager_FH_Init },
-        { "FH_Open", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)J", (void *)FileManager_FH_Open },
-        { "FH_Close", "(J)Z", (void *)FileManager_FH_Close },
-        { "FH_Sync", "(J)Z", (void *)FileManager_FH_Sync },
-        { "FH_Delete", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)FileManager_FH_Delete },
-        { "FH_FindOldest", "(Ljava/lang/String;)Ljava/lang/String;", (void *)FileManager_FH_FindOldest },
+        { "FH_Open", "(Ljava/lang/String;I)Ljava/lang/String;", (void *)FileManager_FH_Open },
+        { "FH_Close", "()Z", (void *)FileManager_FH_Close },
+        { "FH_Sync", "()Z", (void *)FileManager_FH_Sync },
+        { "FH_Delete", "(Ljava/lang/String;)Z", (void *)FileManager_FH_Delete },
+        { "FH_FindOldest", "(I)Ljava/lang/String;", (void *)FileManager_FH_FindOldest },
         { "FH_lock", "(J)Z", (void *)FileManager_FH_lock },
         { "FH_unlock", "(J)Z", (void *)FileManager_FH_unlock },
 };

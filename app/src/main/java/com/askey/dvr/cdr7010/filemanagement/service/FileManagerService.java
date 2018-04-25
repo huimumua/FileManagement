@@ -46,8 +46,8 @@ public class FileManagerService extends Service {
     class MyBinder extends IFileManagerAidlInterface.Stub{
 
         @Override
-        public long openSdcard(String filename, String folderType) throws RemoteException {
-            long result = 0;
+        public String openSdcard(String filename, String folderType) throws RemoteException {
+            String  result = null;
             if(Const.SDCARD_IS_EXIST){
                 result = FileManager.getSingInstance().openSdcard(filename,folderType);
             }
@@ -55,9 +55,9 @@ public class FileManagerService extends Service {
         }
 
         @Override
-        public boolean closeSdcard(long filePointer) throws RemoteException {
+        public boolean closeSdcard() throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
-                boolean result = FileManager.getSingInstance().closeSdcard(filePointer);
+                boolean result = FileManager.getSingInstance().FH_Close();
                 return result;
             }
             return false;

@@ -72,15 +72,15 @@ public class MainActivity extends Activity{
                 FileManager mFileManager =FileManager.getSingInstance();
                 boolean result = mFileManager.sdcardInit();
                 Logg.i(LOG_TAG,"==FH_Init==result=="+result);
-                long resultOpen =mFileManager.FH_Open(Const.SDCARD_PATH, "h1.code", "Event");
+                String resultOpen =mFileManager.FH_Open("h1.code", Const.TYPE_EVENT_DIR);
                 Logg.i(LOG_TAG,"==FH_Init==resultOpen=="+resultOpen);
-                boolean resultClose = mFileManager.FH_Close(resultOpen);
+                boolean resultClose = mFileManager.FH_Close();
                 Logg.i(LOG_TAG,"==FH_Init==resultClose=="+resultClose);
-                boolean resultSync = mFileManager.FH_Sync(resultOpen);
+                boolean resultSync = mFileManager.FH_Sync();
                 Logg.i(LOG_TAG,"==FH_Init==resultSync=="+resultSync);
-                String resultLastfile = mFileManager.FH_FindOldest(Const.SDCARD_PATH+"/Normal");
+                String resultLastfile = mFileManager.FH_FindOldest(Const.TYPE_NORMAL_DIR);
                 Logg.i(LOG_TAG,"==FH_Init==resultLastfile=="+resultLastfile);
-                boolean resultDelete = mFileManager.FH_Delete(Const.SDCARD_PATH, resultLastfile);
+                boolean resultDelete = mFileManager.FH_Delete(resultLastfile);
                 Logg.i(LOG_TAG,"==FH_Init==resultDelete=="+resultDelete);
 
                 List<SdcardInfo> sdcardInfoList = SdcardManager.getSingInstance().getSdcardInfo();

@@ -315,8 +315,11 @@ public class MediaScanner {
     public static boolean deleteFileByGroup(List <String> pathArray) {
         if(pathArray.size()>0){
             for (String path : pathArray){
-              return delete(path);
+                if(!delete(path)){
+                    return false;
+                }
             }
+            return true;
         }
         return false;
     }
@@ -332,7 +335,7 @@ public class MediaScanner {
         File file = new File(fileName);
         // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
         if (file.exists() && file.isFile()) {
-            boolean result = FileManager.getSingInstance().FH_Delete(Const.SDCARD_PATH,fileName);;
+            boolean result = FileManager.getSingInstance().FH_Delete(fileName);;
             Logg.i(TAG,"-->deleteFile --> FH_Delete "+fileName+" result =="+result);
             //之后会使用底层提供的方法进行删除
             if (file.delete()/*result*/) {
