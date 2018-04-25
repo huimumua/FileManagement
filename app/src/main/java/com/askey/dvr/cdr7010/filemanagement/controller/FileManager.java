@@ -1,15 +1,9 @@
 package com.askey.dvr.cdr7010.filemanagement.controller;
 
 import android.content.Context;
-import android.os.storage.DiskInfo;
-import android.os.storage.StorageManager;
-import android.view.View;
 
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
-import com.askey.dvr.cdr7010.filemanagement.util.Logg;
-
-import java.io.File;
 
 /**
  * 项目名称：filemanagement
