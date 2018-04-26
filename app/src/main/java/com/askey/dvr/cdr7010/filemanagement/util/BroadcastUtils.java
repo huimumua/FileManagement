@@ -30,4 +30,16 @@ public class BroadcastUtils {
         context.sendBroadcast(intent);
     }
 
+    /**
+     * 文件超过限制使用这个
+     * */
+    public static void sendLimitBroadcast(Context context , String cmd_ex) {
+        Intent intent = new Intent();
+        intent.setAction("com.askey.dvr.cdr7010.dashcam.limit");
+        intent.putExtra("cmd_ex", cmd_ex);
+        context.sendBroadcast(intent);
+    }
+
+
+
 }

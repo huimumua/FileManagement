@@ -70,6 +70,9 @@ public class SdCardReceiver extends BroadcastReceiver {
                 }
                 Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(context);
                 boolean result = FileManager.getSingInstance().sdcardInit();
+                if(!result){
+                    BroadcastUtils.sendLimitBroadcast(context,Const.CMD_SHOW_SDCARD_INIT_FAIL);
+                }
                 Logg.i(TAG,"=sdcardInit=result=="+result);
             }
         }).start();
