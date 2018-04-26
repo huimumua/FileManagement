@@ -109,7 +109,7 @@ public class Const {
     public static final String CMD_SHOW_SDCARD_FULL_LIMIT ="show_sdcard_full_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT = "show_unreach_sdcard_full_limit";//限制解除
     public static final String CMD_SHOW_SDCARD_INIT_FAIL ="show_sdcard_init_fail";//init 失败
-
+    public static final String CMD_SHOW_UNREACH_SDCARD_INIT_SUCC = "show_unreach_sdcard_init_success";//限制解除
 
 
 }

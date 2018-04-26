@@ -72,6 +72,8 @@ public class SdCardReceiver extends BroadcastReceiver {
                 boolean result = FileManager.getSingInstance().sdcardInit();
                 if(!result){
                     BroadcastUtils.sendLimitBroadcast(context,Const.CMD_SHOW_SDCARD_INIT_FAIL);
+                }else{
+                    BroadcastUtils.sendLimitBroadcast(context,Const.CMD_SHOW_UNREACH_SDCARD_INIT_SUCC);
                 }
                 Logg.i(TAG,"=sdcardInit=result=="+result);
             }
