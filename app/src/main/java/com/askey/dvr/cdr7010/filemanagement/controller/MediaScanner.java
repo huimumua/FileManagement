@@ -174,7 +174,7 @@ public class MediaScanner {
             //视频时长
             String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
             if( path.contains(type) ){
-                Logg.i(TAG,"==name=="+name);
+                Logg.i(TAG,"==path=="+path);
                 if(!type.equals(Const.NORMAL_DIR)){
                     Logg.i(TAG,"==type=="+type);
                     long fileCreateTime = DateUtil.getFileCreateTime(name);
@@ -338,7 +338,7 @@ public class MediaScanner {
             boolean result = FileManager.getSingInstance().FH_Delete(fileName);;
             Logg.i(TAG,"-->deleteFile --> FH_Delete "+fileName+" result =="+result);
             //之后会使用底层提供的方法进行删除
-            if (file.delete()/*result*/) {
+            if (/*file.delete()*/result) {
                 Logg.i(TAG,"-->deleteFile --> delete "+fileName+" success");
                 //这里清除ContentProvader数据库
                 syncDeleteFile(file);
