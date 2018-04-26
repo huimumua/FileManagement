@@ -63,6 +63,11 @@ public class SdCardReceiver extends BroadcastReceiver {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(context);
                 boolean result = FileManager.getSingInstance().sdcardInit();
                 Logg.i(TAG,"=sdcardInit=result=="+result);

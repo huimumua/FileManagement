@@ -1,6 +1,11 @@
 #ifndef _SDCARDDEFRAGMENTALG_H_
 #define _SDCARDDEFRAGMENTALG_H_
 
+#define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#define ALOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
+
 #include <stdio.h>
 #include <string.h> // memset
 #include <stdint.h> // uint64_t
@@ -60,15 +65,13 @@ bool FH_Init(char* mount_path);
 char* FH_Open(char* filename, eFolderType folderType);
 
 //
-// Purpose: Close opened file
-// Input: Opened FILE Pointer
-// Output: bool, true = 1, false = 0;
+// not use
+// Return ture
 bool FH_Close(void);
 
 //
-// Purpose: Move the data from cache to disc
-// Input:  Opened FILE Pointer
-// Output: bool, true = 1, false = 0;
+// not use
+// Return ture
 bool FH_Sync(void);
 
 //

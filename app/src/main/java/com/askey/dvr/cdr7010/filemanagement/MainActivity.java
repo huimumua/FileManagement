@@ -72,8 +72,20 @@ public class MainActivity extends Activity{
                 FileManager mFileManager =FileManager.getSingInstance();
                 boolean result = mFileManager.sdcardInit();
                 Logg.i(LOG_TAG,"==FH_Init==result=="+result);
-                String resultOpen =mFileManager.FH_Open("h1.code", Const.TYPE_EVENT_DIR);
-                Logg.i(LOG_TAG,"==FH_Init==resultOpen=="+resultOpen);
+
+                String openSdcard =mFileManager.openSdcard("180425102345.mp4", Const.EVENT_DIR);
+                Logg.i(LOG_TAG,"==openSdcard==="+openSdcard);
+//                String resultOpen =mFileManager.FH_Open("20180425102345_2.mp4", Const.TYPE_EVENT_DIR);
+//                String resultOpen1 =mFileManager.FH_Open("180425102345_2.mp4", Const.TYPE_EVENT_DIR);
+//                String resultOpen2 =mFileManager.FH_Open("180425102345.mp4", Const.TYPE_EVENT_DIR);
+//                String resultOpen3 =mFileManager.FH_Open("20180425102345.mp4", Const.TYPE_EVENT_DIR);
+//                String resultOpen4 =mFileManager.FH_Open("h1.code", Const.TYPE_EVENT_DIR);
+//                Logg.i(LOG_TAG,"==FH_Init==resultOpen=="+resultOpen);
+//                Logg.i(LOG_TAG,"==FH_Init==resultOpen1=="+resultOpen1);
+//                Logg.i(LOG_TAG,"==FH_Init==resultOpen2=="+resultOpen2);
+//                Logg.i(LOG_TAG,"==FH_Init==resultOpen3=="+resultOpen3);
+//                Logg.i(LOG_TAG,"==FH_Init==resultOpen4=="+resultOpen4);
+
                 boolean resultClose = mFileManager.FH_Close();
                 Logg.i(LOG_TAG,"==FH_Init==resultClose=="+resultClose);
                 boolean resultSync = mFileManager.FH_Sync();

@@ -1,12 +1,13 @@
+#include <android/log.h>
 #include "sdcardDefragmentAlg.h"
+#define LOG_TAG "sdcardDefragmentAlg.cpp"
 
-
-struct file_struct FH_Table[6] = {{"Event", ".eve", 0.2, 100*MEGABYTE, 0,0}, // event
-								{"Manual",  ".man", 0.1, 100*MEGABYTE, 0,0}, // manual
-								{"Normal",  ".nor", 0.2, 100*MEGABYTE, 0,0}, // normal
-								{"Parking", ".par", 0.3, 100*MEGABYTE, 0,0}, // parking
-								{"Picture", ".pic", 0.1, 100*MEGABYTE, 0,0}, // picture
-								{"System",  ".sys", 0.1, 10*MEGABYTE, 0,0}}; // system
+struct file_struct FH_Table[6] = {{"EVENT", ".eve", 0.2, 100*MEGABYTE, 0,0}, // event
+								{"MANUAL",  ".man", 0.1, 100*MEGABYTE, 0,0}, // manual
+								{"NORMAL",  ".nor", 0.2, 100*MEGABYTE, 0,0}, // normal
+								{"PARKING", ".par", 0.3, 100*MEGABYTE, 0,0}, // parking
+								{"PICTURE", ".pic", 0.1, 100*MEGABYTE, 0,0}, // picture
+								{"SYSTEM",  ".sys", 0.1, 10*MEGABYTE, 0,0}}; // system
 
 char g_mount_path[100] = {0};
 
@@ -195,6 +196,7 @@ int SDA_file_exists(char* filename)
 // true = 1, false = 0;
 bool FH_Init(char* mount_path){
 
+	int i;
 	int rc;
 
 	if(mount_path == NULL){
@@ -212,11 +214,11 @@ bool FH_Init(char* mount_path){
 	}
 
 	/* If sdcard not clear, return false */
-	int fileNumber = SDA_get_path_file_num(mount_path);
-	if(fileNumber != 0){
-		cout << "Error: SDCARD not clear... Exist file number: " <<fileNumber << endl;
-		return false;
-	}
+	// int fileNumber = SDA_get_path_file_num(mount_path);
+	// if(fileNumber != 0){
+	// 	cout << "Error: SDCARD not clear... Exist file number: " <<fileNumber << endl;
+	// 	return false;
+	// }
 
 	struct statvfs buf;
 
@@ -277,27 +279,18 @@ bool FH_Init(char* mount_path){
 	/* write file_struct in config file */
 	SDA_write_table_in_config(mount_path);
 
-	char event_path[100];
-	sprintf(event_path, "%s%s", mount_path,"/Event");
-	mkdir(event_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
-	char manual_path[100];
-	sprintf(manual_path, "%s%s", mount_path,"/Manual");
-	mkdir(manual_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
-	char normal_path[100];
-	sprintf(normal_path, "%s%s", mount_path,"/Normal");
-	mkdir(normal_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
-	char parking_path[100];
-	sprintf(parking_path, "%s%s", mount_path,"/Parking");
-	mkdir(parking_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
-	char picture_path[100];
-	sprintf(picture_path, "%s%s", mount_path,"/Picture");
-	mkdir(picture_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
-	char system_path[100];
-	sprintf(system_path, "%s%s", mount_path,"/System");
-	mkdir(system_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
-	char free_path[100];
-	sprintf(free_path, "%s%s", mount_path,"/System/Free");
-	mkdir(free_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+	char create_folder_path[100];
+	for(i=0; i<6; i++){
+		
+		sprintf(create_folder_path, "%s/%s", mount_path, FH_Table[i].folder_type);
+		mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+		memset(create_folder_path, 0, sizeof(create_folder_path));
+
+		if(i == 5){
+			sprintf(create_folder_path, "%s/%s/FREE", mount_path, FH_Table[i].folder_type);
+			mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+		}
+	}
 
 	return true;
 }
@@ -308,7 +301,8 @@ char* FH_Open(char* filename, eFolderType folderType){
 	if(strlen(g_mount_path) == 0){
 		return NULL;
 	}
-
+    ALOGE("this is jni call1-->FH_Open filename %s",filename);
+    ALOGE("this is jni call1-->FH_Open folderType %d",folderType);
 	int rc;
 	char config_file_path[100];
 	snprintf(config_file_path, sizeof(config_file_path), "%s/Table.config", g_mount_path);
@@ -318,41 +312,41 @@ char* FH_Open(char* filename, eFolderType folderType){
 	}
 
 	char free_path[100];
-	sprintf(free_path, "%s%s", g_mount_path,"/System/Free");
+	sprintf(free_path, "%s%s", g_mount_path,"/SYSTEM/FREE");
 	char folder_path[100];
 	
 	string first_filename;
 
-	static char purpose_path[100];
+	static char purpose_path[100] = {0};
 
 	snprintf(folder_path, sizeof(folder_path), "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
 
 	int max_file_number = SDA_read_table_file_num_from_config(g_mount_path, folderType);
-	
+
 	// if free folder have .eve extension, rename .eve file to purpose filename
 	first_filename = SDA_get_first_filename(free_path, FH_Table[folderType].folder_extension);
 	if(first_filename.length() != 0){
-		char first_path[100];
+		char first_path[100] ={0};
 		snprintf(first_path, sizeof(first_path), "%s/%s", free_path, first_filename.c_str());
+        ALOGE("this is jni call1-->FH_Open_1first_path %s",first_path);
 
 		snprintf(purpose_path, sizeof(purpose_path), "%s/%s", folder_path, filename);
 
 		rename(first_path, purpose_path);
-
+		ALOGE("this is jni call1-->FH_Open_1 %s",purpose_path);
 		return purpose_path;
 
 	// if no .eve extension in System/Free & folder file number < Event.file_num
 	}else if(SDA_get_path_file_num(folder_path) < max_file_number){
 
 		snprintf(purpose_path, sizeof(purpose_path), "%s/%s", folder_path, filename);
+        ALOGE("this is jni call1-->FH_Open_1 %s",purpose_path);
 		return purpose_path;
 	}else{
-
+        ALOGE("this is jni call1-->FH_Open_1 was full, please delete some file.");
 		cout << "file was full, please delete some file." << endl;
 		return NULL;
 	}
-
-	return NULL;
 }
 
 
@@ -389,14 +383,14 @@ bool FH_Delete(const char* absolute_filepath){
 	const char system_extension[]  = ".sys";
 
 	char free_path[100];
-	snprintf(free_path, sizeof(free_path), "%s/System/Free", g_mount_path);
+	snprintf(free_path, sizeof(free_path), "%s/SYSTEM/FREE", g_mount_path);
 
 	string filename = absolute_filepath;
 	string last_filename;
 
 	/* If fine "Event" string, get last (number).eve in Free folder,
 	  then rename absolute_filepath with (number+1).eve in Free folder */
-	if(filename.find("Event") != -1){
+	if(filename.find(FH_Table[0].folder_type) != -1){
 
 		last_filename = SDA_get_last_filename(free_path, event_extension);
 		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
@@ -406,7 +400,7 @@ bool FH_Delete(const char* absolute_filepath){
 		rc = rename(absolute_filepath, new_last_file);
 		return (rc == 0 ? true : false);
 
-	}else if(filename.find("Manual") != -1){
+	}else if(filename.find(FH_Table[1].folder_type) != -1){
 
 		last_filename = SDA_get_last_filename(free_path, manual_extension);
 		// cout << "last filename: " << last_filename << endl;
@@ -417,7 +411,7 @@ bool FH_Delete(const char* absolute_filepath){
 		rc = rename(absolute_filepath, new_last_file);
 		return (rc == 0 ? true : false);
 
-	}else if(filename.find("Normal") != -1){
+	}else if(filename.find(FH_Table[2].folder_type) != -1){
 
 		cout << "in here" << endl;
 		last_filename = SDA_get_last_filename(free_path, normal_extension);
@@ -429,7 +423,7 @@ bool FH_Delete(const char* absolute_filepath){
 		rc = rename(absolute_filepath, new_last_file);
 		return (rc == 0 ? true : false);
 
-	}else if(filename.find("Parking") != -1){
+	}else if(filename.find(FH_Table[3].folder_type) != -1){
 
 		last_filename = SDA_get_last_filename(free_path, parking_extension);
 		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
@@ -438,7 +432,7 @@ bool FH_Delete(const char* absolute_filepath){
 		rc = rename(absolute_filepath, new_last_file);
 		return (rc == 0 ? true : false);
 
-	}else if(filename.find("Picture") != -1){
+	}else if(filename.find(FH_Table[4].folder_type) != -1){
 
 		last_filename = SDA_get_last_filename(free_path, picture_extension);
 		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
@@ -447,7 +441,7 @@ bool FH_Delete(const char* absolute_filepath){
 		rc = rename(absolute_filepath, new_last_file);
 		return (rc == 0 ? true : false);
 
-	}else if(filename.find("System") != -1){
+	}else if(filename.find(FH_Table[5].folder_type) != -1){
 
 		last_filename = SDA_get_last_filename(free_path, system_extension);
 		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());

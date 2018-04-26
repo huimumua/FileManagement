@@ -4,17 +4,9 @@
 #include <android/log.h>
 #include <jni.h>
 #include "sdcardDefragmentAlg.h"
-//#include "FileManager.h"
 #define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))
 
 #define LOG_TAG "FileManager.cpp"
-
-#define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define ALOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
-#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
-
-
 
 typedef struct {
     JavaVM *vm;
@@ -24,19 +16,30 @@ typedef struct {
 
 static context_t sVMContext = {NULL};
 
- jboolean FileManager_FH_Init(JNIEnv *env, jclass object,jstring mount_path){
+jboolean FileManager_FH_Init(JNIEnv *env, jclass object,jstring mount_path){
      ALOGE("this is jni call1-->FileManager_FH_Init");
     char *infoPath = (char *) env->GetStringUTFChars(mount_path, 0);
+    jboolean result = (jboolean)FH_Init(infoPath);
      env->ReleaseStringUTFChars(mount_path, infoPath);
-     return (jboolean)FH_Init(infoPath);
+     return result;
 }
 
-jstring FileManager_FH_Open(JNIEnv *env, jclass object, jstring file_name, int type){
+jstring FileManager_FH_Open(JNIEnv *env, jclass object, jstring file_name, jint type){
      ALOGE("this is jni call1-->FileManager_FH_Open");
      char *filename = (char *) env->GetStringUTFChars(file_name, 0);
-     env->ReleaseStringUTFChars(file_name, filename);
 
-     return (jstring)FH_Open(filename,(eFolderType)type);
+    ALOGE("this is jni call1-->FileManager_FH_Open filename %s",filename);
+    ALOGE("this is jni call1-->FileManager_FH_Open type %d",type);
+    ALOGE("this is jni call1-->FileManager_FH_Open (eFolderType)type %d",(eFolderType)type);
+     char* str = FH_Open(filename,(eFolderType)type);
+    if(str !=NULL ){
+        ALOGE("this is jni call1-->FileManager_FH_Open_1 %s",str);
+        env->ReleaseStringUTFChars(file_name, filename);
+//        return env->NewString((const jchar *)str, sizeof(str));
+        return env->NewStringUTF(str);
+    }
+    env->ReleaseStringUTFChars(file_name, filename);
+    return NULL;
  }
 
 jboolean FileManager_FH_Close(JNIEnv *env, jclass object){
@@ -52,11 +55,12 @@ jboolean  FileManager_FH_Sync(JNIEnv *env, jclass object){
 jboolean  FileManager_FH_Delete(JNIEnv *env, jclass object,jstring absolute_filepath){
     ALOGE("this is jni call1-->FileManager_FH_Delete");
     char *absoluteFilePath = (char *) env->GetStringUTFChars(absolute_filepath, 0);
+    jboolean result = (jboolean)FH_Delete(absoluteFilePath);
     env->ReleaseStringUTFChars(absolute_filepath, absoluteFilePath);
-    return (jboolean)FH_Delete(absoluteFilePath);
+    return result;
 }
 
-jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,int type){
+jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,jint type){
     ALOGE("this is jni call1-->FileManager_FH_FindOldest");
     string result = FH_FindOldest((eFolderType)type);
     return env->NewStringUTF(result.c_str());
@@ -141,7 +145,6 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     error:
     return result;
 }
-
 
 
 
