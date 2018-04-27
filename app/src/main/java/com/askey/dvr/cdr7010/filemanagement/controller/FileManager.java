@@ -3,6 +3,7 @@ package com.askey.dvr.cdr7010.filemanagement.controller;
 import android.content.Context;
 
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
+import com.askey.dvr.cdr7010.filemanagement.util.BroadcastUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.StringUtil;
@@ -134,26 +135,32 @@ public class FileManager {
             type = Const.TYPE_SYSTEM_DIR;
         }
         Logg.i(LOG_TAG,"=====type====="+type+"==filename=="+filename);
-        String result = FH_Open(filename,type);
+        String result= null;
+        if(sdcardInit()){
+            result = FH_Open(filename,type);
 //        if(null != result){
 //            Logg.i(LOG_TAG,"===FH_Open==getUTF8String===前=="+result);
 //            result = StringUtil.getUTF8String(result);
 //        }
-        Logg.i(LOG_TAG,"=====FH_Open====="+result);
-        if(result == null || result.endsWith("")){
-            // 参数错误, sdcard满或者文件夹个数达到最大限制
-            String oldestPath = FH_FindOldest(type);
-            Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
-           boolean deleteResult = MediaScanner.delete(oldestPath);
-            Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
-           if(deleteResult){
-               result = FH_Open(filename,type);
+            Logg.i(LOG_TAG,"=====FH_Open====="+result);
+            if(result == null || result.endsWith("")){
+                // 参数错误, sdcard满或者文件夹个数达到最大限制
+                String oldestPath = FH_FindOldest(type);
+                Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
+                boolean deleteResult = MediaScanner.delete(oldestPath);
+                Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
+                if(deleteResult){
+                    result = FH_Open(filename,type);
 //               if(null != result){
 //                   Logg.i(LOG_TAG,"===FH_Open=11=getUTF8String===前=="+result);
 //                   result = StringUtil.getUTF8String(result);
 //               }
-           }
+                }
+            }
+        }else{
+            BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),Const.CMD_SHOW_SDCARD_INIT_FAIL);
         }
+
         return result;
     }
 
