@@ -453,6 +453,50 @@ public class MediaScanner {
         }
     }
 
+    public static boolean deleteDirectoryByType(String dir) {
+        // 如果dir不以文件分隔符结尾，自动添加文件分隔符
+        if (!dir.endsWith(File.separator))
+            dir = dir + File.separator;
+        File dirFile = new File(dir);
+        // 如果dir对应的文件不存在，或者不是一个目录，则退出
+        if ((!dirFile.exists()) || (!dirFile.isDirectory())) {
+            Logg.e(TAG,"-->deleteDirectory --> delete "+dir+" not exists");
+            return false;
+        }
+        boolean flag = true;
+        // 删除文件夹中的所有文件包括子目录
+        File[] files = dirFile.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            // 删除子文件
+            if (files[i].isFile()) {
+                flag = deleteFile(files[i].getAbsolutePath());
+                if (!flag)
+                    break;
+            }
+            // 删除子目录
+            else if (files[i].isDirectory()) {
+                flag = deleteDirectory(files[i]
+                        .getAbsolutePath());
+                if (!flag)
+                    break;
+            }else{
+                String str = files[i].getAbsolutePath();
+                File dirFile1 = new File(str);
+                Logg.i(TAG,"=====files.length==222=="+str);
+                try {
+                    Logg.i(TAG,"=====files.length==222=="+dirFile1.delete());
+                }catch (Exception e){
+                    Logg.e(TAG,"=====files.length==222=="+e.getMessage());
+                }
+            }
+        }
+        if (!flag) {
+            Logg.e(TAG,"-->deleteDirectory --> delete "+dir+" failed");
+            return false;
+        }
+        return true;
+    }
+
     /**文件重命名
      * @param path 文件目录
      * @param oldname  原来的文件名
