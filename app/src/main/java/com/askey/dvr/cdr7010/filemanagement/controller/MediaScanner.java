@@ -173,7 +173,7 @@ public class MediaScanner {
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
             //视频时长
             String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
-            if( path.contains(type) ){
+            if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type) ){
                 Logg.i(TAG,"==path=="+path);
                 if(!type.equals(Const.NORMAL_DIR)){
                     Logg.i(TAG,"==type=="+type);
@@ -275,7 +275,7 @@ public class MediaScanner {
             //获取图片的路径
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
             String DATE_ADDED=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED));
-            if( path.contains(Const.PICTURE_DIR) ){
+            if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.PICTURE_DIR) ){
                 Logg.i(TAG,"==name=="+name);
                 long fileCreateTime = DateUtil.getFileCreateTime(name);
                 ItemData itemData= new ItemData();
@@ -442,7 +442,8 @@ public class MediaScanner {
             Logg.e(TAG,"-->deleteDirectory --> delete "+dir+" failed");
             return false;
         }
-        // 删除当前目录
+
+        // 删除当前目录     这里需要不需要还待确认
         if (dirFile.delete()) {
             Logg.i(TAG,"-->deleteDirectory --> delete "+dir+" success");
             return true;
