@@ -138,12 +138,8 @@ public class FileManager {
         String result= null;
         if(sdcardInit()){
             result = FH_Open(filename,type);
-//        if(null != result){
-//            Logg.i(LOG_TAG,"===FH_Open==getUTF8String===前=="+result);
-//            result = StringUtil.getUTF8String(result);
-//        }
             Logg.i(LOG_TAG,"=====FH_Open====="+result);
-            if(result == null || result.endsWith("")){
+            if(result == null || result.equals("")){
                 // 参数错误, sdcard满或者文件夹个数达到最大限制
                 String oldestPath = FH_FindOldest(type);
                 Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
@@ -151,10 +147,6 @@ public class FileManager {
                 Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
                 if(deleteResult){
                     result = FH_Open(filename,type);
-//               if(null != result){
-//                   Logg.i(LOG_TAG,"===FH_Open=11=getUTF8String===前=="+result);
-//                   result = StringUtil.getUTF8String(result);
-//               }
                 }
             }
         }else{
