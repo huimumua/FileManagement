@@ -112,7 +112,7 @@ public class FileManagerService extends Service {
         @Override
         public boolean deleteFileByFolder(String type) throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
-                return MediaScanner.deleteDirectoryByType(type);
+                return MediaScanner.deleteFileByFolder(type);
             }
             return false;
         }

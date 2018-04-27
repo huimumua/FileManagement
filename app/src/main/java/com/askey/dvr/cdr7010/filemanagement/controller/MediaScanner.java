@@ -391,7 +391,7 @@ public class MediaScanner {
             path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.PICTURE_DIR;
         }
         Logg.i(TAG,"=deleteFileByFolder==path=="+path);
-        return deleteDirectory(path);
+        return deleteDirectoryByType(path);
     }
     /**
      * 删除目录及目录下的文件
