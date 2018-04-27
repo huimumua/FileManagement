@@ -382,13 +382,13 @@ public class MediaScanner {
     public static boolean deleteFileByFolder(String type) {
         String path ="";
         if(type.equals(Const.NORMAL_DIR)){
-            path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.DVR_DIR+Const.BACK_SLASH_1+Const.NORMAL_DIR;
+            path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.NORMAL_DIR;
         }else if(type.equals(Const.EVENT_DIR)){
-            path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.DVR_DIR+Const.BACK_SLASH_1+Const.EVENT_DIR;
+            path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.EVENT_DIR;
         }else if(type.equals(Const.PARKING_DIR)){
-            path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.DVR_DIR+Const.BACK_SLASH_1+Const.PARKING_DIR;
+            path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.PARKING_DIR;
         }else if(type.equals(Const.PICTURE_DIR)){
-            path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.DVR_DIR+Const.BACK_SLASH_1+Const.PICTURE_DIR;
+            path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.PICTURE_DIR;
         }
         Logg.i(TAG,"=deleteFileByFolder==path=="+path);
         return deleteDirectory(path);
