@@ -119,8 +119,8 @@ public class FileManagerService extends Service {
 
         @Override
         public List<SdcardInfo> getSdcardInfo() throws RemoteException {
+            Logg.i(LOG_TAG,"====getSdcardInfo===");
             if(Const.SDCARD_IS_EXIST){
-
                 return SdcardManager.getSingInstance().getSdcardInfo();
             }
             return null;

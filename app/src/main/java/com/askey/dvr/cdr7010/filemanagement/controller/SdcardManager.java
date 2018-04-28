@@ -5,6 +5,7 @@ import android.content.Context;
 import com.askey.dvr.cdr7010.filemanagement.SdcardInfo;
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
+import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class SdcardManager {
     }
 
     public List<SdcardInfo> getSdcardInfo(){
+        Logg.i(LOG_TAG,"====CURRENT_SDCARD_SIZE==="+Const.CURRENT_SDCARD_SIZE);
         if(Const.SDCARD_IS_EXIST && Const.CURRENT_SDCARD_SIZE!=0){
             return getCurrentSdcardInfo(Const.CURRENT_SDCARD_SIZE);
         }
@@ -43,7 +45,6 @@ public class SdcardManager {
     }
 
     private List<SdcardInfo> getCurrentSdcardInfo(int currentSdcardSize) {
-
         ArrayList <SdcardInfo> sdcardInfoList= new ArrayList<SdcardInfo>();
         //这里要根据当前sdcard大小及规定的最大文件数量填赋值
         SdcardInfo sdcardInfo = new SdcardInfo();

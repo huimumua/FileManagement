@@ -70,19 +70,19 @@ public class SdcardUtil {
         float totalSdcardSize = Float.parseFloat(currentSdcardSize.substring(0,currentSdcardSize.length()-3));
         if(totalSdcardSize>3 && totalSdcardSize<4){
             totalSize = 4;
-        }else if(totalSdcardSize>7 && totalSdcardSize<8){
+        }else if(totalSdcardSize>6 && totalSdcardSize<8){
             totalSize = 8;
         }else if(totalSdcardSize>15 && totalSdcardSize<16){
             totalSize = 16;
-        }else if(totalSdcardSize>31 && totalSdcardSize<32){
+        }else if(totalSdcardSize>28 && totalSdcardSize<32){
             totalSize = 32;
-        }else if(totalSdcardSize>63 && totalSdcardSize<64){
+        }else if(totalSdcardSize>56 && totalSdcardSize<64){
             totalSize = 64;
-        }else if(totalSdcardSize>127 && totalSdcardSize<128){
+        }else if(totalSdcardSize>110 && totalSdcardSize<128){
             totalSize = 128;
-        }else if(totalSdcardSize>255 && totalSdcardSize<256){
+        }else if(totalSdcardSize>245 && totalSdcardSize<256){
             totalSize = 256;
-        }else if(totalSdcardSize>511 && totalSdcardSize<512){
+        }else if(totalSdcardSize>491 && totalSdcardSize<512){
             totalSize = 512;
         }
         return totalSize;
