@@ -26,7 +26,7 @@ public class BroadcastUtils {
 
     public static void sendMyBroadcast(Context context , String action ,String broadcastStr) {
         Intent intent = new Intent(action);
-        intent.putExtra("Data", broadcastStr);
+        intent.putExtra("data", broadcastStr);
         context.sendBroadcast(intent);
     }
 

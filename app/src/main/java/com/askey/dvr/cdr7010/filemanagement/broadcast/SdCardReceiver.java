@@ -10,8 +10,10 @@ import android.text.format.Formatter;
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
+import com.askey.dvr.cdr7010.filemanagement.controller.SDCardListener;
 import com.askey.dvr.cdr7010.filemanagement.util.BroadcastUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
+import com.askey.dvr.cdr7010.filemanagement.util.FileUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
 
@@ -37,7 +39,7 @@ public class SdCardReceiver extends BroadcastReceiver {
             Const.SDCARD_IS_EXIST = false;
 
             Logg.i(TAG, "我的各种未挂载状态");
-
+            SDCardListener.getSingInstance(Const.SDCARD_PATH).stopWatche();
 //            BroadcastUtils.sendMyBroadcast(context,Const.ACTION_SDCARD_NORMAL_MAX_FILE);
 
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描
@@ -76,6 +78,14 @@ public class SdCardReceiver extends BroadcastReceiver {
                     BroadcastUtils.sendLimitBroadcast(context,Const.CMD_SHOW_SDCARD_INIT_SUCC);
                 }
                 Logg.i(TAG,"=sdcardInit=result=="+result);
+                SDCardListener.getSingInstance(Const.SDCARD_PATH).startWatche();
+
+                String path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.FOTA_NAME;
+                if(FileUtils.fileIsExists(path)){
+                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                            Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_EXIST);
+                }
+
             }
         }).start();
     }

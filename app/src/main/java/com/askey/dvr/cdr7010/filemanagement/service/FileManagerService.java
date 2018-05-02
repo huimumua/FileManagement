@@ -12,7 +12,9 @@ import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
 import com.askey.dvr.cdr7010.filemanagement.controller.SdcardManager;
+import com.askey.dvr.cdr7010.filemanagement.util.BroadcastUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
+import com.askey.dvr.cdr7010.filemanagement.util.FileUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
 
@@ -34,7 +36,16 @@ public class FileManagerService extends Service {
         Const.SDCARD_IS_EXIST = SdcardUtil.checkSdcardExist();
 
         if(Const.SDCARD_IS_EXIST){
+            //获取sdcard状态信息
             Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(FileManagerApplication.getAppContext());
+
+            //检测升级文件是否存在
+            String path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.FOTA_NAME;
+            if(FileUtils.fileIsExists(path)){
+                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                        Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_EXIST);
+            }
+
         }
 
         Intent startIntent = new Intent(this, SdcardService.class);

@@ -20,6 +20,8 @@ public class Const {
     public static final boolean DEBUG = true;
 
     public static final String SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
+    public static final String FOTA_PATH = "update.zip";
+    public static final String FOTA_NAME = "update.zip";
 
     public static boolean SDCARD_IS_EXIST = false;
 
@@ -111,5 +113,8 @@ public class Const {
     public static final String CMD_SHOW_SDCARD_INIT_FAIL ="show_sdcard_init_fail";//init 失败
     public static final String CMD_SHOW_SDCARD_INIT_SUCC = "show_sdcard_init_success";//限制解除
 
+    public static final String ACTION_FOTA_STATUS = "action_fota_status";
+    public static final String CMD_SHOW_FOTA_FILE_EXIST ="show_fota_file_exist";//升级文件存在
+    public static final String CMD_SHOW_FOTA_FILE_NOT_EXIST = "show_fota_file_not_exist";//升级文件不存在
 
 }

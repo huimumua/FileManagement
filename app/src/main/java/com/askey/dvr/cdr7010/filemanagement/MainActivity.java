@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.askey.dvr.cdr7010.filemanagement.broadcast.SdCardReceiver;
 import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
+import com.askey.dvr.cdr7010.filemanagement.controller.SDCardListener;
 import com.askey.dvr.cdr7010.filemanagement.controller.SdcardManager;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
@@ -66,15 +67,16 @@ public class MainActivity extends Activity{
                 Const.SDCARD_IS_EXIST = SdcardUtil.checkSdcardExist();
 
                 if( Const.SDCARD_IS_EXIST){
+                    SDCardListener.getSingInstance(Const.SDCARD_PATH).startWatche();
                     Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(mContext);
                 }
 
-                FileManager mFileManager =FileManager.getSingInstance();
-                boolean result = mFileManager.sdcardInit();
-                Logg.i(LOG_TAG,"==FH_Init==result=="+result);
+//                FileManager mFileManager =FileManager.getSingInstance();
+//                boolean result = mFileManager.sdcardInit();
+//                Logg.i(LOG_TAG,"==FH_Init==result=="+result);
 
-                String openSdcard =mFileManager.openSdcard("180425102345.mp4", Const.EVENT_DIR);
-                Logg.i(LOG_TAG,"==openSdcard==="+openSdcard);
+//                String openSdcard =mFileManager.openSdcard("180425102345.mp4", Const.EVENT_DIR);
+//                Logg.i(LOG_TAG,"==openSdcard==="+openSdcard);
 //                String resultOpen =mFileManager.FH_Open("20180425102345_2.mp4", Const.TYPE_EVENT_DIR);
 //                String resultOpen1 =mFileManager.FH_Open("180425102345_2.mp4", Const.TYPE_EVENT_DIR);
 //                String resultOpen2 =mFileManager.FH_Open("180425102345.mp4", Const.TYPE_EVENT_DIR);
@@ -86,22 +88,22 @@ public class MainActivity extends Activity{
 //                Logg.i(LOG_TAG,"==FH_Init==resultOpen3=="+resultOpen3);
 //                Logg.i(LOG_TAG,"==FH_Init==resultOpen4=="+resultOpen4);
 
-                boolean resultClose = mFileManager.FH_Close();
-                Logg.i(LOG_TAG,"==FH_Init==resultClose=="+resultClose);
-                boolean resultSync = mFileManager.FH_Sync();
-                Logg.i(LOG_TAG,"==FH_Init==resultSync=="+resultSync);
-                String resultLastfile = mFileManager.FH_FindOldest(Const.TYPE_NORMAL_DIR);
-                Logg.i(LOG_TAG,"==FH_Init==resultLastfile=="+resultLastfile);
-                boolean resultDelete = mFileManager.FH_Delete(resultLastfile);
-                Logg.i(LOG_TAG,"==FH_Init==resultDelete=="+resultDelete);
-
-                List<SdcardInfo> sdcardInfoList = SdcardManager.getSingInstance().getSdcardInfo();
-                if(sdcardInfoList!=null && sdcardInfoList.size()>0){
-                    Logg.i(LOG_TAG,"==getNormalCurrentSize=="+sdcardInfoList.get(0).getNormalCurrentSize());
-                    Logg.i(LOG_TAG,"==getEventCurrentSize=="+sdcardInfoList.get(0).getEventCurrentSize());
-                    Logg.i(LOG_TAG,"==getParkingCurrentSize=="+sdcardInfoList.get(0).getParkingCurrentSize());
-                    Logg.i(LOG_TAG,"==getPictureCurrentSize=="+sdcardInfoList.get(0).getPictureCurrentSize());
-                }
+//                boolean resultClose = mFileManager.FH_Close();
+//                Logg.i(LOG_TAG,"==FH_Init==resultClose=="+resultClose);
+//                boolean resultSync = mFileManager.FH_Sync();
+//                Logg.i(LOG_TAG,"==FH_Init==resultSync=="+resultSync);
+//                String resultLastfile = mFileManager.FH_FindOldest(Const.TYPE_NORMAL_DIR);
+//                Logg.i(LOG_TAG,"==FH_Init==resultLastfile=="+resultLastfile);
+//                boolean resultDelete = mFileManager.FH_Delete(resultLastfile);
+//                Logg.i(LOG_TAG,"==FH_Init==resultDelete=="+resultDelete);
+//
+//                List<SdcardInfo> sdcardInfoList = SdcardManager.getSingInstance().getSdcardInfo();
+//                if(sdcardInfoList!=null && sdcardInfoList.size()>0){
+//                    Logg.i(LOG_TAG,"==getNormalCurrentSize=="+sdcardInfoList.get(0).getNormalCurrentSize());
+//                    Logg.i(LOG_TAG,"==getEventCurrentSize=="+sdcardInfoList.get(0).getEventCurrentSize());
+//                    Logg.i(LOG_TAG,"==getParkingCurrentSize=="+sdcardInfoList.get(0).getParkingCurrentSize());
+//                    Logg.i(LOG_TAG,"==getPictureCurrentSize=="+sdcardInfoList.get(0).getPictureCurrentSize());
+//                }
 
             }
         }).start();

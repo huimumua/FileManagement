@@ -25,7 +25,11 @@ public class DateUtil {
         }
         long  result = 0;
         try {
-            result = Long.valueOf(dateToStamp(time));
+            if(time.length()==12){
+                result = Long.valueOf(dateToStamp1(time));
+            }else if(time.length()==14){
+                result = Long.valueOf(dateToStamp(time));
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -68,6 +72,15 @@ public class DateUtil {
     public static String dateToStamp(String s) throws ParseException {
         String res;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date date = simpleDateFormat.parse(s);
+        long ts = date.getTime();
+        res = String.valueOf(ts);
+        return res;
+    }
+
+    public static String dateToStamp1(String s) throws ParseException {
+        String res;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddHHmmss");
         Date date = simpleDateFormat.parse(s);
         long ts = date.getTime();
         res = String.valueOf(ts);
