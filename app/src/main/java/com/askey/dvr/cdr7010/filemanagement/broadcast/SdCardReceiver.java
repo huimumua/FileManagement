@@ -80,8 +80,7 @@ public class SdCardReceiver extends BroadcastReceiver {
                 Logg.i(TAG,"=sdcardInit=result=="+result);
                 SDCardListener.getSingInstance(Const.SDCARD_PATH).startWatche();
 
-                String path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.FOTA_NAME;
-                if(FileUtils.fileIsExists(path)){
+                if(FileUtils.fileIsExists(Const.FOTA_PATH)){
                     BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                             Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_EXIST);
                 }

@@ -20,8 +20,9 @@ public class Const {
     public static final boolean DEBUG = true;
 
     public static final String SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
-    public static final String FOTA_PATH = "update.zip";
     public static final String FOTA_NAME = "update.zip";
+    public static final String BACK_SLASH_1= "/";
+    public static final String FOTA_PATH = SDCARD_PATH + BACK_SLASH_1 +FOTA_NAME;
 
     public static boolean SDCARD_IS_EXIST = false;
 
@@ -42,7 +43,6 @@ public class Const {
 
     public static int CURRENT_SDCARD_SIZE = 0; // unit GB
     public static final String SDCARD_SIZE_UNIT ="GB" ;
-    public static final String BACK_SLASH_1= "/";
 
     public static final int SDCARD_SIZE_4Gb = 4; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_4Gb = 1000; // unit 个文件
