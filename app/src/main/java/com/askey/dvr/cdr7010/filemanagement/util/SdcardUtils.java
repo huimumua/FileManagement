@@ -73,11 +73,13 @@ public class SdcardUtils {
             Logg.i(LOG_TAG, "onDiskScanned: "+ disk.toString());
             Logg.i(LOG_TAG, "onDiskScanned: volumeCount=" + volumeCount);
             if (disk.isSd()) {
-//                Logg.d(LOG_TAG, "onDiskScanned: sdcard disk, volumeCount = " + volumeCount + ", size = " + disk.getSize());
-//                if (volumeCount == 0 && disk.getSize() > 0) {
-//                    // format
-//                    dialog(mContext);
-//                }
+                Logg.d(LOG_TAG, "onDiskScanned: sdcard disk, volumeCount = " + volumeCount + ", size = " + disk.size);
+                if (volumeCount == 0 && disk.size > 0) {
+                    // format
+                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                            Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
+                    dialog(mContext);
+                }
             }
         }
 
@@ -87,6 +89,8 @@ public class SdcardUtils {
             if (disk.isSd() && isShown && null != mView) {
                 mWindowManager.removeView(mView);
                 isShown = false;
+                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                        Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_SUPPORTED);
             }
         }
 
@@ -105,7 +109,9 @@ public class SdcardUtils {
 
             if(newState .equals("6")){
                 // format
-                dialog(mContext);
+                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                        Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
+//                dialog(mContext);
             }
         }
 

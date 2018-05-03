@@ -117,4 +117,8 @@ public class Const {
     public static final String CMD_SHOW_FOTA_FILE_EXIST ="show_fota_file_exist";//升级文件存在
     public static final String CMD_SHOW_FOTA_FILE_NOT_EXIST = "show_fota_file_not_exist";//升级文件不存在
 
+    public static final String ACTION_SDCARD_STATUS = "action_sdcard_status";
+    public static final String CMD_SHOW_SDCARD_NOT_SUPPORTED ="show_sdcard_not_supported";//sdcard格式不支持可用
+    public static final String CMD_SHOW_SDCARD_SUPPORTED = "show_sdcard_supported";//sdcard可用
+
 }

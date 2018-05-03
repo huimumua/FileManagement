@@ -146,6 +146,8 @@ public class MediaScanner {
     }
 
     public static ArrayList <ItemData> getVideos(String type){
+        Logg.i(TAG,"==getVideos=="+type);
+
         ArrayList <ItemData> fileList = new ArrayList<ItemData>();
         //使用content provider查询所有的视频信息
         ContentResolver resolver= FileManagerApplication.getAppContext().getContentResolver();
