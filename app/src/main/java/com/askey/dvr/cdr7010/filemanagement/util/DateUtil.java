@@ -16,7 +16,7 @@ import java.util.Date;
 public class DateUtil {
     private static final String TAG = "DateUtil";
 
-    public static long getFileCreateTime(String name) {
+    public static long getFileCreateTime(String name,String DATE_ADDED) {
         String time;
         if(name.contains("_2")){
             time = name.split("_2")[0];
@@ -26,8 +26,15 @@ public class DateUtil {
         long  result = 0;
         try {
             if(time.length()==12){
-                result = Long.valueOf(dateToStamp1(time));
+//                result = stringToLong(time,"yyyyMMddHHmmss");
+                String createTime = longToString(Long.valueOf(DATE_ADDED),"yyyyMMddHHmmss");
+                Logg.i(TAG,"=====createTime====="+createTime);
+//                time = createTime.substring(0,2)+time;
+                time = "20"+time;
+                Logg.i(TAG,"=====time====="+time);
+                result = Long.valueOf(dateToStamp(time));
             }else if(time.length()==14){
+//                result = stringToLong(time,"yyyyMMddHHmmss");
                 result = Long.valueOf(dateToStamp(time));
             }
         } catch (ParseException e) {
@@ -61,7 +68,13 @@ public class DateUtil {
         date = formatter.parse(strTime);
         return date;
     }
-
+    public static Date stringToDate1(String strTime)
+            throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("YYMMDDhhmmss");
+        Date date = null;
+        date = formatter.parse(strTime);
+        return date;
+    }
     // date要转换的date类型的时间
     public static long dateToLong(Date date) {
         return date.getTime();
@@ -83,8 +96,61 @@ public class DateUtil {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddHHmmss");
         Date date = simpleDateFormat.parse(s);
         long ts = date.getTime();
+        Logg.i(TAG,"====dateToStamp1==ts======"+ts);
         res = String.valueOf(ts);
+        Logg.i(TAG,"====dateToStamp1========"+stringToDate(res));
         return res;
     }
+
+    // formatType格式为yyyy-MM-dd HH:mm:ss//yyyy年MM月dd日 HH时mm分ss秒
+    // data Date类型的时间
+    public static String dateToString(Date data, String formatType) {
+        return new SimpleDateFormat(formatType).format(data);
+    }
+
+    // currentTime要转换的long类型的时间
+    // formatType要转换的string类型的时间格式
+    public static String longToString(long currentTime, String formatType)
+            throws ParseException {
+        Date date = longToDate(currentTime, formatType); // long类型转成Date类型
+        String strTime = dateToString(date, formatType); // date类型转成String
+        return strTime;
+    }
+
+    // strTime要转换的string类型的时间，formatType要转换的格式yyyy-MM-dd HH:mm:ss//yyyy年MM月dd日
+    // HH时mm分ss秒，
+    // strTime的时间格式必须要与formatType的时间格式相同
+    public static Date stringToDate(String strTime, String formatType)
+            throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat(formatType);
+        Date date = null;
+        date = formatter.parse(strTime);
+        return date;
+    }
+
+    // currentTime要转换的long类型的时间
+    // formatType要转换的时间格式yyyy-MM-dd HH:mm:ss//yyyy年MM月dd日 HH时mm分ss秒
+    public static Date longToDate(long currentTime, String formatType)
+            throws ParseException {
+        Date dateOld = new Date(currentTime); // 根据long类型的毫秒数生命一个date类型的时间
+        String sDateTime = dateToString(dateOld, formatType); // 把date类型的时间转换为string
+        Date date = stringToDate(sDateTime, formatType); // 把String类型转换为Date类型
+        return date;
+    }
+
+    // strTime要转换的String类型的时间
+    // formatType时间格式
+    // strTime的时间格式和formatType的时间格式必须相同
+    public static long stringToLong(String strTime, String formatType)
+            throws ParseException {
+        Date date = stringToDate(strTime, formatType); // String类型转成date类型
+        if (date == null) {
+            return 0;
+        } else {
+            long currentTime = dateToLong(date); // date类型转成long类型
+            return currentTime;
+        }
+    }
+
 
 }

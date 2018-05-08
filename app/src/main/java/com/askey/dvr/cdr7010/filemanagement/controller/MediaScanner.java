@@ -14,6 +14,7 @@ import com.askey.dvr.cdr7010.filemanagement.util.DateUtil;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 
 import java.io.File;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -175,11 +176,13 @@ public class MediaScanner {
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
             //视频时长
             String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
+               Logg.i(TAG,"==path=contains="+Const.SDCARD_PATH+Const.BACK_SLASH_1+type);
             if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type) ){
                 Logg.i(TAG,"==path=="+path);
                 if(!type.equals(Const.NORMAL_DIR)){
                     Logg.i(TAG,"==type=="+type);
-                    long fileCreateTime = DateUtil.getFileCreateTime(name);
+                    Logg.i(TAG,"==name=="+name);
+                    long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_ADDED);
                     ItemData itemData= new ItemData();
                     itemData.setFileTime(fileCreateTime);
                     itemData.setFilePath(path);
@@ -189,7 +192,7 @@ public class MediaScanner {
                 }else{
                     String yyyyMMDD = name.substring(0,8);
                     Logg.i(TAG,"==type=="+type);
-                    long fileCreateTime = DateUtil.getFileCreateTime(name);
+                    long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_ADDED);
 
                     if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
                         ItemData groupitem = new ItemData();
@@ -218,8 +221,9 @@ public class MediaScanner {
                         fileList.add(itemData);
                     }
                 }
+            }else{
+                Logg.i(TAG,"==path=not=add="+path);
             }
-
         }
         return fileList;
     }
@@ -279,7 +283,7 @@ public class MediaScanner {
             String DATE_ADDED=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED));
             if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.PICTURE_DIR) ){
                 Logg.i(TAG,"==name=="+name);
-                long fileCreateTime = DateUtil.getFileCreateTime(name);
+                long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_ADDED);
                 ItemData itemData= new ItemData();
                 itemData.setFileTime(fileCreateTime);
                 itemData.setFilePath(path);
