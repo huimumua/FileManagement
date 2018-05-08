@@ -1,6 +1,7 @@
 package com.askey.dvr.cdr7010.filemanagement.controller;
 
 import android.content.Context;
+import android.os.Environment;
 
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.util.BroadcastUtils;
@@ -109,6 +110,7 @@ public class FileManager {
     public native boolean FH_unlock(long filePointer);
 
     public boolean sdcardInit() {
+        Const.SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
         boolean result = FH_Init(Const.SDCARD_PATH);
 /*        if(!result){
             boolean ret = MediaScanner.deleteDirectory(Const.SDCARD_PATH);

@@ -38,13 +38,13 @@ public class FileManagerService extends Service {
         if(Const.SDCARD_IS_EXIST){
             //获取sdcard状态信息
             Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(FileManagerApplication.getAppContext());
-
+            boolean result = FileManager.getSingInstance().sdcardInit();
+            Logg.i(LOG_TAG,"=sdcardInit=result=="+result);
             //检测升级文件是否存在
             if(FileUtils.fileIsExists(Const.FOTA_PATH)){
                 BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                         Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_EXIST);
             }
-
         }
 
         Intent startIntent = new Intent(this, SdcardService.class);
