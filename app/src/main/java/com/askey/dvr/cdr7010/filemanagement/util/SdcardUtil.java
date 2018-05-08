@@ -72,7 +72,7 @@ public class SdcardUtil {
             totalSize = 4;
         }else if(totalSdcardSize>6 && totalSdcardSize<8){
             totalSize = 8;
-        }else if(totalSdcardSize>15 && totalSdcardSize<16){
+        }else if(totalSdcardSize>14 && totalSdcardSize<16){
             totalSize = 16;
         }else if(totalSdcardSize>28 && totalSdcardSize<32){
             totalSize = 32;
