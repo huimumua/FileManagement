@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <android/log.h>
 #include "sdcardDefragmentAlg.h"
 #define LOG_TAG "sdcardDefragmentAlg.cpp"
@@ -54,7 +55,7 @@ int SDA_get_path_file_num(char* path){
 
 }
 
-string SDA_get_first_filename(char* file_path, char* file_extension){
+string SDA_get_first_filename(const char* file_path, const char* file_extension){
 
 	vector<int> files = vector<int>();
 
@@ -90,7 +91,7 @@ string SDA_get_first_filename(char* file_path, char* file_extension){
 
 }
 
-string SDA_get_last_filename(char* file_path, const char* file_extension){
+string SDA_get_last_filename(const char* file_path, const char* file_extension){
 
 	vector<int> files = vector<int>();
 
@@ -230,7 +231,7 @@ bool FH_Init(char* mount_path){
 		printf("each block is %ld bytes big\n", buf.f_bsize);
 		printf("there are %ld blocks available out of a total of %ld\n",
 		buf.f_bavail, buf.f_blocks);
-		printf("in bytes, that's %.ld bytes free out of a total of %.ld\n",
+		printf("in bytes, that's %" PRIu64 " bytes free out of a total of %" PRIu64 "\n",
 		((uint64_t)buf.f_bavail * buf.f_bsize),
 		((uint64_t)buf.f_blocks * buf.f_bsize));
 

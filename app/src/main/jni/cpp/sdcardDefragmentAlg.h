@@ -37,8 +37,8 @@ enum eFolderType{
 };
 
 struct file_struct{
-	char* folder_type;
-	char* folder_extension;
+	const char* folder_type;
+	const char* folder_extension;
 	float percent;
 	uint64_t every_block_space;
 	int max_file_num;

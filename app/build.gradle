@@ -30,7 +30,6 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=gcc"
-                cppFlags "-fexceptions"
             }
         }
 
