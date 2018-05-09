@@ -128,6 +128,7 @@ public class MediaScanner {
 
         while(cursor.moveToNext())
         {
+            String id=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media._ID));
             //获取视频的名称
             String name=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME));
             //获取视频的大小
@@ -164,6 +165,7 @@ public class MediaScanner {
         List<ItemData> group = new ArrayList<ItemData>();
         while(cursor.moveToNext())
         {
+            String id=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media._ID));
             //获取视频的名称
             String name=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME));
             //获取视频的大小
@@ -188,6 +190,7 @@ public class MediaScanner {
                     itemData.setFilePath(path);
                     itemData.setFileName(name);
                     itemData.setDir(false);
+                    itemData.setMediaID(Integer.valueOf(id));
                     fileList.add(itemData);
                 }else{
                     String yyyyMMDD = name.substring(0,8);
@@ -217,6 +220,7 @@ public class MediaScanner {
                         itemData.setFilePath(path);
                         itemData.setFileName(name);
                         itemData.setDir(true);
+                        itemData.setMediaID(Integer.valueOf(id));
                         itemData.setDirFileItem(group);
                         fileList.add(itemData);
                     }
@@ -247,6 +251,7 @@ public class MediaScanner {
 
         while(cursor.moveToNext())
         {
+            String id=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media._ID));
             //获取图片的名称
             String name=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
             //获取图片的大小
@@ -274,6 +279,7 @@ public class MediaScanner {
         Cursor cursor=resolver.query(uri, null, null, null, orderBy);
         while(cursor.moveToNext())
         {
+            String id=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media._ID));
             //获取图片的名称
             String name=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
             //获取图片的大小
@@ -289,6 +295,7 @@ public class MediaScanner {
                 itemData.setFilePath(path);
                 itemData.setFileName(name);
                 itemData.setDir(false);
+                itemData.setMediaID(Integer.valueOf(id));
                 fileList.add(itemData);
             }
         }
