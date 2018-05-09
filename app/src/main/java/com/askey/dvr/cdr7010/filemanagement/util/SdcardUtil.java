@@ -43,6 +43,28 @@ public class SdcardUtil {
         return Formatter.formatFileSize(context, Long.valueOf(target_size));
     }
 
+    /**
+     * 检测sdcard空间是否充足
+     * */
+    public static boolean  checkSDcardIsFull(){
+        //找到sdcard的位置
+        File directory = Environment.getExternalStorageDirectory();
+        //硬盘的描述类
+        StatFs statFs = new StatFs(directory.getAbsolutePath());
+        //每块的大小
+        long blockSize = statFs.getBlockSize();
+        Logg.i(TAG,"==blockSize=="+blockSize);
+        //可用块的数量
+        int availableBlocks = statFs.getAvailableBlocks();
+        Logg.i(TAG,"==availableBlocks=="+availableBlocks);
+        //可用空间      以字节为单位
+        long availableSdcardSize = blockSize*availableBlocks;
+        Logg.i(TAG,"==availableSdcardSize==" + availableSdcardSize );
+        if(availableSdcardSize <= Const.SDCARD_RESERVE_SPACE){//这里预留100M
+            return true;
+        }
+        return false;
+    }
     public static int getCurentSdcardInfo(Context context ) {
         //找到sdcard的位置
         File directory = Environment.getExternalStorageDirectory();

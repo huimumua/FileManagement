@@ -43,6 +43,7 @@ public class Const {
 
     public static int CURRENT_SDCARD_SIZE = 0; // unit GB
     public static final String SDCARD_SIZE_UNIT ="GB" ;
+    public static final long SDCARD_RESERVE_SPACE = 1024*1024*100 ;//sdcard预留空间大小
 
     public static final int SDCARD_SIZE_4Gb = 4; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_4Gb = 1000; // unit 个文件
@@ -104,6 +105,8 @@ public class Const {
     public static final String CMD_SHOW_UNREACH_PARKING_FILE_LIMIT = "show_unreach_parking_file_limit";//限制解除
     public static final String CMD_SHOW_REACH_NORMAL_FILE_LIMIT ="show_reach_normal_file_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_NORMAL_FILE_LIMIT = "show_unreach_normal_file_limit";//限制解除
+    public static final String CMD_SHOW_REACH_MANUAL_FILE_LIMIT ="show_reach_manual_file_limit";//超过限制
+    public static final String CMD_SHOW_UNREACH_MANUAL_FILE_LIMIT = "show_unreach_manual_file_limit";//限制解除
     public static final String CMD_SHOW_REACH_PICTURE_FILE_LIMIT ="show_reach_picture_file_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_PICTURE_FILE_LIMIT = "show_unreach_picture_file_limit";//限制解除
     public static final String CMD_SHOW_REACH_SYSTEM_FILE_LIMIT ="show_reach_system_file_limit";//超过限制
