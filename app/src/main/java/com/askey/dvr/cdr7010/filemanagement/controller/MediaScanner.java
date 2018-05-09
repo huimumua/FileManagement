@@ -141,7 +141,6 @@ public class MediaScanner {
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
             //视频时长
             String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
-
             fileList.add(path);
         }
         return fileList;
@@ -203,6 +202,7 @@ public class MediaScanner {
                         groupitem.setFilePath(path);
                         groupitem.setFileName(name);
                         groupitem.setDir(false);
+                        groupitem.setMediaID(Integer.valueOf(id));
                         group.add(groupitem);
                     }else{
                         currentYYYYMMDD = yyyyMMDD;
@@ -213,6 +213,7 @@ public class MediaScanner {
                         groupitem.setFilePath(path);
                         groupitem.setFileName(name);
                         groupitem.setDir(false);
+                        groupitem.setMediaID(Integer.valueOf(id));
                         group.add(groupitem);
 
                         ItemData itemData= new ItemData();
@@ -220,7 +221,7 @@ public class MediaScanner {
                         itemData.setFilePath(path);
                         itemData.setFileName(name);
                         itemData.setDir(true);
-                        itemData.setMediaID(Integer.valueOf(id));
+//                        itemData.setMediaID(Integer.valueOf(id));
                         itemData.setDirFileItem(group);
                         fileList.add(itemData);
                     }
@@ -248,7 +249,6 @@ public class MediaScanner {
         String orderBy = MediaStore.Images.Media.DISPLAY_NAME+ " DESC";
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor=resolver.query(uri, null, null, null, orderBy);
-
         while(cursor.moveToNext())
         {
             String id=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media._ID));
@@ -258,10 +258,9 @@ public class MediaScanner {
             String size=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.SIZE));
             //获取图片的路径
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            if( Const.PICTURE_DIR.equals(path) ){
+            if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.PICTURE_DIR) ){
                 fileList.add(path);
             }
-
         }
         return fileList;
     }
@@ -288,7 +287,6 @@ public class MediaScanner {
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
             String DATE_ADDED=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED));
             if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.PICTURE_DIR) ){
-                Logg.i(TAG,"==name=="+name);
                 long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_ADDED);
                 ItemData itemData= new ItemData();
                 itemData.setFileTime(fileCreateTime);
