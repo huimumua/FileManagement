@@ -16,6 +16,9 @@ import java.util.Date;
 public class DateUtil {
     private static final String TAG = "DateUtil";
 
+    /**
+     * 获取文件的创建时间  DATE_ADDED可能不准确有待讨论
+     * */
     public static long getFileCreateTime(String name,String DATE_ADDED) {
         String time;
         if(name.contains("_2")){
@@ -29,8 +32,8 @@ public class DateUtil {
 //                result = stringToLong(time,"yyyyMMddHHmmss");
                 String createTime = longToString(Long.valueOf(DATE_ADDED),"yyyyMMddHHmmss");
                 Logg.i(TAG,"=====createTime====="+createTime);
-//                time = createTime.substring(0,2)+time;
-                time = "20"+time;
+                time = createTime.substring(0,2)+time;
+//                time = "20"+time;//强行固定20世纪
                 Logg.i(TAG,"=====time====="+time);
                 result = Long.valueOf(dateToStamp(time));
             }else if(time.length()==14){
