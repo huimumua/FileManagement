@@ -1,11 +1,6 @@
 #ifndef _SDCARDDEFRAGMENTALG_H_
 #define _SDCARDDEFRAGMENTALG_H_
 
-#define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define ALOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
-#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
-
 #include <stdio.h>
 #include <string.h> // memset
 #include <stdint.h> // uint64_t
@@ -14,7 +9,8 @@
 #include <sys/mount.h> // mount
 #include <sys/statvfs.h> // Init()
 #include <fcntl.h> // open
-#include <unistd.h> //fsync
+#include <unistd.h> // fsync
+#include <pthread.h> // mutex
 
 #include <algorithm>
 #include <iostream>
@@ -37,8 +33,8 @@ enum eFolderType{
 };
 
 struct file_struct{
-	const char* folder_type;
-	const char* folder_extension;
+	char* folder_type;
+	char* folder_extension;
 	float percent;
 	uint64_t every_block_space;
 	int max_file_num;

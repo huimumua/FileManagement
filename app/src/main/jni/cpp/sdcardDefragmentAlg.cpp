@@ -1,7 +1,7 @@
-#include <inttypes.h>
-#include <android/log.h>
 #include "sdcardDefragmentAlg.h"
-#define LOG_TAG "sdcardDefragmentAlg.cpp"
+
+
+pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct file_struct FH_Table[6] = {{"EVENT", ".eve", 0.2, 100*MEGABYTE, 0,0}, // event
 								{"MANUAL",  ".man", 0.1, 100*MEGABYTE, 0,0}, // manual
@@ -55,7 +55,7 @@ int SDA_get_path_file_num(char* path){
 
 }
 
-string SDA_get_first_filename(const char* file_path, const char* file_extension){
+string SDA_get_first_filename(char* file_path, char* file_extension){
 
 	vector<int> files = vector<int>();
 
@@ -91,7 +91,7 @@ string SDA_get_first_filename(const char* file_path, const char* file_extension)
 
 }
 
-string SDA_get_last_filename(const char* file_path, const char* file_extension){
+string SDA_get_last_filename(char* file_path, const char* file_extension){
 
 	vector<int> files = vector<int>();
 
@@ -197,10 +197,12 @@ int SDA_file_exists(char* filename)
 // true = 1, false = 0;
 bool FH_Init(char* mount_path){
 
+	pthread_mutex_lock(&g_mutex);
 	int i;
 	int rc;
 
 	if(mount_path == NULL){
+		pthread_mutex_unlock(&g_mutex);
 		return false;
 	}else{
 		strncpy(g_mount_path, mount_path, strlen(mount_path));
@@ -211,6 +213,7 @@ bool FH_Init(char* mount_path){
 	snprintf(config_file_path, sizeof(config_file_path), "%s/table.config", mount_path);
 	rc = SDA_file_exists(config_file_path);
 	if(rc == 1){
+		pthread_mutex_unlock(&g_mutex);
 		return true;
 	}
 
@@ -231,7 +234,7 @@ bool FH_Init(char* mount_path){
 		printf("each block is %ld bytes big\n", buf.f_bsize);
 		printf("there are %ld blocks available out of a total of %ld\n",
 		buf.f_bavail, buf.f_blocks);
-		printf("in bytes, that's %" PRIu64 " bytes free out of a total of %" PRIu64 "\n",
+		printf("in bytes, that's %.ld bytes free out of a total of %.ld\n",
 		((uint64_t)buf.f_bavail * buf.f_bsize),
 		((uint64_t)buf.f_blocks * buf.f_bsize));
 
@@ -280,6 +283,7 @@ bool FH_Init(char* mount_path){
 	/* write file_struct in config file */
 	SDA_write_table_in_config(mount_path);
 
+	/* Create FH_Table.folder_type file in sdcard */
 	char create_folder_path[100];
 	for(i=0; i<6; i++){
 		
@@ -293,22 +297,26 @@ bool FH_Init(char* mount_path){
 		}
 	}
 
+	pthread_mutex_unlock(&g_mutex);
 	return true;
 }
 
 
 char* FH_Open(char* filename, eFolderType folderType){
 
+	pthread_mutex_lock(&g_mutex);
+
 	if(strlen(g_mount_path) == 0){
+		pthread_mutex_unlock(&g_mutex);
 		return NULL;
 	}
-    ALOGE("this is jni call1-->FH_Open filename %s",filename);
-    ALOGE("this is jni call1-->FH_Open folderType %d",folderType);
+
 	int rc;
 	char config_file_path[100];
 	snprintf(config_file_path, sizeof(config_file_path), "%s/Table.config", g_mount_path);
 	rc = SDA_file_exists(config_file_path);
 	if(rc != 1){
+		pthread_mutex_unlock(&g_mutex);
 		return NULL;
 	}
 
@@ -318,7 +326,7 @@ char* FH_Open(char* filename, eFolderType folderType){
 	
 	string first_filename;
 
-	static char purpose_path[100] = {0};
+	static char purpose_path[100];
 
 	snprintf(folder_path, sizeof(folder_path), "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
 
@@ -327,49 +335,58 @@ char* FH_Open(char* filename, eFolderType folderType){
 	// if free folder have .eve extension, rename .eve file to purpose filename
 	first_filename = SDA_get_first_filename(free_path, FH_Table[folderType].folder_extension);
 	if(first_filename.length() != 0){
-		char first_path[100] ={0};
+		char first_path[100];
 		snprintf(first_path, sizeof(first_path), "%s/%s", free_path, first_filename.c_str());
-        ALOGE("this is jni call1-->FH_Open_1first_path %s",first_path);
 
 		snprintf(purpose_path, sizeof(purpose_path), "%s/%s", folder_path, filename);
 
 		rename(first_path, purpose_path);
-		ALOGE("this is jni call1-->FH_Open_1 %s",purpose_path);
+
+		pthread_mutex_unlock(&g_mutex);
 		return purpose_path;
 
 	// if no .eve extension in System/Free & folder file number < Event.file_num
 	}else if(SDA_get_path_file_num(folder_path) < max_file_number){
-
 		snprintf(purpose_path, sizeof(purpose_path), "%s/%s", folder_path, filename);
-        ALOGE("this is jni call1-->FH_Open_1 %s",purpose_path);
+
+		pthread_mutex_unlock(&g_mutex);	
 		return purpose_path;
 	}else{
-        ALOGE("this is jni call1-->FH_Open_1 was full, please delete some file.");
 		cout << "file was full, please delete some file." << endl;
+
+		pthread_mutex_unlock(&g_mutex);
 		return NULL;
 	}
 }
 
-
+// 
+// true = 1, false = 0;
 bool FH_Close(void){
 
+	pthread_mutex_lock(&g_mutex);
+	pthread_mutex_unlock(&g_mutex);
 	return true;
 }
 
-// fsync:
+// 
 // true = 1, false = 0;
 bool FH_Sync(void){
 
+	pthread_mutex_lock(&g_mutex);
+	pthread_mutex_unlock(&g_mutex);
 	return true;
 }
 
 
-
+// 
 // true = 1, false = 0;
 bool FH_Delete(const char* absolute_filepath){
 
+	pthread_mutex_lock(&g_mutex);
+
 	int fd = open(absolute_filepath, O_RDWR);
 	if(fd == -1){
+		pthread_mutex_unlock(&g_mutex);
 		return false;
 	}
 	close(fd);
@@ -399,29 +416,32 @@ bool FH_Delete(const char* absolute_filepath){
 		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, event_extension);
 		// cout << new_last_file << endl;	
 		rc = rename(absolute_filepath, new_last_file);
+
+		pthread_mutex_unlock(&g_mutex);
 		return (rc == 0 ? true : false);
 
 	}else if(filename.find(FH_Table[1].folder_type) != -1){
 
 		last_filename = SDA_get_last_filename(free_path, manual_extension);
-		// cout << "last filename: " << last_filename << endl;
 		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
 		char new_last_file[100] = {0};
 		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, manual_extension);
 
 		rc = rename(absolute_filepath, new_last_file);
+
+		pthread_mutex_unlock(&g_mutex);
 		return (rc == 0 ? true : false);
 
 	}else if(filename.find(FH_Table[2].folder_type) != -1){
 
-		cout << "in here" << endl;
 		last_filename = SDA_get_last_filename(free_path, normal_extension);
 		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
-		cout << "number_filename: " << number_filename << endl;
-
 		char new_last_file[100] = {0};
 		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, normal_extension);
+
 		rc = rename(absolute_filepath, new_last_file);
+
+		pthread_mutex_unlock(&g_mutex);
 		return (rc == 0 ? true : false);
 
 	}else if(filename.find(FH_Table[3].folder_type) != -1){
@@ -430,7 +450,10 @@ bool FH_Delete(const char* absolute_filepath){
 		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
 		char new_last_file[100] = {0};
 		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, parking_extension);
+
 		rc = rename(absolute_filepath, new_last_file);
+
+		pthread_mutex_unlock(&g_mutex);
 		return (rc == 0 ? true : false);
 
 	}else if(filename.find(FH_Table[4].folder_type) != -1){
@@ -439,7 +462,10 @@ bool FH_Delete(const char* absolute_filepath){
 		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
 		char new_last_file[100] = {0};
 		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, picture_extension);
+
 		rc = rename(absolute_filepath, new_last_file);
+
+		pthread_mutex_unlock(&g_mutex);
 		return (rc == 0 ? true : false);
 
 	}else if(filename.find(FH_Table[5].folder_type) != -1){
@@ -448,14 +474,18 @@ bool FH_Delete(const char* absolute_filepath){
 		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
 		char new_last_file[100] = {0};
 		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, system_extension);
-		rc = rename(absolute_filepath, new_last_file);
-		return (rc == 0 ? true : false);
 
+		rc = rename(absolute_filepath, new_last_file);
+
+		pthread_mutex_unlock(&g_mutex);
+		return (rc == 0 ? true : false);
 	}
 }
 
 
 string FH_FindOldest(eFolderType folderType){
+
+	pthread_mutex_lock(&g_mutex);
 
 	char finding_path[128];
 	snprintf(finding_path, sizeof(finding_path), "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
@@ -471,6 +501,7 @@ string FH_FindOldest(eFolderType folderType){
 
 	
 	if (dp == NULL){
+		pthread_mutex_unlock(&g_mutex);
 		return "";
 	}
 
@@ -495,6 +526,8 @@ string FH_FindOldest(eFolderType folderType){
 
 	if(fileTable.empty()){
 		cout << "No file in path." << endl;
+
+		pthread_mutex_unlock(&g_mutex);
 		return "";
 	}
 
@@ -506,6 +539,7 @@ string FH_FindOldest(eFolderType folderType){
 		char oldest_file_path[100];
 		snprintf(oldest_file_path, sizeof(oldest_file_path), "%s/%s", finding_path, filename_inMap.c_str());
 
+		pthread_mutex_unlock(&g_mutex);
 		return string(oldest_file_path);
 	}
 }
@@ -513,17 +547,17 @@ string FH_FindOldest(eFolderType folderType){
 //
 // true = 1, false = 0;
 bool FH_lock(FILE* fp){
-	// if(fd == -1){
-	// 	return false;
-	// }
+	
+	pthread_mutex_lock(&g_mutex);
+	pthread_mutex_unlock(&g_mutex);
 	return true;
 }
 
 //
 // true = 1, false = 0
 bool FH_unlock(FILE* fp){
-	// if(fd == -1){
-	// 	return false;
-	// }
+	
+	pthread_mutex_lock(&g_mutex);
+	pthread_mutex_unlock(&g_mutex);
 	return true;
 }
