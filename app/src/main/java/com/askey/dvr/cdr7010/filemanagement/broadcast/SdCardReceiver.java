@@ -83,6 +83,9 @@ public class SdCardReceiver extends BroadcastReceiver {
                 if(FileUtils.fileIsExists(Const.FOTA_PATH)){
                     BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                             Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_EXIST);
+                }else{
+                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                            Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_NOT_EXIST);
                 }
 
             }
