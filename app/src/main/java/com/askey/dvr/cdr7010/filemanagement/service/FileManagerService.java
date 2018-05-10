@@ -17,6 +17,7 @@ import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.FileUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
+import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtils;
 
 import java.io.File;
 import java.util.List;
@@ -141,6 +142,15 @@ public class FileManagerService extends Service {
             Logg.i(LOG_TAG,"====checkNewSystemVersion===");
             if(Const.SDCARD_IS_EXIST){
                 return FileUtils.fileIsExists(Const.FOTA_PATH);
+            }
+            return false;
+        }
+
+        @Override
+        public boolean checkSdcardAvailable() throws RemoteException {
+            Logg.i(LOG_TAG,"====checkSdcardAvailable===");
+            if(Const.SDCARD_IS_EXIST){
+                return SdcardUtils.sdcardAvailable();
             }
             return false;
         }

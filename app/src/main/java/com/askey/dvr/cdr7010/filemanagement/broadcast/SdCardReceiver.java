@@ -40,6 +40,8 @@ public class SdCardReceiver extends BroadcastReceiver {
 
             Logg.i(TAG, "我的各种未挂载状态");
             SDCardListener.getSingInstance(Const.SDCARD_PATH).stopWatche();
+            BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                    Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_NOT_EXIST);
 //            BroadcastUtils.sendMyBroadcast(context,Const.ACTION_SDCARD_NORMAL_MAX_FILE);
 
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描

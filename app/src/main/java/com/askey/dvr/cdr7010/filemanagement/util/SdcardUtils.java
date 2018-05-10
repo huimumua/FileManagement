@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.askey.dvr.cdr7010.filemanagement.R;
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
+import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.platform.storage.AskeyStorageManager;
 import com.askey.platform.storage.DiskInfo;
 import com.askey.platform.storage.StorageEventListener;
@@ -38,7 +39,14 @@ public class SdcardUtils {
                 return true;
             }
         }
+        return false;
+    }
 
+    public static boolean sdcardAvailable() {
+        // sdcard 存在  格式正确  且init成功才算可用
+        if(isSDCardValid(FileManagerApplication.getAppContext())){
+            return FileManager.getSingInstance().sdcardInit();
+        }
         return false;
     }
 
@@ -204,6 +212,8 @@ public class SdcardUtils {
         AskeyStorageManager storageManager =AskeyStorageManager.getInstance(context);
         storageManager.unregisterListener(mStorageEventListener);
     }
+
+
 
 
 }
