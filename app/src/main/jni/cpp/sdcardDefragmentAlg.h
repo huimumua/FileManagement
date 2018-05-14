@@ -37,8 +37,11 @@ struct file_struct{
 	char* folder_extension;
 	float percent;
 	uint64_t every_block_space;
+	uint64_t avail_space;
 	int max_file_num;
 	int file_num;
+	int exist_flag;
+
 };
 
 //

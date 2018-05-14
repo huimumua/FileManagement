@@ -3,12 +3,12 @@
 
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-struct file_struct FH_Table[6] = {{"EVENT", ".eve", 0.2, 100*MEGABYTE, 0,0}, // event
-								{"MANUAL",  ".man", 0.1, 100*MEGABYTE, 0,0}, // manual
-								{"NORMAL",  ".nor", 0.2, 100*MEGABYTE, 0,0}, // normal
-								{"PARKING", ".par", 0.3, 100*MEGABYTE, 0,0}, // parking
-								{"PICTURE", ".pic", 0.1, 100*MEGABYTE, 0,0}, // picture
-								{"SYSTEM",  ".sys", 0.1, 10*MEGABYTE, 0,0}}; // system
+struct file_struct FH_Table[6] = {{"EVENT", ".eve", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // event
+								{"MANUAL",  ".man", 0.1, 100*MEGABYTE, 0, 0, 0, 0}, // manual
+								{"NORMAL",  ".nor", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // normal
+								{"PARKING", ".par", 0.3, 100*MEGABYTE, 0, 0, 0, 0}, // parking
+								{"PICTURE", ".pic", 0.1, 100*MEGABYTE, 0, 0, 0, 0}, // picture
+								{"SYSTEM",  ".sys", 0.1, 10*MEGABYTE, 0, 0, 0, 0}}; // system
 
 char g_mount_path[100] = {0};
 
@@ -34,25 +34,12 @@ int SDA_get_path_file_num(char* path){
 		if(filterFile[0] == '.'){
 			continue;
 		}
-
-		if(filterFile == "DVR"){
-			continue;
-		}
-
-		if(filterFile == "LOST.DIR"){
-			continue;
-		}
-
-		if(filterFile == "blockcanary"){
-			continue;
-		}
 		
 		file_number++;
 	}
 	closedir(dp);
 
 	return file_number;
-
 }
 
 string SDA_get_first_filename(char* file_path, char* file_extension){
@@ -88,7 +75,6 @@ string SDA_get_first_filename(char* file_path, char* file_extension){
 	snprintf(first_filename, sizeof(first_filename), "%d%s", first_file_number, file_extension);
 
 	return string(first_filename);
-
 }
 
 string SDA_get_last_filename(char* file_path, const char* file_extension){
@@ -123,11 +109,11 @@ string SDA_get_last_filename(char* file_path, const char* file_extension){
 	char last_filename[100];
 	snprintf(last_filename, sizeof(last_filename), "%d%s", last_file_number, file_extension);
 
-	return string(last_filename);		
-	
+	return string(last_filename);
 }
 
 int SDA_write_table_in_config(char* mount_path){
+	int i;
 	char table_config_path[100];
 	snprintf(table_config_path, sizeof(table_config_path), "%s/table.config", mount_path);
 	FILE* fp = fopen(table_config_path, "w");
@@ -138,12 +124,9 @@ int SDA_write_table_in_config(char* mount_path){
 
 	// cout << FH_Table[0].every_block_space << endl;
 
-	fwrite(&FH_Table[0], sizeof(struct file_struct), 1, fp);
-	fwrite(&FH_Table[1], sizeof(struct file_struct), 1, fp);
-	fwrite(&FH_Table[2], sizeof(struct file_struct), 1, fp);
-	fwrite(&FH_Table[3], sizeof(struct file_struct), 1, fp);
-	fwrite(&FH_Table[4], sizeof(struct file_struct), 1, fp);
-	fwrite(&FH_Table[5], sizeof(struct file_struct), 1, fp);
+	for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+		fwrite(&FH_Table[i], sizeof(struct file_struct), 1, fp);
+	}
 
 	if(fwrite != 0){
 		fclose(fp);
@@ -189,9 +172,67 @@ int SDA_file_exists(char* filename)
 	/* find file */
         if (i == 0)
         {
-                return 1;
+			return 1;
         }
         return -1;
+}
+
+int SDA_scan_sdcard_folder_exist(char* mount_path){
+
+	int i;
+	int rc;
+	DIR *dp = opendir(mount_path);
+	struct dirent *dirp;
+
+	if (dp == NULL){
+		return -1;
+	}
+
+	/* Clear exist_flag */
+	for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+		FH_Table[i].exist_flag = 0;
+	}
+
+	while ((dirp = readdir(dp)) != NULL) {
+
+		string filterFile = dirp->d_name;
+
+		if((filterFile.compare(".") == 0) || (filterFile.compare("..") == 0)){
+			continue;
+		}
+
+		for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+			if(filterFile.compare(FH_Table[i].folder_type) == 0){
+				FH_Table[i].exist_flag = 1;
+			}
+		}
+	}
+
+	closedir(dp);
+	return 0;
+}
+
+void SDA_get_structure_value_from_config(char* mount_path){
+
+	int i = 0;
+	char table_config_path[100];
+	snprintf(table_config_path, sizeof(table_config_path), "%s/table.config", mount_path);
+	FILE* fp = fopen(table_config_path, "r");
+
+	struct file_struct read_table;
+
+	while(fread(&read_table, sizeof(file_struct), 1, fp)){
+		FH_Table[i].percent           = read_table.percent;
+		FH_Table[i].every_block_space = read_table.every_block_space;
+		FH_Table[i].avail_space       = read_table.avail_space;
+		FH_Table[i].max_file_num      = read_table.max_file_num;
+		FH_Table[i].file_num          = read_table.file_num;
+		FH_Table[i].exist_flag        = read_table.exist_flag;
+
+		i++;
+	}
+
+	fclose(fp);
 }
 
 // true = 1, false = 0;
@@ -213,8 +254,7 @@ bool FH_Init(char* mount_path){
 	snprintf(config_file_path, sizeof(config_file_path), "%s/table.config", mount_path);
 	rc = SDA_file_exists(config_file_path);
 	if(rc == 1){
-		pthread_mutex_unlock(&g_mutex);
-		return true;
+		SDA_get_structure_value_from_config(mount_path);
 	}
 
 	/* If sdcard not clear, return false */
@@ -241,61 +281,107 @@ bool FH_Init(char* mount_path){
 		mount_path_avail_size = ((uint64_t)buf.f_bavail * buf.f_bsize);
 	}
 
-	uint64_t event_avail_size = mount_path_avail_size  * FH_Table[0].percent;
-	uint64_t manual_avail_size = mount_path_avail_size * FH_Table[1].percent;
-	uint64_t normal_avail_size = mount_path_avail_size * FH_Table[2].percent;
-	uint64_t parking_avail_size = mount_path_avail_size* FH_Table[3].percent;
-	uint64_t picture_avail_size = mount_path_avail_size* FH_Table[4].percent;
-	uint64_t system_avail_size = mount_path_avail_size * FH_Table[5].percent;
+	/* Scan which folder not exist */
+	rc = SDA_scan_sdcard_folder_exist(mount_path);
+	if(rc == -1){
+		cout << "Scan SDCARD failed." << endl;
+		pthread_mutex_unlock(&g_mutex);
+		return false;
+	}
 
-	/* Calculation every struct file_num */
-	FH_Table[0].file_num = event_avail_size/FH_Table[0].every_block_space;
-	FH_Table[1].file_num = manual_avail_size/FH_Table[1].every_block_space;
-	FH_Table[2].file_num = normal_avail_size/FH_Table[2].every_block_space;
-	FH_Table[3].file_num = parking_avail_size/FH_Table[3].every_block_space;
-	FH_Table[4].file_num = picture_avail_size/FH_Table[4].every_block_space;
+	int count = 0;
+	for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+		if(FH_Table[i].exist_flag == 0){
+			count++;
+		}
+	}
 
-	uint64_t remaing_space = mount_path_avail_size - (FH_Table[0].every_block_space*FH_Table[0].file_num) - (FH_Table[1].every_block_space*FH_Table[1].file_num) -
-		(FH_Table[2].every_block_space*FH_Table[2].file_num) - (FH_Table[3].every_block_space*FH_Table[3].file_num) - (FH_Table[4].every_block_space*FH_Table[4].file_num);
-	// cout << "remaining" << remaing_space << endl;
-	FH_Table[5].file_num = remaing_space/FH_Table[5].every_block_space;
+	/* if exist_flag == 0, means folder not exist */
+	float percent_add = 0;
+	for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+		if(FH_Table[i].exist_flag == 0){
+			percent_add += FH_Table[i].percent;
+		}
+	}
 
-/* If file_num > max_file_num, use max_file num*/
-	// if(FH_Table[0].file_num > FH_Table[0].max_file_num){
-	// 	FH_Table[0].file_num = FH_Table[0].max_file_num;
+	/* Calucate folder avail space */
+	if(count > 1){
+		int recount = 0;
+		uint64_t remaing_space = 0;
+		for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+			/* if exist_flag == 0, means folder not exist */
+			if(FH_Table[i].exist_flag == 0){
+				recount++;
+				if(recount == count){
+					FH_Table[i].avail_space = mount_path_avail_size - remaing_space;
+					break;
+				}
+				FH_Table[i].avail_space = (mount_path_avail_size/(percent_add*10))*(FH_Table[i].percent*10);
+				remaing_space += FH_Table[i].avail_space;
+			}
+		}
+	}else if (count == 1){
+		for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+			if(FH_Table[i].exist_flag == 0){
+				FH_Table[i].avail_space = mount_path_avail_size;
+			}
+		}
+	}
+
+	/* Calucate available file number */
+	for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+		if(FH_Table[i].exist_flag == 0){
+			FH_Table[i].file_num = FH_Table[i].avail_space/FH_Table[i].every_block_space;
+		}
+	}
+
+	/* Create folder in SDCARD */
+	char create_folder_path[100];
+	for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+		if(FH_Table[i].exist_flag == 0){
+			sprintf(create_folder_path, "%s/%s", mount_path, FH_Table[i].folder_type);
+			mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+			memset(create_folder_path, 0, sizeof(create_folder_path));
+
+			if(FH_Table[i].folder_type == "SYSTEM"){
+				sprintf(create_folder_path, "%s/%s/FREE", mount_path, FH_Table[i].folder_type);
+				mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+			}	
+		}	
+	}
+
+	/* Check if SYSTEM exist SYSTEM/FREE not exist, create FREE*/
+	if(FH_Table[5].exist_flag == 1){
+		char free_folder_path[100];
+		sprintf(free_folder_path, "%s/SYSTEM/FREE", mount_path);
+		rc = SDA_file_exists(free_folder_path);
+		if(rc != 1){
+			cout << "Create FREE" << endl;
+			mkdir(free_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+		}
+	}
+
+	/* Debug usage: print Structure data */
+	// for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+	// 	cout << FH_Table[i].folder_type << " " 
+	// 	<< FH_Table[i].folder_extension << " " << FH_Table[i].percent << " " 
+	// 	<< FH_Table[i].every_block_space << " " << FH_Table[i].avail_space << " "
+	// 	<< FH_Table[i].max_file_num << " " << FH_Table[i].file_num << " "
+	// 	<< FH_Table[i].exist_flag << endl;
 	// }
-	// if(FH_Table[1].file_num > FH_Table[1].max_file_num){
-	// 	FH_Table[1].file_num = FH_Table[1].max_file_num;
-	// }
-	// if(FH_Table[2].file_num > FH_Table[2].max_file_num){
-	// 	FH_Table[2].file_num = FH_Table[2].max_file_num;
-	// }
-	// if(FH_Table[3].file_num > FH_Table[3].max_file_num){
-	// 	FH_Table[3].file_num = FH_Table[3].max_file_num;
-	// }
-	// if(FH_Table[4].file_num > FH_Table[4].max_file_num){
-	// 	FH_Table[4].file_num = FH_Table[4].max_file_num;
-	// }
-	// if(FH_Table[5].file_num > FH_Table[5].max_file_num){
-	// 	FH_Table[5].file_num = FH_Table[5].max_file_num;
+
+
+
+	/* JVC Define */
+	/* If file_num > max_file_num, use max_file num */
+	// for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+	// 	if(FH_Table[i].file_num > FH_Table[i].max_file_num){
+	// 		FH_Table[i].file_num = FH_Table[i].max_file_num;
+	// 	}
 	// }
 
 	/* write file_struct in config file */
 	SDA_write_table_in_config(mount_path);
-
-	/* Create FH_Table.folder_type file in sdcard */
-	char create_folder_path[100];
-	for(i=0; i<6; i++){
-		
-		sprintf(create_folder_path, "%s/%s", mount_path, FH_Table[i].folder_type);
-		mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
-		memset(create_folder_path, 0, sizeof(create_folder_path));
-
-		if(i == 5){
-			sprintf(create_folder_path, "%s/%s/FREE", mount_path, FH_Table[i].folder_type);
-			mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
-		}
-	}
 
 	pthread_mutex_unlock(&g_mutex);
 	return true;
@@ -313,7 +399,7 @@ char* FH_Open(char* filename, eFolderType folderType){
 
 	int rc;
 	char config_file_path[100];
-	snprintf(config_file_path, sizeof(config_file_path), "%s/Table.config", g_mount_path);
+	snprintf(config_file_path, sizeof(config_file_path), "%s/table.config", g_mount_path);
 	rc = SDA_file_exists(config_file_path);
 	if(rc != 1){
 		pthread_mutex_unlock(&g_mutex);
@@ -391,14 +477,8 @@ bool FH_Delete(const char* absolute_filepath){
 	}
 	close(fd);
 
+	int i;
 	int rc = -1;
-
-	const char event_extension[]   = ".eve";
-	const char manual_extension[]  = ".man";
-	const char normal_extension[]  = ".nor";
-	const char parking_extension[] = ".par";
-	const char picture_extension[] = ".pic";
-	const char system_extension[]  = ".sys";
 
 	char free_path[100];
 	snprintf(free_path, sizeof(free_path), "%s/SYSTEM/FREE", g_mount_path);
@@ -408,77 +488,19 @@ bool FH_Delete(const char* absolute_filepath){
 
 	/* If fine "Event" string, get last (number).eve in Free folder,
 	  then rename absolute_filepath with (number+1).eve in Free folder */
-	if(filename.find(FH_Table[0].folder_type) != -1){
+	for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
+		if(filename.find(FH_Table[i].folder_type) != -1){
+			// cout << "find FH_Table: " << FH_Table[i].folder_type << endl;
+			last_filename = SDA_get_last_filename(free_path, FH_Table[i].folder_extension);
+			int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
+			char new_last_file[100] = {0};
+			snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, FH_Table[i].folder_extension);
+			// cout << "new last_filename: " << new_last_file << endl;	
+			rc = rename(absolute_filepath, new_last_file);
 
-		last_filename = SDA_get_last_filename(free_path, event_extension);
-		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
-		char new_last_file[100] = {0};
-		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, event_extension);
-		// cout << new_last_file << endl;	
-		rc = rename(absolute_filepath, new_last_file);
-
-		pthread_mutex_unlock(&g_mutex);
-		return (rc == 0 ? true : false);
-
-	}else if(filename.find(FH_Table[1].folder_type) != -1){
-
-		last_filename = SDA_get_last_filename(free_path, manual_extension);
-		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
-		char new_last_file[100] = {0};
-		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, manual_extension);
-
-		rc = rename(absolute_filepath, new_last_file);
-
-		pthread_mutex_unlock(&g_mutex);
-		return (rc == 0 ? true : false);
-
-	}else if(filename.find(FH_Table[2].folder_type) != -1){
-
-		last_filename = SDA_get_last_filename(free_path, normal_extension);
-		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
-		char new_last_file[100] = {0};
-		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, normal_extension);
-
-		rc = rename(absolute_filepath, new_last_file);
-
-		pthread_mutex_unlock(&g_mutex);
-		return (rc == 0 ? true : false);
-
-	}else if(filename.find(FH_Table[3].folder_type) != -1){
-
-		last_filename = SDA_get_last_filename(free_path, parking_extension);
-		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
-		char new_last_file[100] = {0};
-		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, parking_extension);
-
-		rc = rename(absolute_filepath, new_last_file);
-
-		pthread_mutex_unlock(&g_mutex);
-		return (rc == 0 ? true : false);
-
-	}else if(filename.find(FH_Table[4].folder_type) != -1){
-
-		last_filename = SDA_get_last_filename(free_path, picture_extension);
-		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
-		char new_last_file[100] = {0};
-		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, picture_extension);
-
-		rc = rename(absolute_filepath, new_last_file);
-
-		pthread_mutex_unlock(&g_mutex);
-		return (rc == 0 ? true : false);
-
-	}else if(filename.find(FH_Table[5].folder_type) != -1){
-
-		last_filename = SDA_get_last_filename(free_path, system_extension);
-		int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
-		char new_last_file[100] = {0};
-		snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, system_extension);
-
-		rc = rename(absolute_filepath, new_last_file);
-
-		pthread_mutex_unlock(&g_mutex);
-		return (rc == 0 ? true : false);
+			pthread_mutex_unlock(&g_mutex);
+			return (rc == 0 ? true : false);
+		}
 	}
 }
 
@@ -516,6 +538,9 @@ string FH_FindOldest(eFolderType folderType){
 		stat(path_and_filename, &attrib);
 		strftime(file_timestramp, sizeof(file_timestramp), "%Y%m%d%H%M%S", localtime(&attrib.st_mtime));
 
+		if(inPath_filename.compare("FREE") == 0){
+			continue;
+		}
 		if(inPath_filename.compare(".") != 0 && (inPath_filename.compare("..") != 0)){
 			// fileTable[time] = name;
 			fileTable.insert(pair<string, string>(file_timestramp, inPath_filename));
