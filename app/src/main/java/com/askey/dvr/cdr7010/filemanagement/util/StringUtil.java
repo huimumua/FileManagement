@@ -13,6 +13,7 @@ import java.net.URLEncoder;
  * 修改备注：
  */
 public class StringUtil {
+    private static final String LOG_TAG = StringUtil.class.getSimpleName();
 
     public static String toUtf8(String str) {
         String result = null;

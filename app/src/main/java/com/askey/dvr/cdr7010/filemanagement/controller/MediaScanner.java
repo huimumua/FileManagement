@@ -4,6 +4,9 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -164,7 +167,7 @@ public class MediaScanner {
         List<ItemData> group = new ArrayList<ItemData>();
         while(cursor.moveToNext())
         {
-            String id=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media._ID));
+            String id = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media._ID));
             //获取视频的名称
             String name=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME));
             //获取视频的大小
@@ -177,7 +180,10 @@ public class MediaScanner {
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
             //视频时长
             String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
-               Logg.i(TAG,"==path=contains="+Const.SDCARD_PATH+Const.BACK_SLASH_1+type);
+
+//            Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(resolver,
+//                    Long.valueOf(id), MediaStore.Images.Thumbnails.MICRO_KIND, null);
+
             if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type) ){
                 Logg.i(TAG,"==path=="+path);
                 if(!type.equals(Const.NORMAL_DIR)){
@@ -233,6 +239,19 @@ public class MediaScanner {
         return fileList;
     }
 
+    public static Bitmap getVideoThumbnail(String videoPath, int width, int height, int kind) {
+        Bitmap bitmap =null;
+        bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
+        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        return bitmap;
+    }
+
+    public static Bitmap getVideoThumbnail(String videoPath) {
+        MediaMetadataRetriever media =new MediaMetadataRetriever();
+        media.setDataSource(videoPath);
+        Bitmap bitmap = media.getFrameAtTime();
+        return bitmap;
+    }
 
 
     /**
