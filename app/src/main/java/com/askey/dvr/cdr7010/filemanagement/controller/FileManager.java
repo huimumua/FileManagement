@@ -10,6 +10,7 @@ import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
 import com.askey.dvr.cdr7010.filemanagement.util.StringUtil;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -141,6 +142,21 @@ public class FileManager {
                     result = FH_Open(filename,type);
                 }
             }
+
+            final String finalResult = result;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(2000);
+                        MediaScanner.scanFileAsync(mContext,finalResult);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
+
         }else{
             BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),Const.CMD_SHOW_SDCARD_INIT_FAIL);
         }

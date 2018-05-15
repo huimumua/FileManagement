@@ -372,6 +372,7 @@ public class MediaScanner {
                 Logg.i(TAG,"-->deleteFile --> delete "+fileName+" success");
                 //这里清除ContentProvader数据库
                 syncDeleteFile(file);
+//                scanFileAsync(FileManagerApplication.getAppContext(),fileName);
                 return true;
             } else {
                 Logg.e(TAG,"-->deleteFile --> delete "+fileName+" failed");
@@ -383,7 +384,7 @@ public class MediaScanner {
         }
     }
 
-    private static void syncDeleteFile(File file) {
+    public static void syncDeleteFile(File file) {
         //删除多媒体数据库中的数据
         String filePath = file.getPath();
         if(filePath.endsWith(".mp4")){
