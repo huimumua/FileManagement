@@ -41,12 +41,18 @@ public class MediaScanner {
      * 扫描指定文件
      * */
     public static void scanFileAsync(Context ctx, String filePath) {
-        Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File file = new File(filePath);
-        Uri uri = Uri.fromFile(file);
+        try {
+            Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            File file = new File(filePath);
+            if(file!=null){
+                Uri uri = Uri.fromFile(file);
 //        Uri uri = FileProvider.getUriForFile(ctx, BuildConfig.APPLICATION_ID, file);
-        scanIntent.setData(uri);
-        ctx.sendBroadcast(scanIntent);
+                scanIntent.setData(uri);
+                ctx.sendBroadcast(scanIntent);
+            }
+        }catch (Exception e){
+            Logg.e(TAG,"scanFileAsync->Exception="+e.getMessage());
+        }
     }
 
     public static final String ACTION_MEDIA_SCANNER_SCAN_DIR = "android.intent.action.MEDIA_SCANNER_SCAN_DIR";
@@ -56,12 +62,19 @@ public class MediaScanner {
      * 扫描指定目录
      * */
     public static void scanDirAsync(Context ctx, String dir) {
-        Intent scanIntent = new Intent(ACTION_MEDIA_SCANNER_SCAN_DIR);
-        File file = new File(dir);
-        Uri uri = Uri.fromFile(file);
+        try {
+            Intent scanIntent = new Intent(ACTION_MEDIA_SCANNER_SCAN_DIR);
+            File file = new File(dir);
+            if(file!=null){
+                Uri uri = Uri.fromFile(file);
 //        Uri uri = FileProvider.getUriForFile(ctx, BuildConfig.APPLICATION_ID, file);
-        scanIntent.setData(uri);
-        ctx.sendBroadcast(scanIntent);
+                scanIntent.setData(uri);
+                ctx.sendBroadcast(scanIntent);
+            }
+        }catch (Exception e){
+            Logg.e(TAG,"scanDirAsync->Exception="+e.getMessage());
+        }
+
     }
 
     /**
