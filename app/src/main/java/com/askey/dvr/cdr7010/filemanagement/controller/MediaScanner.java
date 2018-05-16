@@ -378,7 +378,7 @@ public class MediaScanner {
         File file = new File(fileName);
         // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
         if (file.exists() && file.isFile()) {
-            boolean result = FileManager.getSingInstance().FH_Delete(fileName);;
+            boolean result = FileManager.getSingInstance().FH_Delete(fileName);
             Logg.i(TAG,"-->deleteFile --> FH_Delete "+fileName+" result =="+result);
             //之后会使用底层提供的方法进行删除
             if (/*file.delete()*/result) {
@@ -510,30 +510,32 @@ public class MediaScanner {
         boolean flag = true;
         // 删除文件夹中的所有文件包括子目录
         File[] files = dirFile.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            // 删除子文件
-            if (files[i].isFile()) {
-                flag = deleteFile(files[i].getAbsolutePath());
-                if (!flag)
-                    break;
-            }
-            // 删除子目录
-            else if (files[i].isDirectory()) {
-                flag = deleteDirectory(files[i]
-                        .getAbsolutePath());
-                if (!flag)
-                    break;
-            }else{
-                String str = files[i].getAbsolutePath();
-                File dirFile1 = new File(str);
-                Logg.i(TAG,"=====files.length==222=="+str);
-                try {
-                    Logg.i(TAG,"=====files.length==222=="+dirFile1.delete());
-                }catch (Exception e){
-                    Logg.e(TAG,"=====files.length==222=="+e.getMessage());
+        if(files.length>0){
+            for (int i = 0; i < files.length; i++) {
+                // 删除子文件
+                if (files[i].isFile()) {
+                    flag = deleteFile(files[i].getAbsolutePath());
+                    if (!flag){
+                        break;
+                    }
+                }else if (files[i].isDirectory()) { // 删除子目录
+                    flag = deleteDirectory(files[i].getAbsolutePath());
+                    if (!flag){
+                        break;
+                    }
+                }else{
+                    String str = files[i].getAbsolutePath();
+                    File dirFile1 = new File(str);
+                    Logg.i(TAG,"=====files.length==222=="+str);
+                    try {
+                        Logg.i(TAG,"=====files.length==222=="+dirFile1.delete());
+                    }catch (Exception e){
+                        Logg.e(TAG,"=====files.length==222=="+e.getMessage());
+                    }
                 }
             }
         }
+
         if (!flag) {
             Logg.e(TAG,"-->deleteDirectory --> delete "+dir+" failed");
             return false;

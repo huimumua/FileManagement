@@ -1,17 +1,7 @@
 package com.askey.dvr.cdr7010.filemanagement.util;
 
 import android.content.Context;
-import android.graphics.PixelFormat;
-import android.os.storage.StorageManager;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.RadioButton;
-import android.widget.TextView;
 
-import com.askey.dvr.cdr7010.filemanagement.R;
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.platform.storage.AskeyStorageManager;
@@ -50,31 +40,6 @@ public class SdcardUtils {
         return false;
     }
 
-    private static void formatSDCard(final Context context) {
-        final AskeyStorageManager storageManager =AskeyStorageManager.getInstance(context);
-        for (final DiskInfo disk :storageManager.getDisks()) {
-            Logg.d(LOG_TAG, "formatSDCard: disk " + disk.sysPath);
-            if (disk.isSd()) {
-//                Logg.d(LOG_TAG, "formatSDCard: sdcard disk, volumeCount = " + disk.getvolumeCount() + ", size = " + disk.getSize());
-//                if (disk.getvolumeCount() == 0 && disk.getSize() > 0) {
-//                    // No supported volumes found, give user option to format
-                    Logg.d(LOG_TAG, "formatSDCard: format " + disk.sysPath);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                storageManager.partitionPublic(disk.id);
-                            } catch (Exception e) {
-                                Logg.w(LOG_TAG, "formatSDCard: format thread error. " + e.getMessage());
-                            }
-                        }
-                    }).start();
-                    return;
-//                }
-            }
-        }
-    }
-
     private static StorageEventListener mStorageEventListener = new StorageEventListener() {
         @Override
         public void onDiskScanned(DiskInfo disk, int volumeCount) {
@@ -86,7 +51,6 @@ public class SdcardUtils {
                     // format
                     BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                             Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
-                    dialog(mContext);
                 }
             }
         }
@@ -94,9 +58,7 @@ public class SdcardUtils {
         @Override
         public void onDiskDestroyed(DiskInfo disk) {
             Logg.d(LOG_TAG, "onDiskDestroyed: " + disk.toString());
-            if (disk.isSd() && isShown && null != mView) {
-                mWindowManager.removeView(mView);
-                isShown = false;
+            if (disk.isSd()) {
                 BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                         Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_SUPPORTED);
             }
@@ -131,75 +93,7 @@ public class SdcardUtils {
 
 
     };
-    private static WindowManager mWindowManager;
-    private static Boolean isShown = false;
-    private static View mView = null;
 
-    private static void dialog(final Context context) {
-        if (isShown && null != mView) {
-            mWindowManager.removeView(mView);
-            isShown = false;
-        }
-        isShown = true;
-        mView = null;
-        mWindowManager = (WindowManager) mContext
-                .getSystemService(Context.WINDOW_SERVICE);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-        params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-        int flags = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
-        params.flags = flags;
-        params.format = PixelFormat.TRANSLUCENT;
-        params.width = WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = WindowManager.LayoutParams.MATCH_PARENT;
-        params.gravity = Gravity.CENTER;
-        mView = LayoutInflater.from(context).inflate(R.layout.format_sdcard_activity, null);
-        TextView tv_activity_title = (TextView) mView.findViewById(R.id.tv_activity_title);
-        tv_activity_title.setText(R.string.format_sdcard_activity);
-        RadioButton rbStartFormat = (RadioButton) mView.findViewById(R.id.rb_start_format);
-        RadioButton rbCancelFormat = (RadioButton) mView.findViewById(R.id.rb_cancel_format);
-        rbStartFormat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mWindowManager.removeView(mView);
-                isShown = false;
-                formatSDCard(context);
-            }
-        });
-        rbStartFormat.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                switch (i) {
-                    case KeyEvent.KEYCODE_BACK:
-                        mWindowManager.removeView(mView);
-                        isShown = false;
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-        });
-        rbCancelFormat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mWindowManager.removeView(mView);
-                isShown = false;
-            }
-        });
-        rbCancelFormat.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                switch (i) {
-                    case KeyEvent.KEYCODE_BACK:
-                        mWindowManager.removeView(mView);
-                        isShown = false;
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-        });
-        mWindowManager.addView(mView, params);
-    }
 
     public static void registerStorageEventListener(Context context) {
         AskeyStorageManager storageManager =AskeyStorageManager.getInstance(context);

@@ -1,6 +1,4 @@
 <resources>
     <string name="app_name">FileManagement</string>
-    <string name="start_format">Yes</string>
-    <string name="cancel_format">No</string>
-    <string name="format_sdcard_activity">Format confirm\n Data in the SD card will lose.</string>
+
 </resources>
