@@ -44,6 +44,7 @@ public class SdcardUtils {
         @Override
         public void onDiskScanned(DiskInfo disk, int volumeCount) {
             Logg.i(LOG_TAG, "onDiskScanned: "+ disk.toString());
+            Logg.i(LOG_TAG, "disk.isAdoptable()=" + disk.isAdoptable());
             Logg.i(LOG_TAG, "onDiskScanned: volumeCount=" + volumeCount);
             if (disk.isSd()) {
                 Logg.d(LOG_TAG, "onDiskScanned: sdcard disk, volumeCount = " + volumeCount + ", size = " + disk.size);
@@ -51,6 +52,9 @@ public class SdcardUtils {
                     // format
                     BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                             Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
+                }else if(volumeCount == 0 && disk.size == 0){
+                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                            Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_UNRECOGNIZABLE);
                 }
             }
         }
@@ -76,7 +80,6 @@ public class SdcardUtils {
             Logg.i(LOG_TAG, "onStorageStateChanged: path=" + path);
             Logg.i(LOG_TAG, "onStorageStateChanged: oldState=" + oldState);
             Logg.i(LOG_TAG, "onStorageStateChanged: newState=" + newState);
-
             if(newState .equals("6")){
                 // format
                 BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),

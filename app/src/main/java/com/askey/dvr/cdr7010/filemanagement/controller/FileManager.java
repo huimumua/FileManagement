@@ -158,7 +158,7 @@ public class FileManager {
 
 
         }else{
-            BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),Const.CMD_SHOW_SDCARD_INIT_FAIL);
+            BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_FAIL);
         }
 
         return result;
