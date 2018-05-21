@@ -90,6 +90,12 @@ public class SdCardReceiver extends BroadcastReceiver {
                             Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_NOT_EXIST);
                 }
 
+                if(FileUtils.fileIsExists(Const.FOTA_COMPLETE_FILE_PATH)){
+                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                            Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_COMPLETE);
+                    MediaScanner.delete(Const.FOTA_COMPLETE_FILE_PATH);
+                }
+
             }
         }).start();
     }

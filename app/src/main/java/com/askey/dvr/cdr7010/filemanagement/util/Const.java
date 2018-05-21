@@ -21,8 +21,10 @@ public class Const {
 
     public static  String SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
     public static final String FOTA_NAME = "update.zip";
+    public static final String FOTA_COMPLETE = "complete.text";
     public static final String BACK_SLASH_1= "/";
     public static final String FOTA_PATH = SDCARD_PATH + BACK_SLASH_1 +FOTA_NAME;
+    public static final String FOTA_COMPLETE_FILE_PATH = SDCARD_PATH + BACK_SLASH_1 +FOTA_COMPLETE;
 
     public static boolean SDCARD_IS_EXIST = false;
 
@@ -118,6 +120,7 @@ public class Const {
     public static final String ACTION_FOTA_STATUS = "action_fota_status";
     public static final String CMD_SHOW_FOTA_FILE_EXIST ="show_fota_file_exist";//升级文件存在
     public static final String CMD_SHOW_FOTA_FILE_NOT_EXIST = "show_fota_file_not_exist";//升级文件不存在
+    public static final String CMD_SHOW_FOTA_COMPLETE= "show_fota_complete";//升级完成
 
     public static final String ACTION_SDCARD_STATUS = "action_sdcard_status";
     public static final String CMD_SHOW_SDCARD_NOT_SUPPORTED ="show_sdcard_not_supported";//sdcard格式不支持可用
