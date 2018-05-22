@@ -34,6 +34,9 @@ public class FileManagerService extends Service {
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
 
+        Intent startIntent = new Intent(this, SdcardService.class);
+        startService(startIntent);
+
         Const.SDCARD_IS_EXIST = SdcardUtil.checkSdcardExist();
 
         if(Const.SDCARD_IS_EXIST){
@@ -47,9 +50,6 @@ public class FileManagerService extends Service {
                         Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_EXIST);
             }
         }
-
-        Intent startIntent = new Intent(this, SdcardService.class);
-        startService(startIntent);
 
         return new MyBinder();
     }

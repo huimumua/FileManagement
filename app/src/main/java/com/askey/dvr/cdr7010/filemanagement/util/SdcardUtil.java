@@ -50,19 +50,21 @@ public class SdcardUtil {
         try {
             //找到sdcard的位置
             File directory = Environment.getExternalStorageDirectory();
-            //硬盘的描述类
-            StatFs statFs = new StatFs(directory.getAbsolutePath());
-            //每块的大小
-            long blockSize = statFs.getBlockSize();
-            Logg.i(TAG,"==blockSize=="+blockSize);
-            //可用块的数量
-            int availableBlocks = statFs.getAvailableBlocks();
-            Logg.i(TAG,"==availableBlocks=="+availableBlocks);
-            //可用空间      以字节为单位
-            long availableSdcardSize = blockSize*availableBlocks;
-            Logg.i(TAG,"==availableSdcardSize==" + availableSdcardSize );
-            if(availableSdcardSize <= Const.SDCARD_RESERVE_SPACE){//这里预留100M
-                return true;
+            if(directory.exists()){
+                //硬盘的描述类
+                StatFs statFs = new StatFs(directory.getAbsolutePath());
+                //每块的大小
+                long blockSize = statFs.getBlockSize();
+                Logg.i(TAG,"==blockSize=="+blockSize);
+                //可用块的数量
+                int availableBlocks = statFs.getAvailableBlocks();
+                Logg.i(TAG,"==availableBlocks=="+availableBlocks);
+                //可用空间      以字节为单位
+                long availableSdcardSize = blockSize*availableBlocks;
+                Logg.i(TAG,"==availableSdcardSize==" + availableSdcardSize );
+                if(availableSdcardSize <= Const.SDCARD_RESERVE_SPACE){//这里预留100M
+                    return true;
+                }
             }
         }catch (Exception e){
             Logg.e(TAG,"-> getCurentSdcardInfo -> Exception"+e.getMessage());
@@ -73,46 +75,48 @@ public class SdcardUtil {
         try {
             //找到sdcard的位置
             File directory = Environment.getExternalStorageDirectory();
-            //硬盘的描述类
-            StatFs statFs = new StatFs(directory.getAbsolutePath());
-            //获取硬盘分的块的数量
-            int blockCount = statFs.getBlockCount();
-            Logg.i(TAG,"==blockCount=="+blockCount);
-            //每块的大小
-            long blockSize = statFs.getBlockSize();
-            Logg.i(TAG,"==blockSize=="+blockSize);
-            //可用块的数量
-            int availableBlocks = statFs.getAvailableBlocks();
-            Logg.i(TAG,"==availableBlocks=="+availableBlocks);
-            //sdcard的总容量   以字节为单位
-            long sdcardSize = blockCount*blockSize;
-            String currentSdcardSize = SdcardUtil.formatSize(context, String.valueOf(sdcardSize));
-            Logg.i(TAG,"==currentSdcardSize=="+ currentSdcardSize);
-            //可用空间      以字节为单位
-            long availableSdcardSize = blockSize*availableBlocks;
-            String availableSize = SdcardUtil.formatSize(context, String.valueOf(availableSdcardSize));
-            Logg.i(TAG,"==availableSdcardSize==" + availableSize );
+            if(directory.exists()){
+                //硬盘的描述类
+                StatFs statFs = new StatFs(directory.getAbsolutePath());
+                //获取硬盘分的块的数量
+                int blockCount = statFs.getBlockCount();
+                Logg.i(TAG,"==blockCount=="+blockCount);
+                //每块的大小
+                long blockSize = statFs.getBlockSize();
+                Logg.i(TAG,"==blockSize=="+blockSize);
+                //可用块的数量
+                int availableBlocks = statFs.getAvailableBlocks();
+                Logg.i(TAG,"==availableBlocks=="+availableBlocks);
+                //sdcard的总容量   以字节为单位
+                long sdcardSize = blockCount*blockSize;
+                String currentSdcardSize = SdcardUtil.formatSize(context, String.valueOf(sdcardSize));
+                Logg.i(TAG,"==currentSdcardSize=="+ currentSdcardSize);
+                //可用空间      以字节为单位
+                long availableSdcardSize = blockSize*availableBlocks;
+                String availableSize = SdcardUtil.formatSize(context, String.valueOf(availableSdcardSize));
+                Logg.i(TAG,"==availableSdcardSize==" + availableSize );
 
-            int totalSize = 0;
-            float totalSdcardSize = Float.parseFloat(currentSdcardSize.substring(0,currentSdcardSize.length()-3));
-            if(totalSdcardSize>3 && totalSdcardSize<4){
-                totalSize = Const.SDCARD_SIZE_4Gb;
-            }else if(totalSdcardSize>6 && totalSdcardSize<8){
-                totalSize = Const.SDCARD_SIZE_8Gb;
-            }else if(totalSdcardSize>14 && totalSdcardSize<16){
-                totalSize = Const.SDCARD_SIZE_16Gb;
-            }else if(totalSdcardSize>28 && totalSdcardSize<32){
-                totalSize = Const.SDCARD_SIZE_32Gb;
-            }else if(totalSdcardSize>56 && totalSdcardSize<64){
-                totalSize = Const.SDCARD_SIZE_64Gb;
-            }else if(totalSdcardSize>110 && totalSdcardSize<128){
-                totalSize = Const.SDCARD_SIZE_128Gb;
-            }else if(totalSdcardSize>245 && totalSdcardSize<256){
-                totalSize = Const.SDCARD_SIZE_256Gb;
-            }else if(totalSdcardSize>491 && totalSdcardSize<512){
-                totalSize = Const.SDCARD_SIZE_512Gb;
+                int totalSize = 0;
+                float totalSdcardSize = Float.parseFloat(currentSdcardSize.substring(0,currentSdcardSize.length()-3));
+                if(totalSdcardSize>3 && totalSdcardSize<4){
+                    totalSize = Const.SDCARD_SIZE_4Gb;
+                }else if(totalSdcardSize>6 && totalSdcardSize<8){
+                    totalSize = Const.SDCARD_SIZE_8Gb;
+                }else if(totalSdcardSize>14 && totalSdcardSize<16){
+                    totalSize = Const.SDCARD_SIZE_16Gb;
+                }else if(totalSdcardSize>28 && totalSdcardSize<32){
+                    totalSize = Const.SDCARD_SIZE_32Gb;
+                }else if(totalSdcardSize>56 && totalSdcardSize<64){
+                    totalSize = Const.SDCARD_SIZE_64Gb;
+                }else if(totalSdcardSize>110 && totalSdcardSize<128){
+                    totalSize = Const.SDCARD_SIZE_128Gb;
+                }else if(totalSdcardSize>245 && totalSdcardSize<256){
+                    totalSize = Const.SDCARD_SIZE_256Gb;
+                }else if(totalSdcardSize>491 && totalSdcardSize<512){
+                    totalSize = Const.SDCARD_SIZE_512Gb;
+                }
+                return totalSize;
             }
-            return totalSize;
         }catch (Exception e){
             Logg.e(TAG,"-> getCurentSdcardInfo -> Exception"+e.getMessage());
         }

@@ -198,56 +198,57 @@ public class MediaScanner {
 
 //            Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(resolver,
 //                    Long.valueOf(id), MediaStore.Images.Thumbnails.MICRO_KIND, null);
-
-            if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type) ){
-                File mFile = new File(path);
-                if(mFile.exists()){
-                    DATE_MODIFIED = String.valueOf(mFile.lastModified());
-                    Logg.i(TAG,"==path=="+path);
-                    if(!type.equals(Const.NORMAL_DIR)){
-                        Logg.i(TAG,"==type=="+type);
-                        Logg.i(TAG,"==name=="+name);
-                        long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
-                        ItemData itemData= new ItemData();
-                        itemData.setFileTime(fileCreateTime);
-                        itemData.setFilePath(path);
-                        itemData.setFileName(name);
-                        itemData.setDir(false);
-                        itemData.setMediaID(Integer.valueOf(id));
-                        fileList.add(itemData);
-                    }else{
-                        String yyyyMMDD = name.substring(0,8);
-                        Logg.i(TAG,"==type=="+type);
-                        long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
-
-                        if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
-                            ItemData groupitem = new ItemData();
-                            groupitem.setFileTime(fileCreateTime);
-                            groupitem.setFilePath(path);
-                            groupitem.setFileName(name);
-                            groupitem.setDir(false);
-                            groupitem.setMediaID(Integer.valueOf(id));
-                            group.add(groupitem);
-                        }else{
-                            currentYYYYMMDD = yyyyMMDD;
-
-                            group= new ArrayList<ItemData>();
-                            ItemData groupitem = new ItemData();
-                            groupitem.setFileTime(fileCreateTime);
-                            groupitem.setFilePath(path);
-                            groupitem.setFileName(name);
-                            groupitem.setDir(false);
-                            groupitem.setMediaID(Integer.valueOf(id));
-                            group.add(groupitem);
-
+            Logg.i(TAG,"==name=="+name);
+            if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type)  ){
+                if(name.length()==16 || name.length()==18){
+                    File mFile = new File(path);
+                    if(mFile.exists()){
+                        DATE_MODIFIED = String.valueOf(mFile.lastModified());
+                        Logg.i(TAG,"==path=="+path);
+                        if(!type.equals(Const.NORMAL_DIR)){
+                            Logg.i(TAG,"==type=="+type);
+                            long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
                             ItemData itemData= new ItemData();
                             itemData.setFileTime(fileCreateTime);
                             itemData.setFilePath(path);
                             itemData.setFileName(name);
-                            itemData.setDir(true);
-//                        itemData.setMediaID(Integer.valueOf(id));
-                            itemData.setDirFileItem(group);
+                            itemData.setDir(false);
+                            itemData.setMediaID(Integer.valueOf(id));
                             fileList.add(itemData);
+                        }else{
+                            String yyyyMMDD = name.substring(0,8);
+                            Logg.i(TAG,"==type=="+type);
+                            long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+
+                            if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
+                                ItemData groupitem = new ItemData();
+                                groupitem.setFileTime(fileCreateTime);
+                                groupitem.setFilePath(path);
+                                groupitem.setFileName(name);
+                                groupitem.setDir(false);
+                                groupitem.setMediaID(Integer.valueOf(id));
+                                group.add(groupitem);
+                            }else{
+                                currentYYYYMMDD = yyyyMMDD;
+
+                                group= new ArrayList<ItemData>();
+                                ItemData groupitem = new ItemData();
+                                groupitem.setFileTime(fileCreateTime);
+                                groupitem.setFilePath(path);
+                                groupitem.setFileName(name);
+                                groupitem.setDir(false);
+                                groupitem.setMediaID(Integer.valueOf(id));
+                                group.add(groupitem);
+
+                                ItemData itemData= new ItemData();
+                                itemData.setFileTime(fileCreateTime);
+                                itemData.setFilePath(path);
+                                itemData.setFileName(name);
+                                itemData.setDir(true);
+//                        itemData.setMediaID(Integer.valueOf(id));
+                                itemData.setDirFileItem(group);
+                                fileList.add(itemData);
+                            }
                         }
                     }
                 }
