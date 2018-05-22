@@ -400,6 +400,12 @@ public class MediaScanner {
 //                scanFileAsync(FileManagerApplication.getAppContext(),fileName);
                 return true;
             } else {
+                if(file.delete()){
+                    Logg.i(TAG,"-->deleteFile --> delete "+fileName+" success");
+                    //这里清除ContentProvader数据库
+                    syncDeleteFile(file);
+                    return true;
+                }
                 Logg.e(TAG,"-->deleteFile --> delete "+fileName+" failed");
                 return false;
             }
