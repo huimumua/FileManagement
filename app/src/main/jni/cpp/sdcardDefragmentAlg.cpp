@@ -536,7 +536,7 @@ string FH_FindOldest(eFolderType folderType){
 		snprintf(path_and_filename, sizeof(path_and_filename), "%s/%s", finding_path, inPath_filename.c_str());
 
 		stat(path_and_filename, &attrib);
-		strftime(file_timestramp, sizeof(file_timestramp), "%Y%m%d%H%M%S", localtime(&attrib.st_mtime));
+		strftime(file_timestramp, sizeof(file_timestramp), "%Y%m%d%H%M%S", localtime((const time_t *)&attrib.st_mtime));
 
 		if(inPath_filename.compare("FREE") == 0){
 			continue;
