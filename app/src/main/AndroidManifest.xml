@@ -45,6 +45,14 @@
                 <action android:name="com.askey.filemanagerservice.action" />
             </intent-filter>
         </service>
+        <service
+            android:name=".service.AskeySettingsService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.askey.filemanagerservice.action" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

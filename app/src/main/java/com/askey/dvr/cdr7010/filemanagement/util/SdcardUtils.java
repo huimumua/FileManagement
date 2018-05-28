@@ -63,8 +63,8 @@ public class SdcardUtils {
         public void onDiskDestroyed(DiskInfo disk) {
             Logg.d(LOG_TAG, "onDiskDestroyed: " + disk.toString());
             if (disk.isSd()) {
-                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
-                        Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_SUPPORTED);
+//                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+//                        Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_SUPPORTED);
             }
         }
 

@@ -25,8 +25,10 @@ public class BroadcastUtils {
     }
 
     public static void sendMyBroadcast(Context context , String action ,String broadcastStr) {
-        Intent intent = new Intent(action);
+        Intent intent = new Intent();
+        intent.setAction(action);
         intent.putExtra("data", broadcastStr);
+        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
         context.sendBroadcast(intent);
     }
 
