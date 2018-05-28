@@ -1,6 +1,7 @@
+#include <android/log.h>
 #include "sdcardDefragmentAlg.h"
 
-
+#define LOG_TAG "sdcardDefragmentAlg.cpp"
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct file_struct FH_Table[6] = {{"EVENT", ".eve", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // event
@@ -412,6 +413,9 @@ char* FH_Open(char* filename, eFolderType folderType){
 	
 	string first_filename;
 
+	ALOGE("this is jni call1-->FH_Open filename %s",filename);
+	ALOGE("this is jni call1-->FH_Open folderType %d",folderType);
+
 	static char purpose_path[100];
 
 	snprintf(folder_path, sizeof(folder_path), "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
@@ -439,6 +443,8 @@ char* FH_Open(char* filename, eFolderType folderType){
 		return purpose_path;
 	}else{
 		cout << "file was full, please delete some file." << endl;
+
+        ALOGE("this is jni call1-->FH_Open file was full, please delete some file.");
 
 		pthread_mutex_unlock(&g_mutex);
 		return NULL;

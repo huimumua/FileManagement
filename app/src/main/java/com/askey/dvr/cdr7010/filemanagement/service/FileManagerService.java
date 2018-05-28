@@ -129,6 +129,15 @@ public class FileManagerService extends Service {
         }
 
         @Override
+        public boolean FH_Sync() throws RemoteException {
+            Logg.i(LOG_TAG,"====FH_Sync===");
+            if(Const.SDCARD_IS_EXIST){
+                return FileManager.getSingInstance().FH_Sync();
+            }
+            return false;
+        }
+
+        @Override
         public List<SdcardInfo> getSdcardInfo() throws RemoteException {
             Logg.i(LOG_TAG,"====getSdcardInfo===");
             if(Const.SDCARD_IS_EXIST){
