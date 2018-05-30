@@ -1,6 +1,11 @@
 package com.askey.dvr.cdr7010.filemanagement.askeysettings;
 
+import android.content.ContentResolver;
 import android.os.AsyncTask;
+import android.provider.Settings;
+
+import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
+import com.askey.platform.AskeySettings;
 
 /**
  * 项目名称：filemanagement
@@ -13,25 +18,64 @@ import android.os.AsyncTask;
  */
 public class AskeySettingSyncTask extends AsyncTask<Void, Integer, Boolean> {
     private static final String LOG_TAG = AskeySettingSyncTask.class.getSimpleName();
+    private int selectUser;
+    private ContentResolver contentResolver;
+    private String userId;
 
     public AskeySettingSyncTask() {
+        contentResolver = FileManagerApplication.getAppContext().getContentResolver();
+        selectUser = Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_SELECT_USER, 0);
     }
 
 
     @Override
     protected Boolean doInBackground(Void... voids) {
+        if (selectUser == 1) {
+            userId = "user_1";
+        } else if (selectUser == 2) {
+            userId = "user_2";
+        } else if (selectUser == 3) {
+            userId = "user_3";
+        } else if (selectUser == 4) {
+            userId = "user_4";
+        } else if (selectUser == 5) {
+            userId = "user_5";
+        }
+        syncSettings(userId);
         return null;
     }
 
-    @Override
-    protected void onProgressUpdate(Integer... values) {
-        super.onProgressUpdate(values);
-    }
-
-    @Override
-    protected void onPostExecute(Boolean ready) {
-
-        super.onPostExecute(ready);
+    /*
+        这个userId的格式必须为"_user1、2、3、4、5"
+     */
+    private void syncSettings(String userId) {
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.ADAS_FCWS + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.ADAS_FCWS, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.ADAS_LDS + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.ADAS_LDS, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.ADAS_DELAY_START + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.ADAS_DELAY_START, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.ADAS_PEDESTRIAN_COLLISION + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.ADAS_PEDESTRIAN_COLLISION, 0));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_REVERSE_RUN + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_REVERSE_RUN, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_SPEED_LIMIT_AREA + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_SPEED_LIMIT_AREA, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_STOP + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_STOP, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_FREQ_ACCIDENT_AREA + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_FREQ_ACCIDENT_AREA, 0));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_DRIVING_TIME + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_DRIVING_TIME, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_INTENSE_DRIVING + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_INTENSE_DRIVING, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_ABNORMAL_HANDING + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_ABNORMAL_HANDING, 0));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_FLUCTUATION_DETECTION + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_FLUCTUATION_DETECTION, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_OUT_OF_AREA + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_OUT_OF_AREA, 0));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_DRIVING_REPORT + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_DRIVING_REPORT, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_ADVICE + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_ADVICE, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_NOTIFICATION + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_NOTIFICATION, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_WEATHER_INFO + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_WEATHER_INFO, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_ROAD_KILL + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_ROAD_KILL, 1));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.NOTIFY_LOCATION_INFO + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.NOTIFY_LOCATION_INFO, 0));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_NOTIFY_VOL + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_NOTIFY_VOL, 3));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_PLAYBACK_VOL + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_PLAYBACK_VOL, 3));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_MONITOR_BRIGHTNESS + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_MONITOR_BRIGHTNESS, 5));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_TIME + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_TIME, 10));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_ACTION + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_ACTION, 0));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_LANGUAGE + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_LANGUAGE, 0));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS, 0));
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.COMM_EMERGENCY_AUTO + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.COMM_EMERGENCY_AUTO, 0));
     }
 
 }

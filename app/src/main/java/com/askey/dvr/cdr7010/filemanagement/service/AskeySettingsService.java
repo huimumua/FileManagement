@@ -1,12 +1,15 @@
 package com.askey.dvr.cdr7010.filemanagement.service;
 
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 
 import com.askey.dvr.cdr7010.filemanagement.IAskeySettingsAidlInterface;
+import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.askeysettings.AskeySettingInitAsyncTask;
 import com.askey.dvr.cdr7010.filemanagement.askeysettings.AskeySettingSyncTask;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
@@ -37,12 +40,12 @@ public class AskeySettingsService extends Service {
     private class AskeySettingsBinder extends IAskeySettingsAidlInterface.Stub {
         @Override
         public void init(String userId) throws RemoteException {
-            if(null != userId && !"".equals(userId)){
-                Logg.i(LOG_TAG,"init-> userId = "+userId);
-                AskeySettingInitAsyncTask askeySettingInitAsyncTask = new AskeySettingInitAsyncTask(userId);
-                askeySettingInitAsyncTask.execute();
-            }else{
-                Logg.e(LOG_TAG,"init-> userId = "+userId);
+            if (null != userId && !"".equals(userId)) {
+                Logg.i(LOG_TAG, "init-> userId = " + userId);
+                AskeySettingInitAsyncTask askeySettingInitAsyncTask = new AskeySettingInitAsyncTask();
+                askeySettingInitAsyncTask.execute(userId);
+            } else {
+                Logg.e(LOG_TAG, "init-> userId = " + userId);
             }
         }
 
@@ -55,8 +58,12 @@ public class AskeySettingsService extends Service {
 
         @Override
         public void write(String key, String value) throws RemoteException {
-            //这里负责处理jvc后台处理的设置  需要改变 user 和 user*两个地方
-
+            //这里负责处理jvc后台处理的设置  需要改变 user 和 user*两个地方,key应该是带user后缀的那种
+            ContentResolver contentResolver = FileManagerApplication.getAppContext().getContentResolver();
+            //带后缀的
+            Settings.Global.putInt(contentResolver, key, Integer.parseInt(value));
+            //不带后缀的
+            Settings.Global.putInt(contentResolver, key.substring(0, key.lastIndexOf("_")), Integer.parseInt(value));
         }
 
 
@@ -67,7 +74,6 @@ public class AskeySettingsService extends Service {
     public static final String SYSSET_DEFAULT_USER = "SYSSET_default_user";
     public static final String SYSSET_SELECT_USER = "SYSSET_select_user";
     public static final String SYSSET_SELECT_USER_DAYS = "SYSSET_select_user_days";
-
 
 
     public static final String SYSSET_USER_ID = "SYSSET_user_id";
@@ -99,7 +105,6 @@ public class AskeySettingsService extends Service {
     public static final String SYSSET_LANGUAGE = "SYSSET_language";
     public static final String SYSSET_SET_LASTUPDATE_DAYS = "SYSSET_set_lastupdate_days";
     public static final String COMM_EMERGENCY_AUTO = "COMM_emergency_auto";
-
 
 
     public static final String SYSSET_USER_ID_USER1 = "SYSSET_user_id_user1";
@@ -255,7 +260,6 @@ public class AskeySettingsService extends Service {
     public static final String SYSSET_LANGUAGE_USER5 = "SYSSET_language_user5";
     public static final String SYSSET_SET_LASTUPDATE_DAYS_USER5 = "SYSSET_set_lastupdate_days_user5";
     public static final String COMM_EMERGENCY_AUTO_USER5 = "COMM_emergency_auto_user5";
-
 
 
 }
