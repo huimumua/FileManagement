@@ -128,21 +128,20 @@ public class FileManager {
         Logg.i(LOG_TAG,"=====type====="+type+"==filename=="+filename);
         String result= null;
         if(sdcardInit()){
-            result = FH_Open(filename,type);
-            Logg.i(LOG_TAG,"=====FH_Open====="+result);
-            if(result == null || result.equals("")){
-                // 参数错误, sdcard满或者文件夹个数达到最大限制    这里定义后需要发送相应的文件夹满的通知
-                sendLimitFileBroadcastByType(folderType);
-                String oldestPath = FH_FindOldest(type);
-                Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
-                boolean deleteResult = MediaScanner.delete(oldestPath);
-                Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
-                if(deleteResult){
-                    sendUnreachLimitFileBroadcastByType(folderType);
-                    result = FH_Open(filename,type);
+            while(result == null || result.equals("")){
+                result = FH_Open(filename,type);
+                Logg.i(LOG_TAG,"=====FH_Open====="+result);
+                if(result == null || result.equals("")){
+                    sendLimitFileBroadcastByType(folderType);
+                    String oldestPath = FH_FindOldest(type);
+                    Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
+                    boolean deleteResult = MediaScanner.delete(oldestPath);
+                    Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
+                    if(deleteResult){
+                        sendUnreachLimitFileBroadcastByType(folderType);
+                    }
                 }
             }
-
             final String finalResult = result;
             new Thread(new Runnable() {
                 @Override
@@ -155,8 +154,6 @@ public class FileManager {
                     }
                 }
             }).start();
-
-
         }else{
             BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_FAIL);
         }
