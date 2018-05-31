@@ -31,15 +31,15 @@ public class AskeySettingSyncTask extends AsyncTask<Void, Integer, Boolean> {
     @Override
     protected Boolean doInBackground(Void... voids) {
         if (selectUser == 1) {
-            userId = "user_1";
+            userId = "_user1";
         } else if (selectUser == 2) {
-            userId = "user_2";
+            userId = "_user2";
         } else if (selectUser == 3) {
-            userId = "user_3";
+            userId = "_user3";
         } else if (selectUser == 4) {
-            userId = "user_4";
+            userId = "_user4";
         } else if (selectUser == 5) {
-            userId = "user_5";
+            userId = "_user5";
         }
         syncSettings(userId);
         return null;

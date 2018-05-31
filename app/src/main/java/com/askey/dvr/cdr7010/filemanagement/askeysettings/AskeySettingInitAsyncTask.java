@@ -31,21 +31,22 @@ public class AskeySettingInitAsyncTask extends AsyncTask<String, Integer, Boolea
     @Override
     protected Boolean doInBackground(String... strings) {
         userId = strings[0];
-        if (userId.equals(AskeySettings.Global.SYSSET_USER_ID_USER1)) {
-            userId = AskeySettings.Global.SYSSET_USER_ID_USER1;
-            initSettings("_user1");
-        } else if (userId.equals(AskeySettings.Global.SYSSET_USER_ID_USER2)) {
-            userId = AskeySettings.Global.SYSSET_USER_ID_USER2;
-            initSettings("_user2");
-        } else if (userId.equals(AskeySettings.Global.SYSSET_USER_ID_USER3)) {
-            userId = AskeySettings.Global.SYSSET_USER_ID_USER3;
-            initSettings("_user3");
-        } else if (userId.equals(AskeySettings.Global.SYSSET_USER_ID_USER4)) {
-            userId = AskeySettings.Global.SYSSET_USER_ID_USER4;
-            initSettings("_user4");
-        } else if (userId.equals(AskeySettings.Global.SYSSET_USER_ID_USER5)) {
-            userId = AskeySettings.Global.SYSSET_USER_ID_USER5;
-            initSettings("_user5");
+        switch (userId) {
+            case AskeySettings.Global.SYSSET_USER_ID_USER1:
+                initSettings("_user1");
+                break;
+            case AskeySettings.Global.SYSSET_USER_ID_USER2:
+                initSettings("_user2");
+                break;
+            case AskeySettings.Global.SYSSET_USER_ID_USER3:
+                initSettings("_user3");
+                break;
+            case AskeySettings.Global.SYSSET_USER_ID_USER4:
+                initSettings("_user4");
+                break;
+            case AskeySettings.Global.SYSSET_USER_ID_USER5:
+                initSettings("_user5");
+                break;
         }
         return null;
     }
