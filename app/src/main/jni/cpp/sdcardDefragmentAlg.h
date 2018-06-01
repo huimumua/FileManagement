@@ -30,7 +30,6 @@ using namespace std;
 
 enum eFolderType{
 	e_Event=0,
-	e_Manual,
 	e_Normal,
 	e_Parking,
 	e_Picture,

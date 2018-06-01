@@ -114,8 +114,8 @@ public class Const {
     public static final String CMD_SHOW_REACH_SYSTEM_FILE_LIMIT ="show_reach_system_file_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_SYSTEM_FILE_LIMIT = "show_unreach_system_file_limit";//限制解除
 
-    public static final String CMD_SHOW_SDCARD_FULL_LIMIT ="show_sdcard_full_limit";//超过限制
-    public static final String CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT = "show_unreach_sdcard_full_limit";//限制解除
+    public static final String CMD_SHOW_SDCARD_FULL_LIMIT ="show_sdcard_full_limit";//sdcard空间不足
+    public static final String CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT = "show_unreach_sdcard_full_limit";//sdcard空间不足解除
 
     public static final String ACTION_FOTA_STATUS = "action_fota_status";
     public static final String CMD_SHOW_FOTA_FILE_EXIST ="show_fota_file_exist";//升级文件存在
@@ -123,7 +123,7 @@ public class Const {
     public static final String CMD_SHOW_FOTA_COMPLETE= "show_fota_complete";//升级完成
 
     public static final String ACTION_SDCARD_STATUS = "action_sdcard_status";
-    public static final String CMD_SHOW_SDCARD_NOT_SUPPORTED ="show_sdcard_not_supported";//sdcard格式不支持可用
+    public static final String CMD_SHOW_SDCARD_NOT_SUPPORTED ="show_sdcard_not_supported";//sdcard格式不支持需要formate
     public static final String CMD_SHOW_SDCARD_SUPPORTED = "show_sdcard_supported";//sdcard可用
     public static final String CMD_SHOW_SDCARD_INIT_FAIL ="show_sdcard_init_fail";//init 失败
     public static final String CMD_SHOW_SDCARD_INIT_SUCC = "show_sdcard_init_success";//init成功

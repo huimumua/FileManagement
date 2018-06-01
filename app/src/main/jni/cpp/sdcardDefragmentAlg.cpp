@@ -4,12 +4,11 @@
 #define LOG_TAG "sdcardDefragmentAlg.cpp"
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-struct file_struct FH_Table[6] = {{"EVENT", ".eve", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // event
-								{"MANUAL",  ".man", 0.1, 100*MEGABYTE, 0, 0, 0, 0}, // manual
-								{"NORMAL",  ".nor", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // normal
-								{"PARKING", ".par", 0.3, 100*MEGABYTE, 0, 0, 0, 0}, // parking
-								{"PICTURE", ".pic", 0.1, 100*MEGABYTE, 0, 0, 0, 0}, // picture
-								{"SYSTEM",  ".sys", 0.1, 10*MEGABYTE, 0, 0, 0, 0}}; // system
+struct file_struct FH_Table[5] = {{"EVENT", ".eve", 0.2, 200*MEGABYTE, 0, 0, 0, 0}, // event
+								{"NORMAL",  ".nor", 0.4, 200*MEGABYTE, 0, 0, 0, 0}, // normal
+								{"PARKING", ".par", 0.2, 200*MEGABYTE, 0, 0, 0, 0}, // parking
+								{"PICTURE", ".pic", 0.1, 200*MEGABYTE, 0, 0, 0, 0}, // picture
+								{"SYSTEM",  ".sys", 0.1, 200*MEGABYTE, 0, 0, 0, 0}}; // system
 
 char g_mount_path[100] = {0};
 
@@ -351,8 +350,8 @@ bool FH_Init(char* mount_path){
 		}	
 	}
 
-	/* Check if SYSTEM exist SYSTEM/FREE not exist, create FREE*/
-	if(FH_Table[5].exist_flag == 1){
+	/* Check if SYSTEM exist but SYSTEM/FREE not exist, create FREE*/
+	if(FH_Table[4].exist_flag == 1){
 		char free_folder_path[100];
 		sprintf(free_folder_path, "%s/SYSTEM/FREE", mount_path);
 		rc = SDA_file_exists(free_folder_path);
@@ -542,7 +541,7 @@ string FH_FindOldest(eFolderType folderType){
 		snprintf(path_and_filename, sizeof(path_and_filename), "%s/%s", finding_path, inPath_filename.c_str());
 
 		stat(path_and_filename, &attrib);
-		strftime(file_timestramp, sizeof(file_timestramp), "%Y%m%d%H%M%S", localtime((const time_t *)&attrib.st_mtime));
+		strftime(file_timestramp, sizeof(file_timestramp), "%Y%m%d%H%M%S", localtime(&attrib.st_mtime));
 
 		if(inPath_filename.compare("FREE") == 0){
 			continue;
