@@ -110,7 +110,4 @@ public class SdcardUtils {
         storageManager.unregisterListener(mStorageEventListener);
     }
 
-
-
-
 }

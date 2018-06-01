@@ -37,11 +37,11 @@ public class Const {
     public static final String SYSTEM_DIR = "SYSTEM";
 
     public static final int TYPE_EVENT_DIR = 0;
-    public static final int TYPE_MANUAL_DIR = 1;
-    public static final int TYPE_NORMAL_DIR = 2;
-    public static final int TYPE_PARKING_DIR = 3;
-    public static final int TYPE_PICTURE_DIR = 4;
-    public static final int TYPE_SYSTEM_DIR = 5;
+    public static final int TYPE_NORMAL_DIR = 1;
+    public static final int TYPE_PARKING_DIR = 2;
+    public static final int TYPE_PICTURE_DIR = 3;
+    public static final int TYPE_SYSTEM_DIR = 4;
+    public static final int TYPE_MANUAL_DIR = 5;
 
     public static int CURRENT_SDCARD_SIZE = 0; // unit GB
     public static final String SDCARD_SIZE_UNIT ="GB" ;
