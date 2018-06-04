@@ -8,10 +8,6 @@ import com.askey.dvr.cdr7010.filemanagement.util.BroadcastUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
-import com.askey.dvr.cdr7010.filemanagement.util.StringUtil;
-
-import java.io.File;
-import java.io.UnsupportedEncodingException;
 
 /**
  * 项目名称：filemanagement

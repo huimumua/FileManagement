@@ -2,6 +2,7 @@ package com.askey.dvr.cdr7010.filemanagement.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.UserHandle;
 
 import java.util.Date;
 
@@ -21,7 +22,8 @@ public class BroadcastUtils {
 
     public static void sendMyBroadcast(Context context , String action) {
         Intent intent = new Intent(action);
-        context.sendBroadcast(intent);
+//        context.sendBroadcast(intent);
+        context.sendBroadcastAsUser(intent, android.os.Process.myUserHandle());
     }
 
     public static void sendMyBroadcast(Context context , String action ,String broadcastStr) {
@@ -29,7 +31,8 @@ public class BroadcastUtils {
         intent.setAction(action);
         intent.putExtra("data", broadcastStr);
         intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-        context.sendBroadcast(intent);
+//        context.sendBroadcast(intent);
+        context.sendBroadcastAsUser(intent, android.os.Process.myUserHandle());
     }
 
     /**
@@ -39,7 +42,8 @@ public class BroadcastUtils {
         Intent intent = new Intent();
         intent.setAction("com.askey.dvr.cdr7010.dashcam.limit");
         intent.putExtra("cmd_ex", cmd_ex);
-        context.sendBroadcast(intent);
+//        context.sendBroadcast(intent);
+        context.sendBroadcastAsUser(intent, android.os.Process.myUserHandle());
     }
 
 

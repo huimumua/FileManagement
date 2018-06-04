@@ -5,8 +5,8 @@ import android.os.Environment;
 
 /***
  * 常量配置类
- * Company: Chengdu Skysoft Info&Tech Co., Ltd.
- * Copyright ©2014-2018 成都天软信息技术有限公司
+ * @Company: Chengdu Skysoft Info&Tech Co., Ltd.
+ * @Copyright ©2014-2018 成都天软信息技术有限公司
  * @since:JDK1.7
  * @version:1.0
  * @see
