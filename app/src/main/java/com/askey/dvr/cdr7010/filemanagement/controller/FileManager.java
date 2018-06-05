@@ -95,6 +95,8 @@ public class FileManager {
 
     public native String FH_FindOldest(int type);
 
+
+    public native int FH_FolderCanUseFilenumber(int type);
     //
 // not implement
 // Return ture
@@ -159,7 +161,8 @@ public class FileManager {
 
     private void sendLimitFileBroadcastByType(String folderType) {
         String currentAction = "";
-        if(SdcardUtil.checkSDcardIsFull()){
+//        if(SdcardUtil.checkSDcardIsFull()){
+        if(sdcardIsFull(folderType)){
             currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
         }else{
             if(folderType.equals(Const.EVENT_DIR)){
@@ -179,9 +182,20 @@ public class FileManager {
         BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
     }
 
+    private boolean sdcardIsFull(String folderType) {
+        int type = getCurrentType(folderType);
+        int canUseNumb = FH_FolderCanUseFilenumber(type);
+        Logg.i(LOG_TAG,"=FH_FolderCanUseFilenumber=="+canUseNumb);
+        if(canUseNumb==0){
+           return  true;
+        }
+        return false;
+    }
+
     private void sendUnreachLimitFileBroadcastByType(String folderType) {
         String currentAction = "";
-        if(!SdcardUtil.checkSDcardIsFull()){
+//        if(!SdcardUtil.checkSDcardIsFull()){
+        if(!sdcardIsFull(folderType)){
             currentAction = Const.CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT;
             BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
         }

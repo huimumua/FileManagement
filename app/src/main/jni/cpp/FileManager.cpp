@@ -55,6 +55,11 @@ jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,jint type){
     return env->NewStringUTF(result.c_str());
 }
 
+jint FileManager_FH_FolderCanUseFilenumber(JNIEnv *env, jclass object,jint type){
+    return FH_FolderCanUseFilenumber((eFolderType)type);
+}
+
+
 jboolean FileManager_FH_lock(JNIEnv *env, jclass object,jlong file_pointer){
     return (jboolean)FH_lock((FILE*)file_pointer);
 }
@@ -78,7 +83,6 @@ static void FileManager_native_init(JNIEnv *env, jobject thiz) {
     }
 }
 
-
 static const JNINativeMethod gMethods[] = {
         { "init_native", "()V", (void *)FileManager_init_native },
         { "FH_Init", "(Ljava/lang/String;)Z", (void *)FileManager_FH_Init },
@@ -87,6 +91,7 @@ static const JNINativeMethod gMethods[] = {
         { "FH_Sync", "()Z", (void *)FileManager_FH_Sync },
         { "FH_Delete", "(Ljava/lang/String;)Z", (void *)FileManager_FH_Delete },
         { "FH_FindOldest", "(I)Ljava/lang/String;", (void *)FileManager_FH_FindOldest },
+        { "FH_FolderCanUseFilenumber", "(I)I", (void *)FileManager_FH_FolderCanUseFilenumber },
         { "FH_lock", "(J)Z", (void *)FileManager_FH_lock },
         { "FH_unlock", "(J)Z", (void *)FileManager_FH_unlock },
 };
