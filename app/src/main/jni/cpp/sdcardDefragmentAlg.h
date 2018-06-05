@@ -16,6 +16,7 @@
 #include <fcntl.h> // open
 #include <unistd.h> // fsync
 #include <pthread.h> // mutex
+#include <inttypes.h> // PRIu64
 
 #include <algorithm>
 #include <iostream>
@@ -24,6 +25,8 @@
 #include <vector>
 
 using namespace std;
+
+#define NORULESIZE 128
 
 #define KILOBYTE (1 << 10)
 #define MEGABYTE (1 << 20)
@@ -37,8 +40,8 @@ enum eFolderType{
 };
 
 struct file_struct{
-	char* folder_type;
-	char* folder_extension;
+	char folder_type[8];
+	char folder_extension[5];
 	float percent;
 	uint64_t every_block_space;
 	uint64_t avail_space;
@@ -90,6 +93,13 @@ bool FH_Delete(const char* absolute_filepath);
 // Output: oldest_filepath, ""
 // ** Oldest file, means the file which is earliest modification time **
 string FH_FindOldest(eFolderType folderType);
+
+//
+// Purpose: 
+// Input: enum eFolderType
+// Output: The number of videos that can be recorded
+// ** if number < 2, return 0. 
+int FH_FolderCanUseFilenumber(eFolderType folderType);
 
 //
 // not use
