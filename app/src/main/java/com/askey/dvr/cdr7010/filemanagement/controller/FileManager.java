@@ -125,7 +125,7 @@ public class FileManager {
         int type = getCurrentType(folderType);
         Logg.i(LOG_TAG,"=====type====="+type+"==filename=="+filename);
         String result= null;
-        if(sdcardInit()){
+        if(Const.SDCARD_INIT_SUCCESS){
 //            while(result == null || result.equals("")){
                 result = FH_Open(filename,type);
                 Logg.i(LOG_TAG,"=====FH_Open====="+result);
@@ -183,12 +183,17 @@ public class FileManager {
     }
 
     private boolean sdcardIsFull(String folderType) {
-        int type = getCurrentType(folderType);
-        int canUseNumb = FH_FolderCanUseFilenumber(type);
-        Logg.i(LOG_TAG,"=FH_FolderCanUseFilenumber=="+canUseNumb);
-        if(canUseNumb==0){
-           return  true;
+        try {
+            int type = getCurrentType(folderType);
+            int canUseNumb = FH_FolderCanUseFilenumber(type);
+            Logg.i(LOG_TAG,"=FH_FolderCanUseFilenumber=="+canUseNumb);
+            if(canUseNumb==0){
+                return  true;
+            }
+        }catch (Exception e){
+            Logg.e(LOG_TAG,"sdcardIsFull--->Exception--->"+e.getMessage());
         }
+
         return false;
     }
 

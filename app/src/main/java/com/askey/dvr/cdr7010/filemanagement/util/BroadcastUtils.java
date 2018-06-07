@@ -43,6 +43,7 @@ public class BroadcastUtils {
         intent.setAction("com.askey.dvr.cdr7010.dashcam.limit");
         intent.putExtra("cmd_ex", cmd_ex);
 //        context.sendBroadcast(intent);
+        Logg.i(TAG,"===sendLimitBroadcast=="+cmd_ex);
         context.sendBroadcastAsUser(intent, android.os.Process.myUserHandle());
     }
 

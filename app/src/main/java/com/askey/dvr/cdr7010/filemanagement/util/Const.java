@@ -27,6 +27,7 @@ public class Const {
     public static final String FOTA_COMPLETE_FILE_PATH = SDCARD_PATH + BACK_SLASH_1 +FOTA_COMPLETE;
 
     public static boolean SDCARD_IS_EXIST = false;
+    public static boolean SDCARD_INIT_SUCCESS = false;
 
     public static final String DVR_DIR = "DVR";
     public static final String NORMAL_DIR = "NORMAL";
