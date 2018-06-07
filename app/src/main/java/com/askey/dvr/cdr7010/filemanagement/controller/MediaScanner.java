@@ -161,6 +161,9 @@ public class MediaScanner {
             String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
             fileList.add(path);
         }
+        if(cursor != null && !cursor.isClosed()){
+            cursor.close();
+        }
         return fileList;
     }
 
@@ -257,12 +260,14 @@ public class MediaScanner {
             }
 
         }
+        if(cursor != null && !cursor.isClosed()){
+            cursor.close();
+        }
         return fileList;
     }
 
     public static Bitmap getVideoThumbnail(String videoPath, int width, int height, int kind) {
-        Bitmap bitmap =null;
-        bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
+        Bitmap  bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
         bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
         return bitmap;
     }
@@ -302,6 +307,9 @@ public class MediaScanner {
                 fileList.add(path);
             }
         }
+        if(cursor != null && !cursor.isClosed()){
+            cursor.close();
+        }
         return fileList;
     }
 
@@ -340,6 +348,9 @@ public class MediaScanner {
                 }
 
             }
+        }
+        if(cursor != null && !cursor.isClosed()){
+            cursor.close();
         }
         return fileList;
     }

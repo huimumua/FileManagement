@@ -12,7 +12,7 @@ struct file_struct FH_Table[5] = {{"EVENT", ".eve", 0.2, 100*MEGABYTE, 0, 0, 0, 
 
 char g_mount_path[NORULESIZE];
 
-int SDA_get_path_file_num(char* path){
+int SDA_get_recoder_file_num(char* path){
 
 	DIR *dp = opendir(path);
 	struct dirent *dirp;
@@ -27,21 +27,44 @@ int SDA_get_path_file_num(char* path){
 
 		string filterFile = dirp->d_name;
 
+		if(filterFile.length() != 16){
+			continue;
+		}
+
+		// if filename != Month formant
+		if(atoi(filterFile.substr(2,2).c_str()) > 12){
+			continue;
+		}
+
+		// if filename != Days formant
+		if(atoi(filterFile.substr(4,2).c_str()) > 31){
+			continue;
+		}
+
+		// if filename != Hour formant
+		if(atoi(filterFile.substr(6,2).c_str()) > 23){
+			continue;
+		}
+
+		// if filename != Minute formant
+		if(atoi(filterFile.substr(8,2).c_str()) > 59){
+			continue;
+		}
+
+		// if filename != second formant
+		if(atoi(filterFile.substr(10,2).c_str()) > 59){
+			continue;
+		}
+
 		if((filterFile.compare(".") == 0) || (filterFile.compare("..") == 0)){
-			continue;
-		}
-
-		if(filterFile[0] == '.'){
-			continue;
-		}
-
-		if(filterFile.compare("FREE") == 0){
 			continue;
 		}
 		
 		file_number++;
 	}
 	closedir(dp);
+
+	cout << "filenumber= " << file_number << endl;
 
 	return file_number;
 }
@@ -430,7 +453,7 @@ char* FH_Open(char* filename, eFolderType folderType){
 		return purpose_path;
 
 	// if no .eve extension in System/Free & folder file number < Event.file_num
-	}else if(SDA_get_path_file_num(folder_path) < max_file_number){
+	}else if(SDA_get_recoder_file_num(folder_path) < max_file_number){
 		snprintf(purpose_path, NORULESIZE, "%s/%s", folder_path, filename);
 
 		pthread_mutex_unlock(&g_mutex);	
@@ -607,7 +630,6 @@ int FH_FolderCanUseFilenumber(eFolderType folderType){
 
 	char folder_path[NORULESIZE];
 	snprintf(folder_path, NORULESIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
-	cout << "folder_path: " << folder_path << endl;
 
 	DIR *dp = opendir(folder_path);
 	struct dirent *dirp;
