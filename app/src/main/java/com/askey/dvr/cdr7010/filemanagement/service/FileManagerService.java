@@ -61,6 +61,9 @@ public class FileManagerService extends Service {
             String  result = null;
             if(Const.SDCARD_IS_EXIST){
                 result = FileManager.getSingInstance().openSdcard(filename,folderType);
+                Logg.i(LOG_TAG,"====openSdcard==="+result);
+            }else{
+                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
             }
             return result;
         }
@@ -69,24 +72,29 @@ public class FileManagerService extends Service {
         public boolean closeSdcard() throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
                 boolean result = FileManager.getSingInstance().FH_Close();
+                Logg.i(LOG_TAG,"====closeSdcard==="+result);
                 return result;
+            }else{
+                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
             }
             return false;
         }
 
         @Override
         public List<String> getAllFilesByType(String type) throws RemoteException {
-            Logg.i(LOG_TAG,"====getAllFilesByType==="+type);
             if(Const.SDCARD_IS_EXIST){
+                Logg.i(LOG_TAG,"====getAllFilesByType==="+type);
                 return MediaScanner.getAllFileList(type);
+            }else{
+                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
             }
             return null;
         }
 
         @Override
         public List<ItemData> getAllFileByType(String type) throws RemoteException {
-            Logg.i(LOG_TAG,"====getAllFileByType==="+type);
             if(Const.SDCARD_IS_EXIST){
+                Logg.i(LOG_TAG,"====getAllFileByType==="+type);
                 List <ItemData>list =MediaScanner.getAllFiles(type);
                 Logg.i(LOG_TAG,"list.size()==="+list.size());
                 for (ItemData item :list){
@@ -97,6 +105,8 @@ public class FileManagerService extends Service {
                     }
                 }
                 return list;
+            }else{
+                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
             }
             return null;
         }
@@ -106,7 +116,11 @@ public class FileManagerService extends Service {
         public boolean deleteFile(String path) throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
                 //jni提供的删除方法
-                return MediaScanner.deleteFile(path);
+                boolean result = MediaScanner.deleteFile(path);
+                Logg.i(LOG_TAG,"====deleteFile==="+result);
+                return result;
+            }else{
+                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
             }
             return false;
         }
@@ -115,7 +129,11 @@ public class FileManagerService extends Service {
         public boolean deleteFileByGroup(List<String> pathArray) throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
                 //jni提供的删除方法
-                return MediaScanner.deleteFileByGroup(pathArray);
+                boolean result = MediaScanner.deleteFileByGroup(pathArray);
+                Logg.i(LOG_TAG,"====deleteFileByGroup==="+result);
+                return result;
+            }else{
+                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
             }
             return false;
         }
@@ -123,43 +141,58 @@ public class FileManagerService extends Service {
         @Override
         public boolean deleteFileByFolder(String type) throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
-                return MediaScanner.deleteFileByFolder(type);
+                boolean result = MediaScanner.deleteFileByFolder(type);
+                Logg.i(LOG_TAG,"====deleteFileByFolder==="+result);
+                return result;
+            }else{
+                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
             }
             return false;
         }
 
         @Override
         public boolean FH_Sync() throws RemoteException {
-            Logg.i(LOG_TAG,"====FH_Sync===");
             if(Const.SDCARD_IS_EXIST){
-                return FileManager.getSingInstance().FH_Sync();
+                boolean result = FileManager.getSingInstance().FH_Sync();
+                Logg.i(LOG_TAG,"====FH_Sync==="+result);
+                return result;
+            }else{
+                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
             }
             return false;
         }
 
         @Override
         public List<SdcardInfo> getSdcardInfo() throws RemoteException {
-            Logg.i(LOG_TAG,"====getSdcardInfo===");
             if(Const.SDCARD_IS_EXIST){
+                Logg.i(LOG_TAG,"====getSdcardInfo===");
                 return SdcardManager.getSingInstance().getSdcardInfo();
+            }else{
+                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
             }
             return null;
         }
 
         @Override
         public boolean checkNewSystemVersion() throws RemoteException {
-            Logg.i(LOG_TAG,"====checkNewSystemVersion===");
             if(Const.SDCARD_IS_EXIST){
-                return FileUtils.fileIsExists(Const.FOTA_PATH);
+                boolean result = FileUtils.fileIsExists(Const.FOTA_PATH);
+                Logg.i(LOG_TAG,"====checkNewSystemVersion==="+result);
+                return result;
+            }else{
+                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
             }
             return false;
         }
 
         @Override
         public boolean checkSdcardAvailable() throws RemoteException {
-            Logg.i(LOG_TAG,"====checkSdcardAvailable===");
             if(Const.SDCARD_IS_EXIST){
-                return SdcardUtils.sdcardAvailable();
+                Boolean result = SdcardUtils.sdcardAvailable();
+                Logg.i(LOG_TAG,"====checkSdcardAvailable==="+result);
+                return result;
+            }else{
+                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
             }
             return false;
         }

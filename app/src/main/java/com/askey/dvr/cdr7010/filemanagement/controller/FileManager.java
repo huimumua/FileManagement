@@ -125,7 +125,8 @@ public class FileManager {
         int type = getCurrentType(folderType);
         Logg.i(LOG_TAG,"=====type====="+type+"==filename=="+filename);
         String result= null;
-        if(Const.SDCARD_INIT_SUCCESS){
+//        if(sdcardInit()){
+            if(Const.SDCARD_INIT_SUCCESS){
 //            while(result == null || result.equals("")){
                 result = FH_Open(filename,type);
                 Logg.i(LOG_TAG,"=====FH_Open====="+result);
