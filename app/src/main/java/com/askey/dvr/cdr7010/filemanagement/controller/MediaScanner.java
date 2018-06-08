@@ -50,7 +50,8 @@ public class MediaScanner {
                 Uri uri = Uri.fromFile(file);
 //        Uri uri = FileProvider.getUriForFile(ctx, BuildConfig.APPLICATION_ID, file);
                 scanIntent.setData(uri);
-                ctx.sendBroadcast(scanIntent);
+//                ctx.sendBroadcast(scanIntent);
+                ctx.sendBroadcastAsUser(scanIntent, android.os.Process.myUserHandle());
             }
         }catch (Exception e){
             Logg.e(TAG,"scanFileAsync->Exception="+e.getMessage());
@@ -71,7 +72,8 @@ public class MediaScanner {
                 Uri uri = Uri.fromFile(file);
 //        Uri uri = FileProvider.getUriForFile(ctx, BuildConfig.APPLICATION_ID, file);
                 scanIntent.setData(uri);
-                ctx.sendBroadcast(scanIntent);
+//                ctx.sendBroadcast(scanIntent);
+                ctx.sendBroadcastAsUser(scanIntent, android.os.Process.myUserHandle());
             }
         }catch (Exception e){
             Logg.e(TAG,"scanDirAsync->Exception="+e.getMessage());

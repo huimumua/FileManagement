@@ -34,8 +34,12 @@ public class SdcardUtils {
 
     public static boolean sdcardAvailable() {
         // sdcard 存在  格式正确  且init成功才算可用
-        if(isSDCardValid(FileManagerApplication.getAppContext())){
-            return FileManager.getSingInstance().sdcardInit();
+        if(Const.SDCARD_IS_EXIST){
+            if(isSDCardValid(FileManagerApplication.getAppContext())){
+                if(Const.SDCARD_INIT_SUCCESS){
+                    return true;
+                }
+            }
         }
         return false;
     }

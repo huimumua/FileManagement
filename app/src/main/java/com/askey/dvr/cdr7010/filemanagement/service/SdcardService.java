@@ -41,6 +41,7 @@ public class SdcardService extends Service {
         sdCardReceiver =new SdCardReceiver();
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_MEDIA_MOUNTED);// sd卡被插入，且已经挂载
         intentFilter.setPriority(1000);// 设置最高优先级
+        intentFilter.addAction(Intent.ACTION_MEDIA_EJECT);//已拔掉外部大容量储存设备发出的广播（比如SD卡，或移动硬盘
         intentFilter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);// sd卡存在，但还没有挂载
         intentFilter.addAction(Intent.ACTION_MEDIA_REMOVED);// sd卡被移除
         intentFilter.addAction(Intent.ACTION_MEDIA_SHARED);// sd卡作为 USB大容量存储被共享，挂载被解除

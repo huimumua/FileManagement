@@ -110,14 +110,12 @@ public class FileManager {
     public native boolean FH_unlock(long filePointer);
 
     public boolean sdcardInit() {
-        Const.SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
-        boolean result = FH_Init(Const.SDCARD_PATH);
-/*        if(!result){
-            boolean ret = MediaScanner.deleteDirectory(Const.SDCARD_PATH);
-            if(ret){
-                result = FH_Init(Const.SDCARD_PATH);
-            }
-        }*/
+        boolean result = false;
+        if(Const.SDCARD_IS_EXIST){
+            Const.SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
+            result = FH_Init(Const.SDCARD_PATH);
+            Logg.i(LOG_TAG,"==sdcardInit=FH_Init="+result);
+        }
         return result;
     }
 
