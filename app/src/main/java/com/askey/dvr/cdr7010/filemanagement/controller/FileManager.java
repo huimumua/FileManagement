@@ -137,6 +137,7 @@ public class FileManager {
                     boolean deleteResult = MediaScanner.delete(oldestPath);
                     Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
                     if(deleteResult){
+                        result = FH_Open(filename,type);
 //                        sendUnreachLimitFileBroadcastByType(folderType);
                     }
                 }
