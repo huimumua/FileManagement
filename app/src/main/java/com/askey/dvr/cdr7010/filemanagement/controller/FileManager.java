@@ -124,22 +124,23 @@ public class FileManager {
         Logg.i(LOG_TAG,"=====type====="+type+"==filename=="+filename);
         String result= null;
 //        if(sdcardInit()){
-            if(Const.SDCARD_INIT_SUCCESS){
-//            while(result == null || result.equals("")){
+        if(Const.SDCARD_INIT_SUCCESS){
+            while(result == null || result.equals("")){
                 result = FH_Open(filename,type);
                 Logg.i(LOG_TAG,"=====FH_Open====="+result);
                 if(result == null || result.equals("")){
                     sendLimitFileBroadcastByType(folderType);
                     String oldestPath = FH_FindOldest(type);
-                    Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
-                    boolean deleteResult = MediaScanner.delete(oldestPath);
-                    Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
-                    if(deleteResult){
-                        result = FH_Open(filename,type);
+                    if(null != oldestPath && !"".equals(oldestPath)){
+                        Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
+                        boolean deleteResult = MediaScanner.delete(oldestPath);
+                        Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
+                        if(deleteResult){
 //                        sendUnreachLimitFileBroadcastByType(folderType);
+                        }
                     }
                 }
-//            }
+            }
             final String finalResult = result;
             new Thread(new Runnable() {
                 @Override
