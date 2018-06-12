@@ -16,7 +16,6 @@ public class SdcardUtils {
     private static final String LOG_TAG = SdcardUtils.class.getSimpleName();
     private static Context mContext;
 
-
     public static boolean isSDCardValid(Context context) {
         AskeyStorageManager storageManager =AskeyStorageManager.getInstance(context);
         for (DiskInfo disk :storageManager.getDisks()) {
@@ -38,7 +37,9 @@ public class SdcardUtils {
             if(isSDCardValid(FileManagerApplication.getAppContext())){
                 if(Const.SDCARD_INIT_SUCCESS){
                     return true;
-                }
+                }/*else{
+                    return FileManager.getSingInstance().sdcardInit();
+                }*/
             }
         }
         return false;
@@ -47,16 +48,17 @@ public class SdcardUtils {
     private static StorageEventListener mStorageEventListener = new StorageEventListener() {
         @Override
         public void onDiskScanned(DiskInfo disk, int volumeCount) {
+            boolean isSd = disk.isSd();
+            long diskSize = disk.size;
             Logg.i(LOG_TAG, "onDiskScanned: "+ disk.toString());
             Logg.i(LOG_TAG, "disk.isAdoptable()=" + disk.isAdoptable());
-            Logg.i(LOG_TAG, "onDiskScanned: volumeCount=" + volumeCount);
-            if (disk.isSd()) {
-                Logg.d(LOG_TAG, "onDiskScanned: sdcard disk, volumeCount = " + volumeCount + ", size = " + disk.size);
-                if (volumeCount == 0 && disk.size > 0) {
+            Logg.d(LOG_TAG, "onDiskScanned: sdcard disk, volumeCount = " + volumeCount + ", size = " + diskSize);
+            if (isSd) {
+                if (volumeCount == 0 && diskSize > 0) {
                     // format
                     BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                             Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
-                }else if(volumeCount == 0 && disk.size == 0){
+                }else if(volumeCount == 0 && diskSize == 0){
                     BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                             Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_UNRECOGNIZABLE);
                 }

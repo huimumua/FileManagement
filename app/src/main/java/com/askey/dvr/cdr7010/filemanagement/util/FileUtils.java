@@ -17,15 +17,17 @@ public class FileUtils {
 
     public static  boolean fileIsExists(String path){
         try{
-            File file=new File(path);
-            if(!file.exists()){
-                return false;
+            if(Const.SDCARD_IS_EXIST){
+                File file=new File(path);
+                if(file.exists()){
+                    return true;
+                }
             }
         }catch (Exception e) {
             // TODO: handle exception
             return false;
         }
-        return true;
+        return false;
     }
 
 
