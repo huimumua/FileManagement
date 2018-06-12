@@ -361,11 +361,32 @@ bool FH_Init(char* mount_path){
 		if(FH_Table[i].exist_flag == 0){
 			snprintf(create_folder_path, NORULESIZE, "%s/%s", mount_path, FH_Table[i].folder_type);
 			mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
-			memset(create_folder_path, 0, sizeof(create_folder_path));
+			memset(create_folder_path, 0, NORULESIZE);
 
-			if(FH_Table[i].folder_type == "SYSTEM"){
+			if(strcmp(FH_Table[i].folder_type, "SYSTEM") == 0){
 				snprintf(create_folder_path, NORULESIZE, "%s/%s/FREE", mount_path, FH_Table[i].folder_type);
 				mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+				memset(create_folder_path, 0, NORULESIZE);
+
+				snprintf(create_folder_path, NORULESIZE, "%s/%s/NMEA", mount_path, FH_Table[i].folder_type);
+				mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+				memset(create_folder_path, 0, NORULESIZE);
+
+				snprintf(create_folder_path, NORULESIZE, "%s/%s/NMEA/NORMAL", mount_path, FH_Table[i].folder_type);
+				mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+				memset(create_folder_path, 0, NORULESIZE);
+
+				snprintf(create_folder_path, NORULESIZE, "%s/%s/NMEA/EVENT", mount_path, FH_Table[i].folder_type);
+				mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+				memset(create_folder_path, 0, NORULESIZE);
+
+				snprintf(create_folder_path, NORULESIZE, "%s/%s/NMEA/MANUAL", mount_path, FH_Table[i].folder_type);
+				mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+				memset(create_folder_path, 0, NORULESIZE);
+
+				snprintf(create_folder_path, NORULESIZE, "%s/%s/NMEA/PARKING", mount_path, FH_Table[i].folder_type);
+				mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+				memset(create_folder_path, 0, NORULESIZE);
 			}	
 		}	
 	}
@@ -656,7 +677,12 @@ int FH_FolderCanUseFilenumber(eFolderType folderType){
 		using_file_size = using_file_size + attrib.st_size;
 	}
 
+	ALOGE("this is jni call1-->FH_FolderCanUseFilenumber====folderType== %d",folderType);
+	ALOGE("this is jni call1-->FH_FolderCanUseFilenumber====FH_Table[folderType].avail_space== %d",FH_Table[folderType].avail_space);
+	ALOGE("this is jni call1-->FH_FolderCanUseFilenumber====using_file_size== %d",using_file_size);
+	ALOGE("this is jni call1-->FH_FolderCanUseFilenumber====FH_Table[folderType].every_block_space== %d",FH_Table[folderType].every_block_space);
 	int can_use_num = (FH_Table[folderType].avail_space - using_file_size)/FH_Table[folderType].every_block_space;
+	ALOGE("this is jni call1-->FH_FolderCanUseFilenumber %d",can_use_num);
 	if(can_use_num < 2){
 		pthread_mutex_unlock(&g_mutex);
 		return 0;

@@ -56,9 +56,11 @@ jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,jint type){
 }
 
 jint FileManager_FH_FolderCanUseFilenumber(JNIEnv *env, jclass object,jint type){
-    return FH_FolderCanUseFilenumber((eFolderType)type);
+    jint  numb = FH_FolderCanUseFilenumber((eFolderType)type);
+    ALOGE("this is jni call1-->FileManager_FH_FolderCanUseFilenumber= %d" , numb);
+//    return FH_FolderCanUseFilenumber((eFolderType)type);
+    return numb;
 }
-
 
 jboolean FileManager_FH_lock(JNIEnv *env, jclass object,jlong file_pointer){
     return (jboolean)FH_lock((FILE*)file_pointer);
