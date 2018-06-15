@@ -34,7 +34,7 @@ public class SdcardService extends Service {
         // 在IntentFilter中选择你要监听的行为
         SdcardUtils.registerStorageEventListener(FileManagerApplication.getAppContext());
         registerReceiver();
-        Logg.i(TAG, "sd status");
+
     }
 
     private void registerReceiver() {
@@ -53,6 +53,7 @@ public class SdcardService extends Service {
     }
 
     public void onDestroy() {
+        Logg.i(TAG, "==onDestroy==");
         SdcardUtils.unRegisterStorageEventListener(FileManagerApplication.getAppContext());
         unregisterReceiver(sdCardReceiver);//取消注册
     };
