@@ -118,6 +118,10 @@ public class FileManagerService extends Service {
                 //jni提供的删除方法
                 boolean result = MediaScanner.deleteFile(path);
                 Logg.i(LOG_TAG,"====deleteFile==="+result);
+                if(result){
+                    String type = FileManager.getSingInstance().getTypebyPath(path);
+                    FileManager.getSingInstance().sendUnreachLimitFileBroadcastByType(type);
+                }
                 return result;
             }else{
                 Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
@@ -131,6 +135,10 @@ public class FileManagerService extends Service {
                 //jni提供的删除方法
                 boolean result = MediaScanner.deleteFileByGroup(pathArray);
                 Logg.i(LOG_TAG,"====deleteFileByGroup==="+result);
+                if(result){
+                    String type = FileManager.getSingInstance().getTypebyPath(pathArray.get(0));
+                    FileManager.getSingInstance().sendUnreachLimitFileBroadcastByType(type);
+                }
                 return result;
             }else{
                 Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
@@ -143,6 +151,9 @@ public class FileManagerService extends Service {
             if(Const.SDCARD_IS_EXIST){
                 boolean result = MediaScanner.deleteFileByFolder(type);
                 Logg.i(LOG_TAG,"====deleteFileByFolder==="+result);
+                if(result){
+                    FileManager.getSingInstance().sendUnreachLimitFileBroadcastByType(type);
+                }
                 return result;
             }else{
                 Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);

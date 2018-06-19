@@ -102,6 +102,7 @@ public class Const {
     public static final String ACTION_SDCARD_PICTURE_MAX_FILE = "action_sdcard_picture_max_file";
     public static final String ACTION_SDCARD_FULL_MAX_FILE = "action_sdcard_full";
 
+    public static boolean IS_SDCARD_FOLDER_LIMIT =false;
     public static final String CMD_SHOW_REACH_EVENT_FILE_LIMIT ="show_reach_event_file_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_EVENT_FILE_LIMIT = "show_unreach_event_file_limit";//限制解除
     public static final String CMD_SHOW_REACH_PARKING_FILE_LIMIT = "show_reach_parking_file_limit";//超过限制
@@ -115,6 +116,7 @@ public class Const {
     public static final String CMD_SHOW_REACH_SYSTEM_FILE_LIMIT ="show_reach_system_file_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_SYSTEM_FILE_LIMIT = "show_unreach_system_file_limit";//限制解除
 
+    public static boolean IS_SDCARD_FULL_LIMIT =false;
     public static final String CMD_SHOW_SDCARD_FULL_LIMIT ="show_sdcard_full_limit";//sdcard空间不足
     public static final String CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT = "show_unreach_sdcard_full_limit";//sdcard空间不足解除
 

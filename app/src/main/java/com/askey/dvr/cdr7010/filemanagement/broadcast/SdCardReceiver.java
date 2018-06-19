@@ -34,10 +34,12 @@ public class SdCardReceiver extends BroadcastReceiver {
                 || action.equals(Intent.ACTION_MEDIA_UNMOUNTED)
                 || action.equals(Intent.ACTION_MEDIA_BAD_REMOVAL)) {
             Const.SDCARD_IS_EXIST = false;
-
+            Const.IS_SDCARD_FOLDER_LIMIT = false;
         } else if ( action.equals(Intent.ACTION_MEDIA_EJECT)) {
             Const.SDCARD_IS_EXIST = false;
             Const.SDCARD_INIT_SUCCESS=false;
+            Const.IS_SDCARD_FULL_LIMIT = false;
+            Const.IS_SDCARD_FOLDER_LIMIT = false;
             SDCardListener.getSingInstance(Const.SDCARD_PATH).stopWatche();
             BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                     Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_NOT_EXIST);
@@ -88,6 +90,17 @@ public class SdCardReceiver extends BroadcastReceiver {
                             Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_COMPLETE);
                     MediaScanner.delete(Const.FOTA_COMPLETE_FILE_PATH);
                 }
+
+                if(SdcardUtil.checkSDcardIsFull()){
+//        if(sdcardIsFull(folderType)){
+                    Const.IS_SDCARD_FULL_LIMIT = true;
+                    String currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
+                    BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                }/*else{
+                    String currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
+                    BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                }*/
+
 
             }
         }).start();

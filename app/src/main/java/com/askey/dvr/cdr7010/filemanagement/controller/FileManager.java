@@ -162,8 +162,9 @@ public class FileManager {
 
     private void sendLimitFileBroadcastByType(String folderType) {
         String currentAction = "";
-        if(SdcardUtil.checkSDcardIsFull()){
+        if(Const.IS_SDCARD_FULL_LIMIT || SdcardUtil.checkSDcardIsFull()){
 //        if(sdcardIsFull(folderType)){
+            Const.IS_SDCARD_FULL_LIMIT = true;
             currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
         }else{
             if(folderType.equals(Const.EVENT_DIR)){
@@ -179,6 +180,7 @@ public class FileManager {
             }else if(folderType.equals(Const.SYSTEM_DIR)){
                 currentAction = Const.CMD_SHOW_REACH_SYSTEM_FILE_LIMIT;
             }
+            Const.IS_SDCARD_FOLDER_LIMIT = true;
         }
         BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
     }
@@ -198,27 +200,31 @@ public class FileManager {
         return false;
     }
 
-    private void sendUnreachLimitFileBroadcastByType(String folderType) {
-        String currentAction = "";
-        if(!SdcardUtil.checkSDcardIsFull()){
+    public void sendUnreachLimitFileBroadcastByType(String folderType) {
+            String currentAction = "";
+            if(Const.IS_SDCARD_FULL_LIMIT && !SdcardUtil.checkSDcardIsFull()){
 //        if(!sdcardIsFull(folderType)){
-            currentAction = Const.CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT;
-            BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
-        }
-        if(folderType.equals(Const.EVENT_DIR)){
-            currentAction = Const.CMD_SHOW_UNREACH_EVENT_FILE_LIMIT;
-        }else if(folderType.equals(Const.MANUAL_DIR)){
-            currentAction = Const.CMD_SHOW_UNREACH_MANUAL_FILE_LIMIT;
-        }else if(folderType.equals(Const.NORMAL_DIR)){
-            currentAction = Const.CMD_SHOW_UNREACH_NORMAL_FILE_LIMIT;
-        }else if(folderType.equals(Const.PARKING_DIR)){
-            currentAction = Const.CMD_SHOW_UNREACH_PARKING_FILE_LIMIT;
-        }else if(folderType.equals(Const.PICTURE_DIR)){
-            currentAction = Const.CMD_SHOW_UNREACH_PICTURE_FILE_LIMIT;
-        }else if(folderType.equals(Const.SYSTEM_DIR)){
-            currentAction = Const.CMD_SHOW_UNREACH_SYSTEM_FILE_LIMIT;
-        }
-        BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+                Const.IS_SDCARD_FULL_LIMIT = false;
+                currentAction = Const.CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT;
+                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+            }
+            if(Const.IS_SDCARD_FOLDER_LIMIT){
+                if(folderType.equals(Const.EVENT_DIR)){
+                    currentAction = Const.CMD_SHOW_UNREACH_EVENT_FILE_LIMIT;
+                }else if(folderType.equals(Const.MANUAL_DIR)){
+                    currentAction = Const.CMD_SHOW_UNREACH_MANUAL_FILE_LIMIT;
+                }else if(folderType.equals(Const.NORMAL_DIR)){
+                    currentAction = Const.CMD_SHOW_UNREACH_NORMAL_FILE_LIMIT;
+                }else if(folderType.equals(Const.PARKING_DIR)){
+                    currentAction = Const.CMD_SHOW_UNREACH_PARKING_FILE_LIMIT;
+                }else if(folderType.equals(Const.PICTURE_DIR)){
+                    currentAction = Const.CMD_SHOW_UNREACH_PICTURE_FILE_LIMIT;
+                }else if(folderType.equals(Const.SYSTEM_DIR)){
+                    currentAction = Const.CMD_SHOW_UNREACH_SYSTEM_FILE_LIMIT;
+                }
+                Const.IS_SDCARD_FOLDER_LIMIT = false;
+                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+            }
     }
 
     private int getCurrentType(String folderType) {
@@ -240,4 +246,21 @@ public class FileManager {
     }
 
 
+    public String getTypebyPath(String path) {
+        String type =Const.NORMAL_DIR;
+        if(path.contains(Const.EVENT_DIR)){
+            type = Const.EVENT_DIR;
+        }else if(path.contains(Const.MANUAL_DIR)){
+            type = Const.MANUAL_DIR;
+        }else if(path.contains(Const.NORMAL_DIR)){
+            type = Const.NORMAL_DIR;
+        }else if(path.contains(Const.PARKING_DIR)){
+            type = Const.PARKING_DIR;
+        }else if(path.contains(Const.PICTURE_DIR)){
+            type = Const.PICTURE_DIR;
+        }else if(path.contains(Const.SYSTEM_DIR)){
+            type = Const.SYSTEM_DIR;
+        }
+        return type;
+    }
 }
