@@ -10,7 +10,7 @@ android {
 
     signingConfigs {
         singnedconfig {
-            keyAlias 'kenwood'
+            keyAlias 'android'
             keyPassword 'android'
             storeFile file('../tools/debug.keystore')
             storePassword 'android'
