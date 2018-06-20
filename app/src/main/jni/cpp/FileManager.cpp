@@ -56,8 +56,8 @@ jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,jint type){
 }
 
 jint FileManager_FH_FolderCanUseFilenumber(JNIEnv *env, jclass object,jint type){
-    jint  numb = FH_FolderCanUseFilenumber((eFolderType)type);
-    ALOGE("this is jni call1-->FileManager_FH_FolderCanUseFilenumber= %d" , numb);
+    jint  numb = FH_CanUseFilenumber((eFolderType)type);
+    ALOGE("this is jni call1-->FileManager_FH_CanUseFilenumber= %d" , numb);
 //    return FH_FolderCanUseFilenumber((eFolderType)type);
     return numb;
 }

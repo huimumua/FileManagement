@@ -26,7 +26,10 @@
 
 using namespace std;
 
-#define NORULESIZE 128
+#define TABLE_SIZE 8
+#define MAINFOLDER_SIZE  5
+
+#define NORULE_SIZE 128
 
 #define KILOBYTE (1 << 10)
 #define MEGABYTE (1 << 20)
@@ -36,12 +39,15 @@ enum eFolderType{
 	e_Normal,
 	e_Parking,
 	e_Picture,
-	e_System
+	e_System,
+	e_NMEA_EVENT,
+	e_NMEA_NORMAL,
+	e_NMEA_PARKING
 };
 
 struct file_struct{
-	char folder_type[8];
-	char folder_extension[5];
+	char folder_type[20];
+	char folder_extension[6];
 	float percent;
 	uint64_t every_block_space;
 	uint64_t avail_space;
@@ -99,7 +105,7 @@ string FH_FindOldest(eFolderType folderType);
 // Input: enum eFolderType
 // Output: The number of videos that can be recorded
 // ** if number < 2, return 0. 
-int FH_FolderCanUseFilenumber(eFolderType folderType);
+int FH_CanUseFilenumber(eFolderType folderType);
 
 //
 // not use
