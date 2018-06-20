@@ -162,8 +162,7 @@ public class FileManager {
 
     private void sendLimitFileBroadcastByType(String folderType) {
         String currentAction = "";
-        if(Const.IS_SDCARD_FULL_LIMIT || SdcardUtil.checkSDcardIsFull()){
-//        if(sdcardIsFull(folderType)){
+        if(Const.IS_SDCARD_FULL_LIMIT || /*sdcardIsFull(folderType)*/SdcardUtil.checkSDcardIsFull()){
             Const.IS_SDCARD_FULL_LIMIT = true;
             currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
         }else{
@@ -185,11 +184,11 @@ public class FileManager {
         BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
     }
 
-    private boolean sdcardIsFull(String folderType) {
+    public boolean sdcardIsFull(String folderType) {
         try {
             int type = getCurrentType(folderType);
             int canUseNumb = FH_FolderCanUseFilenumber(type);
-            Logg.i(LOG_TAG,"=FH_FolderCanUseFilenumber=="+canUseNumb);
+            Logg.i(LOG_TAG,"=FH_CanUseFilenumber=="+canUseNumb);
             if(canUseNumb==0){
                 return  true;
             }
@@ -202,8 +201,7 @@ public class FileManager {
 
     public void sendUnreachLimitFileBroadcastByType(String folderType) {
             String currentAction = "";
-            if(Const.IS_SDCARD_FULL_LIMIT && !SdcardUtil.checkSDcardIsFull()){
-//        if(!sdcardIsFull(folderType)){
+            if(Const.IS_SDCARD_FULL_LIMIT && !/*sdcardIsFull(folderType)*/SdcardUtil.checkSDcardIsFull()){
                 Const.IS_SDCARD_FULL_LIMIT = false;
                 currentAction = Const.CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT;
                 BroadcastUtils.sendLimitBroadcast(mContext,currentAction);

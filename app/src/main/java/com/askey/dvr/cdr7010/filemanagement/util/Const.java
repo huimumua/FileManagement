@@ -20,16 +20,12 @@ public class Const {
     public static final boolean DEBUG = true;
 
     public static  String SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
-    public static final String FOTA_NAME = "update.zip";
-    public static final String FOTA_COMPLETE = "complete.text";
+
     public static final String BACK_SLASH_1= "/";
-    public static final String FOTA_PATH = SDCARD_PATH + BACK_SLASH_1 +FOTA_NAME;
-    public static final String FOTA_COMPLETE_FILE_PATH = SDCARD_PATH + BACK_SLASH_1 +FOTA_COMPLETE;
 
     public static boolean SDCARD_IS_EXIST = false;
     public static boolean SDCARD_INIT_SUCCESS = false;
 
-    public static final String DVR_DIR = "DVR";
     public static final String NORMAL_DIR = "NORMAL";
     public static final String EVENT_DIR = "EVENT";
     public static final String PARKING_DIR = "PARKING";
@@ -96,12 +92,6 @@ public class Const {
     public static final int SDCARD_MAX_PARKING_FILE_SIZE_512Gb = 1000; // unit 个文件
     public static final int SDCARD_MAX_PICTURE_FILE_SIZE_512Gb = 1000; // unit 个文件
 
-    public static final String ACTION_SDCARD_NORMAL_MAX_FILE = "action_sdcard_normal_max_file";
-    public static final String ACTION_SDCARD_EVENT_MAX_FILE = "action_sdcard_event_max_file";
-    public static final String ACTION_SDCARD_PARKING_MAX_FILE = "action_sdcard_parking_max_file";
-    public static final String ACTION_SDCARD_PICTURE_MAX_FILE = "action_sdcard_picture_max_file";
-    public static final String ACTION_SDCARD_FULL_MAX_FILE = "action_sdcard_full";
-
     public static boolean IS_SDCARD_FOLDER_LIMIT =false;
     public static final String CMD_SHOW_REACH_EVENT_FILE_LIMIT ="show_reach_event_file_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_EVENT_FILE_LIMIT = "show_unreach_event_file_limit";//限制解除
@@ -120,14 +110,8 @@ public class Const {
     public static final String CMD_SHOW_SDCARD_FULL_LIMIT ="show_sdcard_full_limit";//sdcard空间不足
     public static final String CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT = "show_unreach_sdcard_full_limit";//sdcard空间不足解除
 
-    public static final String ACTION_FOTA_STATUS = "action_fota_status";
-    public static final String CMD_SHOW_FOTA_FILE_EXIST ="show_fota_file_exist";//升级文件存在
-    public static final String CMD_SHOW_FOTA_FILE_NOT_EXIST = "show_fota_file_not_exist";//升级文件不存在
-    public static final String CMD_SHOW_FOTA_COMPLETE= "show_fota_complete";//升级完成
-
     public static final String ACTION_SDCARD_STATUS = "action_sdcard_status";
     public static final String CMD_SHOW_SDCARD_NOT_SUPPORTED ="show_sdcard_not_supported";//sdcard格式不支持需要formate
-    public static final String CMD_SHOW_SDCARD_SUPPORTED = "show_sdcard_supported";//sdcard可用
     public static final String CMD_SHOW_SDCARD_INIT_FAIL ="show_sdcard_init_fail";//init 失败
     public static final String CMD_SHOW_SDCARD_INIT_SUCC = "show_sdcard_init_success";//init成功
     public static final String CMD_SHOW_SDCARD_UNRECOGNIZABLE ="show_sdcard_unrecognizable";//不被识别

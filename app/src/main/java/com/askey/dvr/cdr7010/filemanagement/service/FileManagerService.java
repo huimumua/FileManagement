@@ -44,11 +44,6 @@ public class FileManagerService extends Service {
             Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(FileManagerApplication.getAppContext());
             Const.SDCARD_INIT_SUCCESS = FileManager.getSingInstance().sdcardInit();
             Logg.i(LOG_TAG,"=sdcardInit=result=="+Const.SDCARD_INIT_SUCCESS);
-            //检测升级文件是否存在
-            if(FileUtils.fileIsExists(Const.FOTA_PATH)){
-                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
-                        Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_EXIST);
-            }
         }
 
         return new MyBinder();
@@ -186,13 +181,7 @@ public class FileManagerService extends Service {
 
         @Override
         public boolean checkNewSystemVersion() throws RemoteException {
-            if(Const.SDCARD_IS_EXIST){
-                boolean result = FileUtils.fileIsExists(Const.FOTA_PATH);
-                Logg.i(LOG_TAG,"====checkNewSystemVersion==="+result);
-                return result;
-            }else{
-                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
-            }
+
             return false;
         }
 

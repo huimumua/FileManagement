@@ -56,10 +56,6 @@ public class SDCardListener extends FileObserver {
         switch(event) {
             case FileObserver.DELETE:
                 //删除文件
-                if(path.equals(Const.FOTA_NAME)){
-                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
-                            Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_NOT_EXIST);
-                }
                 Logg.d(LOG_TAG, "==DELETE==path:"+ path);
                 break;
             case FileObserver.DELETE_SELF:
@@ -68,17 +64,12 @@ public class SDCardListener extends FileObserver {
                 break;
             case FileObserver.CREATE:
                 //创建文件
-                if(path.equals(Const.FOTA_NAME)){
 
-                }
                 Logg.d(LOG_TAG, "==CREATE===path:"+ path);
                 break;
             case FileObserver.CLOSE_WRITE:
                 //写文件已经成功
-                if(path.equals(Const.FOTA_NAME)){
-                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
-                            Const.ACTION_FOTA_STATUS,Const.CMD_SHOW_FOTA_FILE_EXIST);
-                }
+
                 Logg.d(LOG_TAG, "==CLOSE_WRITE===path:"+ path);
                 break;
             case FileObserver.CLOSE_NOWRITE:
