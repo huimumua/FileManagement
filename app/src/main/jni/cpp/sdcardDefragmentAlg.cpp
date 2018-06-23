@@ -5,10 +5,10 @@
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // event
-								{"NORMAL",  ".nor", 0.4, 100*MEGABYTE, 0, 0, 0, 0}, // normal
-								{"PARKING", ".par", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // parking
-								{"PICTURE", ".pic", 0.1, 100*MEGABYTE, 0, 0, 0, 0}, // picture
-								{"SYSTEM",  ".sys", 0.1, 100*MEGABYTE, 0, 0, 0, 0}, // system
+											{"NORMAL",  ".nor", 0.4, 100*MEGABYTE, 0, 0, 0, 0}, // normal
+											{"PARKING", ".par", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // parking
+											{"PICTURE", ".pic", 0.1, 100*MEGABYTE, 0, 0, 0, 0}, // picture
+											{"SYSTEM",  ".sys", 0.1, 100*MEGABYTE, 0, 0, 0, 0}, // system
 								{"SYSTEM/NMEA/EVENT",   ".neve", 0, 200*KILOBYTE, 0, 0, 0, 1},
 								{"SYSTEM/NMEA/NORMAL",  ".nnor", 0, 200*KILOBYTE, 0, 0, 0, 1},
 								{"SYSTEM/NMEA/PARKING", ".npar", 0, 200*KILOBYTE, 0, 0, 0, 1}};
@@ -31,7 +31,7 @@ int SDA_get_recoder_file_num(char* path){
 
 		string filterFile = dirp->d_name;
 
-		if(filterFile.length() != 16){
+		if(filterFile.length() < 16 || filterFile.length() > 17){
 			continue;
 		}
 
@@ -292,6 +292,18 @@ void SDA_get_structure_value_from_config(char* mount_path){
 	}
 
 	fclose(fp);
+}
+
+// true = 1, false = 0;
+bool FH_ValidFormat(char* mount_path){
+
+	int rc;
+	pthread_mutex_lock(&g_mutex);
+	char config_file_path[NORULE_SIZE];
+	snprintf(config_file_path, NORULE_SIZE, "%s/table.config", mount_path);
+
+	rc = SDA_file_exists(config_file_path);
+	return (rc == 1 ? true : false);
 }
 
 // true = 1, false = 0;
@@ -705,19 +717,28 @@ int FH_CanUseFilenumber(eFolderType folderType){
 		using_file_size = using_file_size + attrib.st_size;
 		count = count + 1;
 	}
+	ALOGE("FH_CanUseFilenumber====folderType== %d",folderType);
+	ALOGE("FH_CanUseFilenumber====FH_Table[folderType].avail_space== %"  PRIu64 "",FH_Table[folderType].avail_space);
+	ALOGE("FH_CanUseFilenumber====using_file_size== %"  PRIu64 "",using_file_size);
+	ALOGE("FH_CanUseFilenumber====FH_Table[folderType].every_block_space== %"  PRIu64 "",FH_Table[folderType].every_block_space);
 
-	ALOGE("this is jni call1-->FH_CanUseFilenumber====folderType== %d",folderType);
-	ALOGE("this is jni call1-->FH_CanUseFilenumber====FH_Table[folderType].avail_space== %d",FH_Table[folderType].avail_space);
-	ALOGE("this is jni call1-->FH_CanUseFilenumber====using_file_size== %d",using_file_size);
-	ALOGE("this is jni call1-->FH_CanUseFilenumber====FH_Table[folderType].every_block_space== %d",FH_Table[folderType].every_block_space);
+	int calucate_space_recoder_num;
+	if(FH_Table[folderType].avail_space < using_file_size){
+		calucate_space_recoder_num = 0;
+	}else{
+		calucate_space_recoder_num = (FH_Table[folderType].avail_space - using_file_size)/FH_Table[folderType].every_block_space;
+	}
 
 	int extension_number = SDA_get_free_extension_filenumber(folderType);
 	// cout << "extension_number: " << extension_number << endl;
 
+	int recoder_file_already_exist_num = SDA_get_recoder_file_num(folder_path);
+
 	if(folderType >= 5){
-		can_use_num = FH_Table[folderType].file_num - count;
+		// NMEA folder
+		can_use_num = FH_Table[folderType].file_num - count + recoder_file_already_exist_num;
 	}else{
-		can_use_num = (FH_Table[folderType].avail_space - using_file_size)/FH_Table[folderType].every_block_space + extension_number;
+		can_use_num = calucate_space_recoder_num + extension_number + recoder_file_already_exist_num;
 	}
 
 	if(can_use_num < 2){

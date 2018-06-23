@@ -57,6 +57,12 @@ struct file_struct{
 
 };
 
+//Purpose: Check config file exist or not 
+//
+//Input:  mount path
+//Output: bool, true = 1, false = 0;
+bool FH_ValidFormat(char* mount_path);
+
 //
 // Purpose: 1.Create Event,Manual,Normal,Parking,Picture,System folder
 //          2.Use SDCARD space to calculate every folder can use file number
