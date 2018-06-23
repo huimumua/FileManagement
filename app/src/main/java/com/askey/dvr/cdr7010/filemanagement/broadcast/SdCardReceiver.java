@@ -40,7 +40,7 @@ public class SdCardReceiver extends BroadcastReceiver {
             Const.SDCARD_INIT_SUCCESS=false;
             Const.IS_SDCARD_FULL_LIMIT = false;
             Const.IS_SDCARD_FOLDER_LIMIT = false;
-            SDCardListener.getSingInstance(Const.SDCARD_PATH).stopWatche();
+//            SDCardListener.getSingInstance(Const.SDCARD_PATH).stopWatche();
 
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描
             boolean result = FileManager.getSingInstance().sdcardInit();
@@ -52,7 +52,7 @@ public class SdCardReceiver extends BroadcastReceiver {
                 Const.SDCARD_INIT_SUCCESS=true;
                 BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_SUCC);
             }
-            SDCardListener.getSingInstance(Const.SDCARD_PATH).startWatche();
+//            SDCardListener.getSingInstance(Const.SDCARD_PATH).startWatche();
 
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_FINISHED)){//扫描完成
             initSdcard(context);
@@ -75,8 +75,8 @@ public class SdCardReceiver extends BroadcastReceiver {
                 }
                 Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(context);
 
-                if(SdcardUtil.checkSDcardIsFull()){
-//                if(FileManager.getSingInstance().sdcardIsFull(Const.NORMAL_DIR)){
+//                if(SdcardUtil.checkSDcardIsFull()){
+                if(FileManager.getSingInstance().sdcardIsFull(Const.NORMAL_DIR)){
                     Const.IS_SDCARD_FULL_LIMIT = true;
                     String currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
                     BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
