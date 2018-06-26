@@ -168,8 +168,6 @@ public class FileManager {
         }else{
             if(folderType.equals(Const.EVENT_DIR)){
                 currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
-            }else if(folderType.equals(Const.MANUAL_DIR)){
-                currentAction = Const.CMD_SHOW_REACH_MANUAL_FILE_LIMIT;
             }else if(folderType.equals(Const.NORMAL_DIR)){
                 currentAction = Const.CMD_SHOW_REACH_NORMAL_FILE_LIMIT;
             }else if(folderType.equals(Const.PARKING_DIR)){
@@ -209,8 +207,6 @@ public class FileManager {
             if(Const.IS_SDCARD_FOLDER_LIMIT){
                 if(folderType.equals(Const.EVENT_DIR)){
                     currentAction = Const.CMD_SHOW_UNREACH_EVENT_FILE_LIMIT;
-                }else if(folderType.equals(Const.MANUAL_DIR)){
-                    currentAction = Const.CMD_SHOW_UNREACH_MANUAL_FILE_LIMIT;
                 }else if(folderType.equals(Const.NORMAL_DIR)){
                     currentAction = Const.CMD_SHOW_UNREACH_NORMAL_FILE_LIMIT;
                 }else if(folderType.equals(Const.PARKING_DIR)){
@@ -229,8 +225,6 @@ public class FileManager {
         int type = -1;
         if(folderType.equals(Const.EVENT_DIR)){
             type = Const.TYPE_EVENT_DIR;
-        }else if(folderType.equals(Const.MANUAL_DIR)){
-            type = Const.TYPE_MANUAL_DIR;
         }else if(folderType.equals(Const.NORMAL_DIR)){
             type = Const.TYPE_NORMAL_DIR;
         }else if(folderType.equals(Const.PARKING_DIR)){
@@ -248,8 +242,6 @@ public class FileManager {
         String type =Const.NORMAL_DIR;
         if(path.contains(Const.EVENT_DIR)){
             type = Const.EVENT_DIR;
-        }else if(path.contains(Const.MANUAL_DIR)){
-            type = Const.MANUAL_DIR;
         }else if(path.contains(Const.NORMAL_DIR)){
             type = Const.NORMAL_DIR;
         }else if(path.contains(Const.PARKING_DIR)){

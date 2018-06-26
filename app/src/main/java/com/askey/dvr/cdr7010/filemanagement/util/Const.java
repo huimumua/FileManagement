@@ -30,7 +30,6 @@ public class Const {
     public static final String EVENT_DIR = "EVENT";
     public static final String PARKING_DIR = "PARKING";
     public static final String PICTURE_DIR = "PICTURE";
-    public static final String MANUAL_DIR = "MANUAL";
     public static final String SYSTEM_DIR = "SYSTEM";
 
     public static final int TYPE_EVENT_DIR = 0;
@@ -38,7 +37,6 @@ public class Const {
     public static final int TYPE_PARKING_DIR = 2;
     public static final int TYPE_PICTURE_DIR = 3;
     public static final int TYPE_SYSTEM_DIR = 4;
-    public static final int TYPE_MANUAL_DIR = 5;
 
     public static int CURRENT_SDCARD_SIZE = 0; // unit GB
     public static final String SDCARD_SIZE_UNIT ="GB" ;
@@ -99,8 +97,6 @@ public class Const {
     public static final String CMD_SHOW_UNREACH_PARKING_FILE_LIMIT = "show_unreach_parking_file_limit";//限制解除
     public static final String CMD_SHOW_REACH_NORMAL_FILE_LIMIT ="show_reach_normal_file_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_NORMAL_FILE_LIMIT = "show_unreach_normal_file_limit";//限制解除
-    public static final String CMD_SHOW_REACH_MANUAL_FILE_LIMIT ="show_reach_manual_file_limit";//超过限制
-    public static final String CMD_SHOW_UNREACH_MANUAL_FILE_LIMIT = "show_unreach_manual_file_limit";//限制解除
     public static final String CMD_SHOW_REACH_PICTURE_FILE_LIMIT ="show_reach_picture_file_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_PICTURE_FILE_LIMIT = "show_unreach_picture_file_limit";//限制解除
     public static final String CMD_SHOW_REACH_SYSTEM_FILE_LIMIT ="show_reach_system_file_limit";//超过限制
