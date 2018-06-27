@@ -5,13 +5,13 @@
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // event
-											{"NORMAL",  ".nor", 0.4, 100*MEGABYTE, 0, 0, 0, 0}, // normal
-											{"PARKING", ".par", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // parking
-											{"PICTURE", ".pic", 0.1, 100*MEGABYTE, 0, 0, 0, 0}, // picture
-											{"SYSTEM",  ".sys", 0.1, 100*MEGABYTE, 0, 0, 0, 0}, // system
-								{"SYSTEM/NMEA/EVENT",   ".neve", 0, 200*KILOBYTE, 0, 0, 0, 1},
-								{"SYSTEM/NMEA/NORMAL",  ".nnor", 0, 200*KILOBYTE, 0, 0, 0, 1},
-								{"SYSTEM/NMEA/PARKING", ".npar", 0, 200*KILOBYTE, 0, 0, 0, 1}};
+											{"NORMAL",  ".nor",  0.4, 100*MEGABYTE, 0, 0, 0, 0}, // normal
+											{"CAMERA2", ".cam2", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // parking
+											{"PICTURE", ".pic",  0.1, 100*MEGABYTE, 0, 0, 0, 0}, // picture
+											{"SYSTEM",  ".sys",  0.1, 100*MEGABYTE, 0, 0, 0, 0}, // system
+								{"SYSTEM/NMEA/EVENT",   ".neve",   0, 200*KILOBYTE, 0, 0, 0, 1},
+								{"SYSTEM/NMEA/NORMAL",  ".nnor",   0, 200*KILOBYTE, 0, 0, 0, 1},
+								{"SYSTEM/NMEA/CAMERA2", ".ncam2",  0, 200*KILOBYTE, 0, 0, 0, 1}};
 
 
 char g_mount_path[NORULE_SIZE];
@@ -419,15 +419,15 @@ bool FH_Init(char* mount_path){
 				mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
 				memset(create_folder_path, 0, NORULE_SIZE);
 
-				snprintf(create_folder_path, NORULE_SIZE, "%s/%s/NMEA/NORMAL", mount_path, FH_Table[i].folder_type);
+				snprintf(create_folder_path, NORULE_SIZE, "%s/%s", mount_path, FH_Table[i+1].folder_type);
 				mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
 				memset(create_folder_path, 0, NORULE_SIZE);
 
-				snprintf(create_folder_path, NORULE_SIZE, "%s/%s/NMEA/EVENT", mount_path, FH_Table[i].folder_type);
+				snprintf(create_folder_path, NORULE_SIZE, "%s/%s", mount_path, FH_Table[i+2].folder_type);
 				mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
 				memset(create_folder_path, 0, NORULE_SIZE);
 
-				snprintf(create_folder_path, NORULE_SIZE, "%s/%s/NMEA/PARKING", mount_path, FH_Table[i].folder_type);
+				snprintf(create_folder_path, NORULE_SIZE, "%s/%s", mount_path, FH_Table[i+3].folder_type);
 				mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
 				memset(create_folder_path, 0, NORULE_SIZE);
 			}	

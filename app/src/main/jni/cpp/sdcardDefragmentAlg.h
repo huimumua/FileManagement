@@ -37,17 +37,17 @@ using namespace std;
 enum eFolderType{
 	e_Event=0,
 	e_Normal,
-	e_Parking,
+	e_Camera2,
 	e_Picture,
 	e_System,
 	e_NMEA_EVENT,
 	e_NMEA_NORMAL,
-	e_NMEA_PARKING
+	e_NMEA_CAMERA2
 };
 
 struct file_struct{
 	char folder_type[20];
-	char folder_extension[6];
+	char folder_extension[7];
 	float percent;
 	uint64_t every_block_space;
 	uint64_t avail_space;
