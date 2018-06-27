@@ -161,7 +161,10 @@ public class MediaScanner {
             String path=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
             //视频时长
             String DURATION=cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
-            fileList.add(path);
+            if(path.endsWith(".mp4")){
+                fileList.add(path);
+            }
+           
         }
         if(cursor != null && !cursor.isClosed()){
             cursor.close();
@@ -204,7 +207,7 @@ public class MediaScanner {
 //            Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(resolver,
 //                    Long.valueOf(id), MediaStore.Images.Thumbnails.MICRO_KIND, null);
             Logg.i(TAG,"==name=="+name);
-            if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type)  ){
+            if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type)  && path.endsWith(".mp4")){
                 if(name.length()==16 || name.length()==18){
                     File mFile = new File(path);
                     if(mFile.exists()){
