@@ -42,7 +42,7 @@ public class FileManager {
 
     private native static void init_native();
 
-
+    public native boolean FH_ValidFormat(String mount_path);
     //
 // Purpose: 1.Create Event,Manual,Normal,Parking,Picture,System folder
 //          2.Use SDCARD space to calculate every folder can use file
@@ -108,6 +108,17 @@ public class FileManager {
 // Return ture
 //    public native boolean FH_unlock(File file);
     public native boolean FH_unlock(long filePointer);
+
+
+    public boolean validFormat() {
+        boolean result = false;
+        if(Const.SDCARD_IS_EXIST){
+            Const.SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
+            result = FH_ValidFormat(Const.SDCARD_PATH);
+            Logg.i(LOG_TAG,"=FH_ValidFormat="+result);
+        }
+        return result;
+    }
 
     public boolean sdcardInit() {
         boolean result = false;

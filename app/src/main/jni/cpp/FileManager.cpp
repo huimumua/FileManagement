@@ -16,6 +16,13 @@ typedef struct {
 
 static context_t sVMContext = {NULL};
 
+jboolean FileManager_FH_ValidFormat(JNIEnv *env, jclass object,jstring mount_path){
+    char *infoPath = (char *) env->GetStringUTFChars(mount_path, 0);
+    jboolean result = (jboolean)FH_ValidFormat(infoPath);
+    env->ReleaseStringUTFChars(mount_path, infoPath);
+    return result;
+}
+
 jboolean FileManager_FH_Init(JNIEnv *env, jclass object,jstring mount_path){
     char *infoPath = (char *) env->GetStringUTFChars(mount_path, 0);
     jboolean result = (jboolean)FH_Init(infoPath);
@@ -87,6 +94,7 @@ static void FileManager_native_init(JNIEnv *env, jobject thiz) {
 
 static const JNINativeMethod gMethods[] = {
         { "init_native", "()V", (void *)FileManager_init_native },
+        { "FH_ValidFormat", "(Ljava/lang/String;)Z", (void *)FileManager_FH_ValidFormat },
         { "FH_Init", "(Ljava/lang/String;)Z", (void *)FileManager_FH_Init },
         { "FH_Open", "(Ljava/lang/String;I)Ljava/lang/String;", (void *)FileManager_FH_Open },
         { "FH_Close", "()Z", (void *)FileManager_FH_Close },
