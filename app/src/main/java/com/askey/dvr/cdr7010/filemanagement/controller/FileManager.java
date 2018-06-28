@@ -125,7 +125,7 @@ public class FileManager {
         String result= null;
 //        if(sdcardInit()){
         if(Const.SDCARD_INIT_SUCCESS){
-            while(result == null || result.equals("")){
+//            while(result == null || result.equals("")){
                 result = FH_Open(filename,type);
                 Logg.i(LOG_TAG,"=====FH_Open====="+result);
                 if(result == null || result.equals("")){
@@ -136,11 +136,12 @@ public class FileManager {
                         boolean deleteResult = MediaScanner.delete(oldestPath);
                         Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
                         if(deleteResult){
+                            result = FH_Open(filename,type);
 //                        sendUnreachLimitFileBroadcastByType(folderType);
                         }
                     }
                 }
-            }
+//            }
             final String finalResult = result;
             new Thread(new Runnable() {
                 @Override
