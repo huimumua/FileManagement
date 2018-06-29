@@ -45,50 +45,42 @@ public class Const {
     public static final int SDCARD_SIZE_4Gb = 4; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_4Gb = 1000; // unit 个文件
     public static final int SDCARD_MAX_EVENT_FILE_SIZE_4Gb = 10; // unit 个文件
-    public static final int SDCARD_MAX_PARKING_FILE_SIZE_4Gb = 10; // unit 个文件
-    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_4Gb = 50; // unit 个文件
+    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_4Gb = 30; // unit 个文件
 
     public static final int SDCARD_SIZE_8Gb = 8; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_8Gb = 1000; // unit 个文件
     public static final int SDCARD_MAX_EVENT_FILE_SIZE_8Gb = 20; // unit 个文件
-    public static final int SDCARD_MAX_PARKING_FILE_SIZE_8Gb = 20; // unit 个文件
-    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_8Gb = 100; // unit 个文件
+    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_8Gb = 60; // unit 个文件
 
     public static final int SDCARD_SIZE_16Gb = 16; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_16Gb = 1000; // unit 个文件
     public static final int SDCARD_MAX_EVENT_FILE_SIZE_16Gb = 40; // unit 个文件
-    public static final int SDCARD_MAX_PARKING_FILE_SIZE_16Gb = 40; // unit 个文件
-    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_16Gb = 200; // unit 个文件
+    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_16Gb = 120; // unit 个文件
 
     public static final int SDCARD_SIZE_32Gb = 32; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_32Gb = 1000; // unit 个文件
     public static final int SDCARD_MAX_EVENT_FILE_SIZE_32Gb = 80; // unit 个文件
-    public static final int SDCARD_MAX_PARKING_FILE_SIZE_32Gb = 80; // unit 个文件
-    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_32Gb = 400; // unit 个文件
+    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_32Gb = 240; // unit 个文件
 
     public static final int SDCARD_SIZE_64Gb = 64; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_64Gb = 1000; // unit 个文件
     public static final int SDCARD_MAX_EVENT_FILE_SIZE_64Gb = 160; // unit 个文件
-    public static final int SDCARD_MAX_PARKING_FILE_SIZE_64Gb = 160; // unit 个文件
-    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_64Gb = 800; // unit 个文件
+    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_64Gb = 480; // unit 个文件
 
     public static final int SDCARD_SIZE_128Gb = 128; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_128Gb = 1000; // unit 个文件
     public static final int SDCARD_MAX_EVENT_FILE_SIZE_128Gb = 320; // unit 个文件
-    public static final int SDCARD_MAX_PARKING_FILE_SIZE_128Gb = 320; // unit 个文件
-    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_128Gb = 1000; // unit 个文件
+    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_128Gb = 960; // unit 个文件
 
     public static final int SDCARD_SIZE_256Gb = 256; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_256Gb = 1000; // unit 个文件
     public static final int SDCARD_MAX_EVENT_FILE_SIZE_256Gb = 640; // unit 个文件
-    public static final int SDCARD_MAX_PARKING_FILE_SIZE_256Gb = 640; // unit 个文件
-    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_256Gb = 1000; // unit 个文件
+    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_256Gb = 1920; // unit 个文件
 
     public static final int SDCARD_SIZE_512Gb = 512; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_512Gb = 1000; // unit 个文件
     public static final int SDCARD_MAX_EVENT_FILE_SIZE_512Gb = 1000; // unit 个文件
-    public static final int SDCARD_MAX_PARKING_FILE_SIZE_512Gb = 1000; // unit 个文件
-    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_512Gb = 1000; // unit 个文件
+    public static final int SDCARD_MAX_PICTURE_FILE_SIZE_512Gb = 3000; // unit 个文件
 
     public static boolean IS_SDCARD_FOLDER_LIMIT =false;
     public static final String CMD_SHOW_REACH_EVENT_FILE_LIMIT ="show_reach_event_file_limit";//超过限制

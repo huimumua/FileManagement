@@ -59,55 +59,46 @@ public class SdcardManager {
             case 4:
                 sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_4Gb));
                 sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_4Gb));
-                sdcardInfo.setParkingSize(String.valueOf(Const.SDCARD_MAX_PARKING_FILE_SIZE_4Gb));
                 sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_4Gb));
                 break;
             case 8:
                 sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_8Gb));
                 sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_8Gb));
-                sdcardInfo.setParkingSize(String.valueOf(Const.SDCARD_MAX_PARKING_FILE_SIZE_8Gb));
                 sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_8Gb));
                 break;
             case 16:
                 sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_16Gb));
                 sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_16Gb));
-                sdcardInfo.setParkingSize(String.valueOf(Const.SDCARD_MAX_PARKING_FILE_SIZE_16Gb));
                 sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_16Gb));
                 break;
             case 32:
                 sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_32Gb));
                 sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_32Gb));
-                sdcardInfo.setParkingSize(String.valueOf(Const.SDCARD_MAX_PARKING_FILE_SIZE_32Gb));
                 sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_32Gb));
                 break;
             case 64:
                 sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_64Gb));
                 sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_64Gb));
-                sdcardInfo.setParkingSize(String.valueOf(Const.SDCARD_MAX_PARKING_FILE_SIZE_64Gb));
                 sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_64Gb));
                 break;
             case 128:
                 sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_128Gb));
                 sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_128Gb));
-                sdcardInfo.setParkingSize(String.valueOf(Const.SDCARD_MAX_PARKING_FILE_SIZE_128Gb));
                 sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_128Gb));
                 break;
             case 256:
                 sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_256Gb));
                 sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_256Gb));
-                sdcardInfo.setParkingSize(String.valueOf(Const.SDCARD_MAX_PARKING_FILE_SIZE_256Gb));
                 sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_256Gb));
                 break;
             case 512:
                 sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_512Gb));
                 sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_512Gb));
-                sdcardInfo.setParkingSize(String.valueOf(Const.SDCARD_MAX_PARKING_FILE_SIZE_512Gb));
                 sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_512Gb));
                 break;
             default:
                 sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_8Gb));
                 sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_8Gb));
-                sdcardInfo.setParkingSize(String.valueOf(Const.SDCARD_MAX_PARKING_FILE_SIZE_8Gb));
                 sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_8Gb));
                 break;
         }
