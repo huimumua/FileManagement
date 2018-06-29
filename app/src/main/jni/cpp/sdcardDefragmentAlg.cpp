@@ -4,11 +4,11 @@
 #define LOG_TAG "sdcardDefragmentAlg.cpp"
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // event
-											{"NORMAL",  ".nor",  0.4, 100*MEGABYTE, 0, 0, 0, 0}, // normal
-											{"CAMERA2", ".cam2", 0.2, 100*MEGABYTE, 0, 0, 0, 0}, // parking
-											{"PICTURE", ".pic",  0.1, 100*MEGABYTE, 0, 0, 0, 0}, // picture
-											{"SYSTEM",  ".sys",  0.1, 100*MEGABYTE, 0, 0, 0, 0}, // system
+struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.2, 107*MEGABYTE, 0, 0, 0, 0}, // event
+											{"NORMAL",  ".nor",  0.4, 107*MEGABYTE, 0, 0, 0, 0}, // normal
+											{"CAMERA2", ".cam2", 0.2, 107*MEGABYTE, 0, 0, 0, 0}, // parking
+											{"PICTURE", ".pic",  0.1, 107*MEGABYTE, 0, 0, 0, 0}, // picture
+											{"SYSTEM",  ".sys",  0.1, 107*MEGABYTE, 0, 0, 0, 0}, // system
 								{"SYSTEM/NMEA/EVENT",   ".neve",   0, 200*KILOBYTE, 0, 0, 0, 1},
 								{"SYSTEM/NMEA/NORMAL",  ".nnor",   0, 200*KILOBYTE, 0, 0, 0, 1},
 								{"SYSTEM/NMEA/CAMERA2", ".ncam2",  0, 200*KILOBYTE, 0, 0, 0, 1}};
@@ -303,6 +303,7 @@ bool FH_ValidFormat(char* mount_path){
 	snprintf(config_file_path, NORULE_SIZE, "%s/table.config", mount_path);
 
 	rc = SDA_file_exists(config_file_path);
+	pthread_mutex_unlock(&g_mutex);
 	return (rc == 1 ? true : false);
 }
 
