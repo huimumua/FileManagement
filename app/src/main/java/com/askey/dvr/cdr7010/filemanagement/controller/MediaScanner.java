@@ -408,9 +408,17 @@ public class MediaScanner {
         if (file.exists() && file.isFile()) {
             boolean result = FileManager.getSingInstance().FH_Delete(fileName);
             Logg.i(TAG,"-->deleteFile --> FH_Delete fileName"+fileName+" result =="+result);
-            String nmeaPath = fileName.replaceAll("mp4", "nmea").replaceAll("EVENT", "SYSTEM/NMEA/EVENT");
-            boolean nmeaResult = FileManager.getSingInstance().FH_Delete(nmeaPath);
-            Logg.i(TAG,"-->deleteFile --> FH_Delete nmeaPath"+nmeaPath+" nmeaResult =="+nmeaResult);
+            String nmeaPath = null;
+            if(fileName.contains("EVENT")){
+                nmeaPath = fileName.replaceAll("mp4", "nmea").replaceAll("EVENT", "SYSTEM/NMEA/EVENT");
+            }else if(fileName.contains("NORMAL")){
+                nmeaPath = fileName.replaceAll("mp4", "nmea").replaceAll("NORMAL", "SYSTEM/NMEA/NORMAL");
+            }
+            //SYSTEM/NMEA/NORMAL
+            if(nmeaPath!=null){
+                boolean nmeaResult = FileManager.getSingInstance().FH_Delete(nmeaPath);
+                Logg.i(TAG,"-->deleteFile --> FH_Delete nmeaPath"+nmeaPath+" nmeaResult =="+nmeaResult);
+            }
             //之后会使用底层提供的方法进行删除
             if (/*file.delete()*/result) {
                 Logg.i(TAG,"-->deleteFile --> delete "+fileName+" success");
