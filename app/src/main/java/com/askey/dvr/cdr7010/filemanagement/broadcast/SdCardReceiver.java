@@ -32,9 +32,22 @@ public class SdCardReceiver extends BroadcastReceiver {
 
         } else if (action.equals(Intent.ACTION_MEDIA_REMOVED)// 各种未挂载状态
                 || action.equals(Intent.ACTION_MEDIA_UNMOUNTED)
-                || action.equals(Intent.ACTION_MEDIA_BAD_REMOVAL)) {
+                || action.equals(Intent.ACTION_MEDIA_BAD_REMOVAL)
+                ) {
+
             Const.SDCARD_IS_EXIST = false;
             Const.IS_SDCARD_FOLDER_LIMIT = false;
+        }else if(action.equals(Intent.ACTION_MEDIA_UNMOUNTABLE)){//用来判断sdcard是坏的
+//            在收到android.intent.action.MEDIA_UNMOUNTABLE,取得fsType的值,若是ntfs就可判為不支持的卡,
+//                    若fsType為其它情況(如空值或exfat)..,則該卡被判為異常.
+            String fsType = intent.getStringExtra("fsType");
+            if("ntfs".equals(fsType)){
+                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                        Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
+            }else{
+                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                        Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_UNRECOGNIZABLE);
+            }
         } else if ( action.equals(Intent.ACTION_MEDIA_EJECT)) {
             Const.SDCARD_IS_EXIST = false;
             Const.SDCARD_INIT_SUCCESS=false;
