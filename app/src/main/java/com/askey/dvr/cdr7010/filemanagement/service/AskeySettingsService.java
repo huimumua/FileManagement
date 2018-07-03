@@ -1,18 +1,31 @@
 package com.askey.dvr.cdr7010.filemanagement.service;
 
+import android.Manifest;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 
+import com.askey.dvr.cdr7010.dashcam.ICommunication;
 import com.askey.dvr.cdr7010.filemanagement.IAskeySettingsAidlInterface;
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.askeysettings.AskeySettingInitAsyncTask;
 import com.askey.dvr.cdr7010.filemanagement.askeysettings.AskeySettingSyncTask;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
+import com.askey.platform.AskeySettings;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * 项目名称：filemanagement
@@ -26,9 +39,21 @@ import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 public class AskeySettingsService extends Service {
 
     private static final String LOG_TAG = AskeySettingsService.class.getSimpleName();
+    private ICommunication mCommunication;
+    private ContentResolver contentResolver;
+    private TelephonyManager mPhoneManager;
+    private String imei;
+    private String userTag = "_user";//用于拼接setting的key
 
     public AskeySettingsService() {
 
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        contentResolver = FileManagerApplication.getAppContext().getContentResolver();
+        mPhoneManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
     }
 
     @Nullable
@@ -54,21 +79,129 @@ public class AskeySettingsService extends Service {
             //用户自己手动设置
             AskeySettingSyncTask askeySettingSyncTask = new AskeySettingSyncTask();
             askeySettingSyncTask.execute();
+            Intent intent = new Intent();
+            intent.setAction("jvcmodule.local.CommuicationService");
+            intent.setPackage("com.askey.dvr.cdr7010.dashcam");
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
 
         @Override
         public void write(String key, String value) throws RemoteException {
             //这里负责处理jvc后台处理的设置  需要改变 user 和 user*两个地方,key应该是带user后缀的那种
-            ContentResolver contentResolver = FileManagerApplication.getAppContext().getContentResolver();
+
             //带后缀的
             Settings.Global.putInt(contentResolver, key, Integer.parseInt(value));
             //不带后缀的
             Settings.Global.putInt(contentResolver, key.substring(0, key.lastIndexOf("_")), Integer.parseInt(value));
         }
-
-
     }
 
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mCommunication = ICommunication.Stub.asInterface(service);
+            try {
+                mCommunication.settingsUpdateRequest(settingsJson());
+                Log.d(LOG_TAG, "onServiceConnected: "+settingsJson());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+    /*
+        组装json字符串
+     */
+    private String settingsJson() {
+        try {
+            JSONObject setting = new JSONObject();
+            setting.put("imei", getImei(mPhoneManager));
+            setting.put("num", getIntSettingValue(AskeySettings.Global.SYSSET_USER_NUM, 1));
+            setting.put("selectuserid", getIntSettingValue(AskeySettings.Global.SYSSET_USER_ID, 1));
+            setting.put("selectdate", getStringSettingValue(AskeySettings.Global.SYSSET_SELECT_USER_DAYS));
+
+            JSONObject userCM = new JSONObject();
+            userCM.put("rec_voice", getIntSettingValue(AskeySettings.Global.RECSET_VOICE_RECORD, 1));
+            userCM.put("rec_info", getIntSettingValue(AskeySettings.Global.RECSET_INFO_STAMP, 1));
+            userCM.put("2nd_camera", getIntSettingValue(AskeySettings.Global.SYSSET_2ND_CAMERA, 0));
+            userCM.put("cartype", getIntSettingValue(AskeySettings.Global.CAR_TYPE, 2));
+            userCM.put("position", getIntSettingValue(AskeySettings.Global.ADAS_MOUNT_POSITION, 1));
+            userCM.put("lastupdate", getStringSettingValue(AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS));
+
+            setting.put("userCM", userCM);
+
+            for (int i = 1; i < 6; i++) {
+                putUserNumSetting(setting, i);
+            }
+
+            return setting.toString();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private void putUserNumSetting(JSONObject setting, int num) throws JSONException {
+        JSONObject userNum = new JSONObject();
+        userNum.put("user_id_user", getIntSettingValue(AskeySettings.Global.SYSSET_USER_ID + userTag + num, num));
+        userNum.put("user_name", getStringSettingValue(AskeySettings.Global.SYSSET_USER_NAME + userTag + num));
+        userNum.put("warn_coll", getIntSettingValue(AskeySettings.Global.ADAS_FCWS + userTag + num, 1));
+        userNum.put("warn_dev", getIntSettingValue(AskeySettings.Global.ADAS_LDS + userTag + num, 1));
+        userNum.put("warn_delay", getIntSettingValue(AskeySettings.Global.ADAS_DELAY_START + userTag + num, 1));
+        userNum.put("warn_pades", getIntSettingValue(AskeySettings.Global.ADAS_PEDESTRIAN_COLLISION + userTag + num, 0));
+        userNum.put("reverse", getIntSettingValue(AskeySettings.Global.NOTIFY_REVERSE_RUN + userTag + num, 1));
+        userNum.put("zone30", getIntSettingValue(AskeySettings.Global.NOTIFY_SPEED_LIMIT_AREA + userTag + num, 1));
+        userNum.put("pause", getIntSettingValue(AskeySettings.Global.NOTIFY_STOP + userTag + num, 1));
+        userNum.put("accident", getIntSettingValue(AskeySettings.Global.NOTIFY_FREQ_ACCIDENT_AREA + userTag + num, 0));
+        userNum.put("runtime", getIntSettingValue(AskeySettings.Global.NOTIFY_DRIVING_TIME + userTag + num, 1));
+        userNum.put("rapid", getIntSettingValue(AskeySettings.Global.NOTIFY_INTENSE_DRIVING + userTag + num, 1));
+        userNum.put("handle", getIntSettingValue(AskeySettings.Global.NOTIFY_ABNORMAL_HANDING + userTag + num, 0));
+        userNum.put("wobble", getIntSettingValue(AskeySettings.Global.NOTIFY_FLUCTUATION_DETECTION + userTag + num, 1));
+        userNum.put("outside", getIntSettingValue(AskeySettings.Global.NOTIFY_OUT_OF_AREA + userTag + num, 0));
+        userNum.put("report", getIntSettingValue(AskeySettings.Global.NOTIFY_DRIVING_REPORT + userTag + num, 1));
+        userNum.put("advice", getIntSettingValue(AskeySettings.Global.NOTIFY_ADVICE + userTag + num, 1));
+        userNum.put("notice", getIntSettingValue(AskeySettings.Global.NOTIFY_NOTIFICATION + userTag + num, 1));
+        userNum.put("weather", getIntSettingValue(AskeySettings.Global.NOTIFY_WEATHER_INFO + userTag + num, 1));
+        userNum.put("animal", getIntSettingValue(AskeySettings.Global.NOTIFY_ROAD_KILL + userTag + num, 1));
+        userNum.put("location", getIntSettingValue(AskeySettings.Global.NOTIFY_LOCATION_INFO + userTag + num, 0));
+        userNum.put("volume_n", getIntSettingValue(AskeySettings.Global.SYSSET_NOTIFY_VOL + userTag + num, 3));
+        userNum.put("volume_p", getIntSettingValue(AskeySettings.Global.SYSSET_PLAYBACK_VOL + userTag + num, 3));
+        userNum.put("bright", getIntSettingValue(AskeySettings.Global.SYSSET_MONITOR_BRIGHTNESS + userTag + num, 5));
+        userNum.put("psave_s", getIntSettingValue(AskeySettings.Global.SYSSET_POWERSAVE_TIME + userTag + num, 10));
+        userNum.put("psave_e", getIntSettingValue(AskeySettings.Global.SYSSET_POWERSAVE_ACTION + userTag + num, 0));
+        userNum.put("lang", getIntSettingValue(AskeySettings.Global.SYSSET_LANGUAGE + userTag + num, 0));
+        userNum.put("set_update_day", getStringSettingValue(AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS + userTag + num));
+        userNum.put("outbound_call", getIntSettingValue(AskeySettings.Global.COMM_EMERGENCY_AUTO + userTag + num, 1));
+
+        setting.put("user0" + num, userNum);
+    }
+
+    private String getStringSettingValue(String key) {
+        return Settings.Global.getString(contentResolver, key);
+    }
+
+    private int getIntSettingValue(String key, int def) {
+        return Settings.Global.getInt(contentResolver, key, def);
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        unbindService(mConnection);
+        return super.onUnbind(intent);
+    }
+
+    private String getImei(TelephonyManager manager) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            return "";
+        }
+        return manager.getDeviceId();
+    }
 
     public static final String SYSSET_USER_NUM = "SYSSET_user_num";
     public static final String SYSSET_DEFAULT_USER = "SYSSET_default_user";
@@ -136,130 +269,4 @@ public class AskeySettingsService extends Service {
     public static final String SYSSET_LANGUAGE_USER1 = "SYSSET_language_user1";
     public static final String SYSSET_SET_LASTUPDATE_DAYS_USER1 = "SYSSET_set_lastupdate_days_user1";
     public static final String COMM_EMERGENCY_AUTO_USER1 = "COMM_emergency_auto_user1";
-
-
-    public static final String SYSSET_USER_ID_USER2 = "SYSSET_user_id_user2";
-    public static final String SYSSET_USER_NAME_USER2 = "SYSSET_user_name_user2";
-    public static final String ADAS_FCWS_USER2 = "ADAS_FCWS_user2";
-    public static final String ADAS_LDS_USER2 = "ADAS_LDS_user2";
-    public static final String ADAS_DELAY_START_USER2 = "ADAS_delay_start_user2";
-    public static final String ADAS_PEDESTRIAN_COLLISION_USER2 = "ADAS_pedestrian_collision_user2";
-    public static final String NOTIFY_REVERSE_RUN_USER2 = "NOTIFY_reverse_run_user2";
-    public static final String NOTIFY_SPEED_LIMIT_AREA_USER2 = "NOTIFY_speed_limit_area_user2";
-    public static final String NOTIFY_STOP_USER2 = "NOTIFY_stop_user2";
-    public static final String NOTIFY_FREQ_ACCIDENT_AREA_USER2 = "NOTIFY_freq_accident_area_user2";
-    public static final String NOTIFY_DRIVING_TIME_USER2 = "NOTIFY_driving_time_user2";
-    public static final String NOTIFY_INTENSE_DRIVING_USER2 = "NOTIFY_Intense_driving_user2";
-    public static final String NOTIFY_ABNORMAL_HANDING_USER2 = "NOTIFY_abnormal_handing_user2";
-    public static final String NOTIFY_FLUCTUATION_DETECTION_USER2 = "NOTIFY_fluctuation_detection_user2";
-    public static final String NOTIFY_OUT_OF_AREA_USER2 = "NOTIFY_out_of_area_user2";
-    public static final String NOTIFY_DRIVING_REPORT_USER2 = "NOTIFY_driving_report_user2";
-    public static final String NOTIFY_ADVICE_USER2 = "NOTIFY_advice_user2";
-    public static final String NOTIFY_NOTIFICATION_USER2 = "NOTIFY_notification_user2";
-    public static final String NOTIFY_WEATHER_INFO_USER2 = "NOTIFY_weather_info_user2";
-    public static final String NOTIFY_ROAD_KILL_USER2 = "NOTIFY_road_kill_user2";
-    public static final String NOTIFY_LOCATION_INFO_USER2 = "NOTIFY_location_info_user2";
-    public static final String SYSSET_NOTIFY_VOL_USER2 = "SYSSET_notify_vol_user2";
-    public static final String SYSSET_PLAYBACK_VOL_USER2 = "SYSSET_playback_vol_user2";
-    public static final String SYSSET_MONITOR_BRIGHTNESS_USER2 = "SYSSET_monitor_brightness_user2";
-    public static final String SYSSET_POWERSAVE_TIME_USER2 = "SYSSET_powersave_time_user2";
-    public static final String SYSSET_POWERSAVE_ACTION_USER2 = "SYSSET_powersave_action_user2";
-    public static final String SYSSET_LANGUAGE_USER2 = "SYSSET_language_user2";
-    public static final String SYSSET_SET_LASTUPDATE_DAYS_USER2 = "SYSSET_set_lastupdate_days_user2";
-    public static final String COMM_EMERGENCY_AUTO_USER2 = "COMM_emergency_auto_user2";
-
-
-    public static final String SYSSET_USER_ID_USER3 = "SYSSET_user_id_user3";
-    public static final String SYSSET_USER_NAME_USER3 = "SYSSET_user_name_user3";
-    public static final String ADAS_FCWS_USER3 = "ADAS_FCWS_user3";
-    public static final String ADAS_LDS_USER3 = "ADAS_LDS_user3";
-    public static final String ADAS_DELAY_START_USER3 = "ADAS_delay_start_user3";
-    public static final String ADAS_PEDESTRIAN_COLLISION_USER3 = "ADAS_pedestrian_collision_user3";
-    public static final String NOTIFY_REVERSE_RUN_USER3 = "NOTIFY_reverse_run_user3";
-    public static final String NOTIFY_SPEED_LIMIT_AREA_USER3 = "NOTIFY_speed_limit_area_user3";
-    public static final String NOTIFY_STOP_USER3 = "NOTIFY_stop_user3";
-    public static final String NOTIFY_FREQ_ACCIDENT_AREA_USER3 = "NOTIFY_freq_accident_area_user3";
-    public static final String NOTIFY_DRIVING_TIME_USER3 = "NOTIFY_driving_time_user3";
-    public static final String NOTIFY_INTENSE_DRIVING_USER3 = "NOTIFY_Intense_driving_user3";
-    public static final String NOTIFY_ABNORMAL_HANDING_USER3 = "NOTIFY_abnormal_handing_user3";
-    public static final String NOTIFY_FLUCTUATION_DETECTION_USER3 = "NOTIFY_fluctuation_detection_user3";
-    public static final String NOTIFY_OUT_OF_AREA_USER3 = "NOTIFY_out_of_area_user3";
-    public static final String NOTIFY_DRIVING_REPORT_USER3 = "NOTIFY_driving_report_user3";
-    public static final String NOTIFY_ADVICE_USER3 = "NOTIFY_advice_user3";
-    public static final String NOTIFY_NOTIFICATION_USER3 = "NOTIFY_notification_user3";
-    public static final String NOTIFY_WEATHER_INFO_USER3 = "NOTIFY_weather_info_user3";
-    public static final String NOTIFY_ROAD_KILL_USER3 = "NOTIFY_road_kill_user3";
-    public static final String NOTIFY_LOCATION_INFO_USER3 = "NOTIFY_location_info_user3";
-    public static final String SYSSET_NOTIFY_VOL_USER3 = "SYSSET_notify_vol_user3";
-    public static final String SYSSET_PLAYBACK_VOL_USER3 = "SYSSET_playback_vol_user3";
-    public static final String SYSSET_MONITOR_BRIGHTNESS_USER3 = "SYSSET_monitor_brightness_user3";
-    public static final String SYSSET_POWERSAVE_TIME_USER3 = "SYSSET_powersave_time_user3";
-    public static final String SYSSET_POWERSAVE_ACTION_USER3 = "SYSSET_powersave_action_user3";
-    public static final String SYSSET_LANGUAGE_USER3 = "SYSSET_language_user3";
-    public static final String SYSSET_SET_LASTUPDATE_DAYS_USER3 = "SYSSET_set_lastupdate_days_user3";
-    public static final String COMM_EMERGENCY_AUTO_USER3 = "COMM_emergency_auto_user3";
-
-
-    public static final String SYSSET_USER_ID_USER4 = "SYSSET_user_id_user4";
-    public static final String SYSSET_USER_NAME_USER4 = "SYSSET_user_name_user4";
-    public static final String ADAS_FCWS_USER4 = "ADAS_FCWS_user4";
-    public static final String ADAS_LDS_USER4 = "ADAS_LDS_user4";
-    public static final String ADAS_DELAY_START_USER4 = "ADAS_delay_start_user4";
-    public static final String ADAS_PEDESTRIAN_COLLISION_USER4 = "ADAS_pedestrian_collision_user4";
-    public static final String NOTIFY_REVERSE_RUN_USER4 = "NOTIFY_reverse_run_user4";
-    public static final String NOTIFY_SPEED_LIMIT_AREA_USER4 = "NOTIFY_speed_limit_area_user4";
-    public static final String NOTIFY_STOP_USER4 = "NOTIFY_stop_user4";
-    public static final String NOTIFY_FREQ_ACCIDENT_AREA_USER4 = "NOTIFY_freq_accident_area_user4";
-    public static final String NOTIFY_DRIVING_TIME_USER4 = "NOTIFY_driving_time_user4";
-    public static final String NOTIFY_INTENSE_DRIVING_USER4 = "NOTIFY_Intense_driving_user4";
-    public static final String NOTIFY_ABNORMAL_HANDING_USER4 = "NOTIFY_abnormal_handing_user4";
-    public static final String NOTIFY_FLUCTUATION_DETECTION_USER4 = "NOTIFY_fluctuation_detection_user4";
-    public static final String NOTIFY_OUT_OF_AREA_USER4 = "NOTIFY_out_of_area_user4";
-    public static final String NOTIFY_DRIVING_REPORT_USER4 = "NOTIFY_driving_report_user4";
-    public static final String NOTIFY_ADVICE_USER4 = "NOTIFY_advice_user4";
-    public static final String NOTIFY_NOTIFICATION_USER4 = "NOTIFY_notification_user4";
-    public static final String NOTIFY_WEATHER_INFO_USER4 = "NOTIFY_weather_info_user4";
-    public static final String NOTIFY_ROAD_KILL_USER4 = "NOTIFY_road_kill_user4";
-    public static final String NOTIFY_LOCATION_INFO_USER4 = "NOTIFY_location_info_user4";
-    public static final String SYSSET_NOTIFY_VOL_USER4 = "SYSSET_notify_vol_user4";
-    public static final String SYSSET_PLAYBACK_VOL_USER4 = "SYSSET_playback_vol_user4";
-    public static final String SYSSET_MONITOR_BRIGHTNESS_USER4 = "SYSSET_monitor_brightness_user4";
-    public static final String SYSSET_POWERSAVE_TIME_USER4 = "SYSSET_powersave_time_user4";
-    public static final String SYSSET_POWERSAVE_ACTION_USER4 = "SYSSET_powersave_action_user4";
-    public static final String SYSSET_LANGUAGE_USER4 = "SYSSET_language_user4";
-    public static final String SYSSET_SET_LASTUPDATE_DAYS_USER4 = "SYSSET_set_lastupdate_days_user4";
-    public static final String COMM_EMERGENCY_AUTO_USER4 = "COMM_emergency_auto_user4";
-
-
-    public static final String SYSSET_USER_ID_USER5 = "SYSSET_user_id_user5";
-    public static final String SYSSET_USER_NAME_USER5 = "SYSSET_user_name_user5";
-    public static final String ADAS_FCWS_USER5 = "ADAS_FCWS_user5";
-    public static final String ADAS_LDS_USER5 = "ADAS_LDS_user5";
-    public static final String ADAS_DELAY_START_USER5 = "ADAS_delay_start_user5";
-    public static final String ADAS_PEDESTRIAN_COLLISION_USER5 = "ADAS_pedestrian_collision_user5";
-    public static final String NOTIFY_REVERSE_RUN_USER5 = "NOTIFY_reverse_run_user5";
-    public static final String NOTIFY_SPEED_LIMIT_AREA_USER5 = "NOTIFY_speed_limit_area_user5";
-    public static final String NOTIFY_STOP_USER5 = "NOTIFY_stop_user5";
-    public static final String NOTIFY_FREQ_ACCIDENT_AREA_USER5 = "NOTIFY_freq_accident_area_user5";
-    public static final String NOTIFY_DRIVING_TIME_USER5 = "NOTIFY_driving_time_user5";
-    public static final String NOTIFY_INTENSE_DRIVING_USER5 = "NOTIFY_Intense_driving_user5";
-    public static final String NOTIFY_ABNORMAL_HANDING_USER5 = "NOTIFY_abnormal_handing_user5";
-    public static final String NOTIFY_FLUCTUATION_DETECTION_USER5 = "NOTIFY_fluctuation_detection_user5";
-    public static final String NOTIFY_OUT_OF_AREA_USER5 = "NOTIFY_out_of_area_user5";
-    public static final String NOTIFY_DRIVING_REPORT_USER5 = "NOTIFY_driving_report_user5";
-    public static final String NOTIFY_ADVICE_USER5 = "NOTIFY_advice_user5";
-    public static final String NOTIFY_NOTIFICATION_USER5 = "NOTIFY_notification_user5";
-    public static final String NOTIFY_WEATHER_INFO_USER5 = "NOTIFY_weather_info_user5";
-    public static final String NOTIFY_ROAD_KILL_USER5 = "NOTIFY_road_kill_user5";
-    public static final String NOTIFY_LOCATION_INFO_USER5 = "NOTIFY_location_info_user5";
-    public static final String SYSSET_NOTIFY_VOL_USER5 = "SYSSET_notify_vol_user5";
-    public static final String SYSSET_PLAYBACK_VOL_USER5 = "SYSSET_playback_vol_user5";
-    public static final String SYSSET_MONITOR_BRIGHTNESS_USER5 = "SYSSET_monitor_brightness_user5";
-    public static final String SYSSET_POWERSAVE_TIME_USER5 = "SYSSET_powersave_time_user5";
-    public static final String SYSSET_POWERSAVE_ACTION_USER5 = "SYSSET_powersave_action_user5";
-    public static final String SYSSET_LANGUAGE_USER5 = "SYSSET_language_user5";
-    public static final String SYSSET_SET_LASTUPDATE_DAYS_USER5 = "SYSSET_set_lastupdate_days_user5";
-    public static final String COMM_EMERGENCY_AUTO_USER5 = "COMM_emergency_auto_user5";
-
-
 }
