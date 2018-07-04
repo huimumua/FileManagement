@@ -169,6 +169,7 @@ int SDA_get_free_extension_filenumber(eFolderType folderType){
 	}
 	// cout << "extension_number: " << extension_number << endl;
 
+    closedir(dp);
 	return extension_number;
 }
 
@@ -743,10 +744,12 @@ int FH_CanUseFilenumber(eFolderType folderType){
 	}
 
 	if(can_use_num < 2){
+        closedir(dp);
 		pthread_mutex_unlock(&g_mutex);
 		return 0;
 	}
 
+    closedir(dp);
 	pthread_mutex_unlock(&g_mutex);
 	return can_use_num;
 }
