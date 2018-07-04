@@ -30,15 +30,29 @@ public class SdCardReceiver extends BroadcastReceiver {
         if (action.equals(Intent.ACTION_MEDIA_MOUNTED)){// SD卡已经成功挂载
             Const.SDCARD_IS_EXIST = true;
 
+            boolean result = FileManager.getSingInstance().sdcardInit();
+            Logg.i(TAG,"=sdcardInit=result=="+result);
+            if(!result){
+                Const.SDCARD_INIT_SUCCESS=false;
+                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_FAIL);
+            }else{
+                Const.SDCARD_INIT_SUCCESS=true;
+                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_SUCC);
+            }
+//            SDCardListener.getSingInstance(Const.SDCARD_PATH).startWatche();
+
+            initSdcard(context);
         } else if (action.equals(Intent.ACTION_MEDIA_REMOVED)// 各种未挂载状态
                 || action.equals(Intent.ACTION_MEDIA_UNMOUNTED)
                 || action.equals(Intent.ACTION_MEDIA_BAD_REMOVAL)
+                || action.equals(Intent.ACTION_MEDIA_EJECT)
                 ) {
 
             Const.SDCARD_IS_EXIST = false;
             Const.SDCARD_INIT_SUCCESS=false;
             Const.IS_SDCARD_FULL_LIMIT = false;
             Const.IS_SDCARD_FOLDER_LIMIT = false;
+//            SDCardListener.getSingInstance(Const.SDCARD_PATH).stopWatche();
         }else if(action.equals(Intent.ACTION_MEDIA_UNMOUNTABLE)){//用来判断sdcard是坏的
 //            在收到android.intent.action.MEDIA_UNMOUNTABLE,取得fsType的值,若是ntfs就可判為不支持的卡,
 //                    若fsType為其它情況(如空值或exfat)..,則該卡被判為異常.
@@ -50,30 +64,10 @@ public class SdCardReceiver extends BroadcastReceiver {
                 BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                         Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_UNRECOGNIZABLE);
             }
-        } else if ( action.equals(Intent.ACTION_MEDIA_EJECT)) {
-            Const.SDCARD_IS_EXIST = false;
-            Const.SDCARD_INIT_SUCCESS=false;
-            Const.IS_SDCARD_FULL_LIMIT = false;
-            Const.IS_SDCARD_FOLDER_LIMIT = false;
-//            SDCardListener.getSingInstance(Const.SDCARD_PATH).stopWatche();
+        } else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描
 
-        }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描
-            if(Const.SDCARD_IS_EXIST){
-                boolean result = FileManager.getSingInstance().sdcardInit();
-                Logg.i(TAG,"=sdcardInit=result=="+result);
-                if(!result){
-                    Const.SDCARD_INIT_SUCCESS=false;
-                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_FAIL);
-                }else{
-                    Const.SDCARD_INIT_SUCCESS=true;
-                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_SUCC);
-                }
-//            SDCardListener.getSingInstance(Const.SDCARD_PATH).startWatche();
-            }
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_FINISHED)){//扫描完成
-            if(Const.SDCARD_IS_EXIST){
-                initSdcard(context);
-            }
+
         }else if (action.equals(Intent.ACTION_MEDIA_SHARED)){//扩展介质的挂载被解除 (unmount)。因为它已经作为 USB 大容量存储被共享
 
         }else {
@@ -100,12 +94,7 @@ public class SdCardReceiver extends BroadcastReceiver {
                     Const.IS_SDCARD_FULL_LIMIT = true;
                     String currentAction = Const.CMD_SHOW_REACH_NORMAL_FILE_LIMIT;
                     BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
-                }/*else{
-                    String currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
-                    BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
-                }*/
-
-
+                }
             }
         }).start();
     }
