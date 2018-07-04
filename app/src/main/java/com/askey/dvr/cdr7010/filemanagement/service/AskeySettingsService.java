@@ -44,6 +44,7 @@ public class AskeySettingsService extends Service {
     private TelephonyManager mPhoneManager;
     private String imei;
     private String userTag = "_user";//用于拼接setting的key
+    private boolean isSettingsBind = false;//判断setting是否绑定了服务
 
     public AskeySettingsService() {
 
@@ -101,6 +102,7 @@ public class AskeySettingsService extends Service {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mCommunication = ICommunication.Stub.asInterface(service);
             try {
+                isSettingsBind = true;
                 mCommunication.settingsUpdateRequest(settingsJson());
                 Log.d(LOG_TAG, "onServiceConnected: "+settingsJson());
             } catch (RemoteException e) {
@@ -192,7 +194,9 @@ public class AskeySettingsService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        unbindService(mConnection);
+        if (isSettingsBind) {
+            unbindService(mConnection);
+        }
         return super.onUnbind(intent);
     }
 
