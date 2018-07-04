@@ -36,6 +36,8 @@ public class SdCardReceiver extends BroadcastReceiver {
                 ) {
 
             Const.SDCARD_IS_EXIST = false;
+            Const.SDCARD_INIT_SUCCESS=false;
+            Const.IS_SDCARD_FULL_LIMIT = false;
             Const.IS_SDCARD_FOLDER_LIMIT = false;
         }else if(action.equals(Intent.ACTION_MEDIA_UNMOUNTABLE)){//用来判断sdcard是坏的
 //            在收到android.intent.action.MEDIA_UNMOUNTABLE,取得fsType的值,若是ntfs就可判為不支持的卡,
@@ -56,20 +58,22 @@ public class SdCardReceiver extends BroadcastReceiver {
 //            SDCardListener.getSingInstance(Const.SDCARD_PATH).stopWatche();
 
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描
-            boolean result = FileManager.getSingInstance().sdcardInit();
-            Logg.i(TAG,"=sdcardInit=result=="+result);
-            if(!result){
-                Const.SDCARD_INIT_SUCCESS=false;
-                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_FAIL);
-            }else{
-                Const.SDCARD_INIT_SUCCESS=true;
-                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_SUCC);
-            }
+            if(Const.SDCARD_IS_EXIST){
+                boolean result = FileManager.getSingInstance().sdcardInit();
+                Logg.i(TAG,"=sdcardInit=result=="+result);
+                if(!result){
+                    Const.SDCARD_INIT_SUCCESS=false;
+                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_FAIL);
+                }else{
+                    Const.SDCARD_INIT_SUCCESS=true;
+                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_SUCC);
+                }
 //            SDCardListener.getSingInstance(Const.SDCARD_PATH).startWatche();
-
+            }
         }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_FINISHED)){//扫描完成
-            initSdcard(context);
-
+            if(Const.SDCARD_IS_EXIST){
+                initSdcard(context);
+            }
         }else if (action.equals(Intent.ACTION_MEDIA_SHARED)){//扩展介质的挂载被解除 (unmount)。因为它已经作为 USB 大容量存储被共享
 
         }else {
