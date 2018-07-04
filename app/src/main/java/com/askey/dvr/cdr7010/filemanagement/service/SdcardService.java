@@ -32,7 +32,7 @@ public class SdcardService extends Service {
         super.onCreate();
         Logg.i(TAG, "service onCreate ...");
         // 在IntentFilter中选择你要监听的行为
-        SdcardUtils.registerStorageEventListener(FileManagerApplication.getAppContext());
+//        SdcardUtils.registerStorageEventListener(FileManagerApplication.getAppContext());
         registerReceiver();
 
     }
@@ -55,7 +55,7 @@ public class SdcardService extends Service {
 
     public void onDestroy() {
         Logg.i(TAG, "==onDestroy==");
-        SdcardUtils.unRegisterStorageEventListener(FileManagerApplication.getAppContext());
+//        SdcardUtils.unRegisterStorageEventListener(FileManagerApplication.getAppContext());
         unregisterReceiver(sdCardReceiver);//取消注册
     };
 

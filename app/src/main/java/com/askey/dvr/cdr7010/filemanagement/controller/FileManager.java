@@ -166,7 +166,8 @@ public class FileManager {
                 }
             }).start();
         }else{
-            BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_FAIL);
+            Logg.e(LOG_TAG,"=====show_sdcard_init_fail=====");
+//            BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_FAIL);
         }
 
         return result;

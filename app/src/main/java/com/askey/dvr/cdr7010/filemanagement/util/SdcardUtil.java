@@ -71,6 +71,7 @@ public class SdcardUtil {
         }
         return false;
     }
+
     public static int getCurentSdcardInfo(Context context ) {
         try {
             //找到sdcard的位置
