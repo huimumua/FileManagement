@@ -138,7 +138,7 @@ public class AskeySettingsService extends Service {
             setting.put("userCM", userCM);
 
             for (int i = 1; i < 6; i++) {
-                putUserNumSetting(setting, i);
+                putUserNumSetting(setting, i);//组装user1-5的json
             }
 
             return setting.toString();
