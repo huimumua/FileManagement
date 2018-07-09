@@ -202,9 +202,9 @@ public class AskeySettingsService extends Service {
 
     private String getImei(TelephonyManager manager) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            return "";
+            return null;
         }
-        return manager.getDeviceId();
+        return manager.getDeviceId() == null ? "null" : manager.getDeviceId();
     }
 
     public static final String SYSSET_USER_NUM = "SYSSET_user_num";
