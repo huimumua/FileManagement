@@ -135,7 +135,7 @@ public class FileManager {
         Logg.i(LOG_TAG,"=====type====="+type+"==filename=="+filename);
         String result= null;
 //        if(sdcardInit()){
-        if(Const.SDCARD_INIT_SUCCESS){
+        if(Const.SDCARD_INIT_SUCCESS && !Const.IS_SDCARD_FULL_LIMIT){
 //            while(result == null || result.equals("")){
                 result = FH_Open(filename,type);
                 Logg.i(LOG_TAG,"=====FH_Open====="+result);
@@ -166,7 +166,8 @@ public class FileManager {
                 }
             }).start();
         }else{
-            Logg.e(LOG_TAG,"=====show_sdcard_init_fail=====");
+            Logg.e(LOG_TAG,"=====is SDCARD_INIT_SUCCESS====="+Const.SDCARD_INIT_SUCCESS);
+            Logg.e(LOG_TAG,"=====is IS_SDCARD_FULL_LIMIT====="+Const.IS_SDCARD_FULL_LIMIT);
 //            BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_FAIL);
         }
 
@@ -175,24 +176,27 @@ public class FileManager {
 
     private void sendLimitFileBroadcastByType(String folderType) {
         String currentAction = "";
-        if(!Const.IS_SDCARD_FULL_LIMIT && sdcardIsFull(folderType)/*SdcardUtil.checkSDcardIsFull()*/){
+        if(SdcardUtil.checkSDcardIsFull()){
             Const.IS_SDCARD_FULL_LIMIT = true;
             currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
+            BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
         }else{
-            if(folderType.equals(Const.EVENT_DIR)){
-                currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
-            }else if(folderType.equals(Const.NORMAL_DIR)){
-                currentAction = Const.CMD_SHOW_REACH_NORMAL_FILE_LIMIT;
-            }else if(folderType.equals(Const.PARKING_DIR)){
-                currentAction = Const.CMD_SHOW_REACH_PARKING_FILE_LIMIT;
-            }else if(folderType.equals(Const.PICTURE_DIR)){
-                currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_LIMIT;
-            }else if(folderType.equals(Const.SYSTEM_DIR)){
-                currentAction = Const.CMD_SHOW_REACH_SYSTEM_FILE_LIMIT;
+            if(sdcardIsFull(folderType)){
+                if(folderType.equals(Const.EVENT_DIR)){
+                    currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
+                }else if(folderType.equals(Const.NORMAL_DIR)){
+                    currentAction = Const.CMD_SHOW_REACH_NORMAL_FILE_LIMIT;
+                }else if(folderType.equals(Const.PARKING_DIR)){
+                    currentAction = Const.CMD_SHOW_REACH_PARKING_FILE_LIMIT;
+                }else if(folderType.equals(Const.PICTURE_DIR)){
+                    currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_LIMIT;
+                }else if(folderType.equals(Const.SYSTEM_DIR)){
+                    currentAction = Const.CMD_SHOW_REACH_SYSTEM_FILE_LIMIT;
+                }
+                Const.IS_SDCARD_FOLDER_LIMIT = true;
+                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
             }
-            Const.IS_SDCARD_FOLDER_LIMIT = true;
         }
-        BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
     }
 
     public boolean sdcardIsFull(String folderType) {
@@ -212,12 +216,12 @@ public class FileManager {
 
     public void sendUnreachLimitFileBroadcastByType(String folderType) {
             String currentAction = "";
-            if(Const.IS_SDCARD_FULL_LIMIT && !sdcardIsFull(folderType)/*SdcardUtil.checkSDcardIsFull()*/){
+            if(Const.IS_SDCARD_FULL_LIMIT && !SdcardUtil.checkSDcardIsFull()){
                 Const.IS_SDCARD_FULL_LIMIT = false;
                 currentAction = Const.CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT;
                 BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
             }
-            if(Const.IS_SDCARD_FOLDER_LIMIT){
+            if(Const.IS_SDCARD_FOLDER_LIMIT && !sdcardIsFull(folderType)){
                 if(folderType.equals(Const.EVENT_DIR)){
                     currentAction = Const.CMD_SHOW_UNREACH_EVENT_FILE_LIMIT;
                 }else if(folderType.equals(Const.NORMAL_DIR)){

@@ -48,7 +48,7 @@ public class Const {
 
     public static int CURRENT_SDCARD_SIZE = 0; // unit GB
     public static final String SDCARD_SIZE_UNIT ="GB" ;
-    public static final long SDCARD_RESERVE_SPACE = 2*1024*1024*100 ;//sdcard预留空间大小
+    public static final long SDCARD_RESERVE_SPACE = 1*1024*1024*100 ;//sdcard预留空间大小
 
     public static final int SDCARD_SIZE_4Gb = 4; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_4Gb = 1000; // unit 个文件
