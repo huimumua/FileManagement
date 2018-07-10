@@ -246,6 +246,14 @@ public class FileManager {
             type = Const.TYPE_PICTURE_DIR;
         }else if(folderType.equals(Const.SYSTEM_DIR)){
             type = Const.TYPE_SYSTEM_DIR;
+        }else if(folderType.equals(Const.CAMERA2_DIR)){
+            type = Const.TYPE_CAMERA2_DIR;
+        }else if(folderType.equals(Const.NMEA_EVENT_DIR)){
+            type = Const.TYPE_NMEA_EVENT_DIR;
+        }else if(folderType.equals(Const.NMEA_NORMAL_DIR)){
+            type = Const.TYPE_NMEA_NORMAL_DIR;
+        }else if(folderType.equals(Const.NMEA_CAMERA_DIR)){
+            type = Const.TYPE_NMEA_CAMERA_DIR;
         }
         return type;
     }
@@ -263,6 +271,14 @@ public class FileManager {
             type = Const.PICTURE_DIR;
         }else if(path.contains(Const.SYSTEM_DIR)){
             type = Const.SYSTEM_DIR;
+        }else if(path.contains(Const.CAMERA2_DIR)){
+            type = Const.CAMERA2_DIR;
+        }else if(path.contains("SYSTEM/NMEA/EVENT")){
+            type = Const.NMEA_EVENT_DIR;
+        }else if(path.contains("SYSTEM/NMEA/NORMAL")){
+            type = Const.NMEA_NORMAL_DIR;
+        }else if(path.contains("SYSTEM/NMEA/CAMERA2")){
+            type = Const.NMEA_CAMERA_DIR;
         }
         return type;
     }

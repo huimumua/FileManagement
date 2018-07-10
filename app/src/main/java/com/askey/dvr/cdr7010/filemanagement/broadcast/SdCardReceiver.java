@@ -88,7 +88,6 @@ public class SdCardReceiver extends BroadcastReceiver {
 
                 boolean validFormat = FileManager.getSingInstance().validFormat();
                 Logg.i(TAG,"validFormat-》"+validFormat);
-
 //                if(SdcardUtil.checkSDcardIsFull()){
                 if(FileManager.getSingInstance().sdcardIsFull(Const.NORMAL_DIR)){
                     Const.IS_SDCARD_FULL_LIMIT = true;

@@ -28,19 +28,27 @@ public class Const {
 
     public static final String NORMAL_DIR = "NORMAL";
     public static final String EVENT_DIR = "EVENT";
-    public static final String PARKING_DIR = "PARKING";
+    public static final String CAMERA2_DIR = "CAMERA2";
     public static final String PICTURE_DIR = "PICTURE";
     public static final String SYSTEM_DIR = "SYSTEM";
+    public static final String NMEA_EVENT_DIR = "NMEA_EVENT";
+    public static final String NMEA_NORMAL_DIR = "NMEA_NORMAL";
+    public static final String NMEA_CAMERA_DIR = "NMEA_CAMERA";
+    public static final String PARKING_DIR = "PARKING";
 
     public static final int TYPE_EVENT_DIR = 0;
     public static final int TYPE_NORMAL_DIR = 1;
-    public static final int TYPE_PARKING_DIR = 2;
+    public static final int TYPE_CAMERA2_DIR = 2;
     public static final int TYPE_PICTURE_DIR = 3;
     public static final int TYPE_SYSTEM_DIR = 4;
+    public static final int TYPE_NMEA_EVENT_DIR = 5;
+    public static final int TYPE_NMEA_NORMAL_DIR = 6;
+    public static final int TYPE_NMEA_CAMERA_DIR = 7;
+    public static final int TYPE_PARKING_DIR = 8;
 
     public static int CURRENT_SDCARD_SIZE = 0; // unit GB
     public static final String SDCARD_SIZE_UNIT ="GB" ;
-    public static final long SDCARD_RESERVE_SPACE = 1024*1024*100 ;//sdcard预留空间大小
+    public static final long SDCARD_RESERVE_SPACE = 2*1024*1024*100 ;//sdcard预留空间大小
 
     public static final int SDCARD_SIZE_4Gb = 4; // unit GB
     public static final int SDCARD_MAX_NORMAL_FILE_SIZE_4Gb = 1000; // unit 个文件
