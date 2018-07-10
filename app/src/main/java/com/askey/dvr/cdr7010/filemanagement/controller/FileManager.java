@@ -150,6 +150,8 @@ public class FileManager {
                             result = FH_Open(filename,type);
 //                        sendUnreachLimitFileBroadcastByType(folderType);
                         }
+                    }else{
+                        Logg.e(LOG_TAG,"=====oldestPath====="+oldestPath);
                     }
                 }
 //            }

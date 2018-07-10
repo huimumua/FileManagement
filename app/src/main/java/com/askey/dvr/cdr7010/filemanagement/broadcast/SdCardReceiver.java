@@ -94,7 +94,6 @@ public class SdCardReceiver extends BroadcastReceiver {
                     String currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
                     BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
                 }
-
             }
         }).start();
     }
