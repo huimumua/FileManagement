@@ -5,13 +5,13 @@
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.2, 107*MEGABYTE, 0, 0, 0, 0}, // event
-											{"NORMAL",  ".nor",  0.4, 107*MEGABYTE, 0, 0, 0, 0}, // normal
-											{"CAMERA2", ".cam2", 0.2, 107*MEGABYTE, 0, 0, 0, 0}, // parking
-											{"PICTURE", ".pic",  0.1, 107*MEGABYTE, 0, 0, 0, 0}, // picture
-											{"SYSTEM",  ".sys",  0.1, 107*MEGABYTE, 0, 0, 0, 0}, // system
-								{"SYSTEM/NMEA/EVENT",   ".neve",   0, 200*KILOBYTE, 0, 0, 0, 1},
-								{"SYSTEM/NMEA/NORMAL",  ".nnor",   0, 200*KILOBYTE, 0, 0, 0, 1},
-								{"SYSTEM/NMEA/CAMERA2", ".ncam2",  0, 200*KILOBYTE, 0, 0, 0, 1}};
+											{"NORMAL",  ".nor",  0.4, 76*MEGABYTE, 0, 0, 0, 0}, // normal
+											{"CAMERA2", ".cam2", 0.2, 76*MEGABYTE, 0, 0, 0, 0}, // parking
+											{"PICTURE", ".pic",  0.1, 76*MEGABYTE, 0, 0, 0, 0}, // picture
+											{"SYSTEM",  ".sys",  0.1, 76*MEGABYTE, 0, 0, 0, 0}, // system
+								{"SYSTEM/NMEA/EVENT",   ".neve",   0, 100*KILOBYTE, 0, 0, 0, 1},
+								{"SYSTEM/NMEA/NORMAL",  ".nnor",   0, 100*KILOBYTE, 0, 0, 0, 1},
+								{"SYSTEM/NMEA/CAMERA2", ".ncam2",  0, 100*KILOBYTE, 0, 0, 0, 1}};
 
 
 char g_mount_path[NORULE_SIZE];
@@ -338,6 +338,7 @@ bool FH_Init(char* mount_path){
 	if (statvfs(mount_path, &buf) == -1)
 		perror("statvfs() error");
 	else {
+        ALOGE("== SDCARD available size = %" PRIu64 "(byte)\n", buf.f_bavail);
 		printf("each block is %ld bytes big\n", buf.f_bsize);
 		printf("there are %ld blocks available out of a total of %ld\n", buf.f_bavail, buf.f_blocks);
 		printf("in bytes, that's %" PRIu64 " bytes free out of a total of %" PRIu64 "\n",
@@ -455,6 +456,9 @@ bool FH_Init(char* mount_path){
 	// 	<< FH_Table[i].max_file_num << " " << FH_Table[i].file_num << " "
 	// 	<< FH_Table[i].exist_flag << endl;
 	// }
+    for(i=0; i<TABLE_SIZE; i++){
+        ALOGE("this is jni call1-->%s, %s, %f, %" PRId64", %" PRId64 ", %d, %d, %d \n",FH_Table[i].folder_type, FH_Table[i].folder_extension, FH_Table[i].percent, FH_Table[i].every_block_space, FH_Table[i].avail_space, FH_Table[i].max_file_num, FH_Table[i].file_num, FH_Table[i].exist_flag);
+    }
 
 
 
