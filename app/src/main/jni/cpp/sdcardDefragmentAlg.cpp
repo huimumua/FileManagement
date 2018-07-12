@@ -4,7 +4,7 @@
 #define LOG_TAG "sdcardDefragmentAlg.cpp"
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.2, 107*MEGABYTE, 0, 0, 0, 0}, // event
+struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.2, 76*MEGABYTE, 0, 0, 0, 0}, // event
 											{"NORMAL",  ".nor",  0.4, 76*MEGABYTE, 0, 0, 0, 0}, // normal
 											{"CAMERA2", ".cam2", 0.2, 76*MEGABYTE, 0, 0, 0, 0}, // parking
 											{"PICTURE", ".pic",  0.1, 76*MEGABYTE, 0, 0, 0, 0}, // picture
