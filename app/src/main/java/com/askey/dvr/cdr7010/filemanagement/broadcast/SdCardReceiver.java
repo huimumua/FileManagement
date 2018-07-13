@@ -92,6 +92,10 @@ public class SdCardReceiver extends BroadcastReceiver {
                     Const.IS_SDCARD_FULL_LIMIT = true;
                     String currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
                     BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                }else{
+                    Const.IS_SDCARD_FULL_LIMIT = false;
+                    String currentAction = Const.CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT;
+                    BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
                 }
                 if(FileManager.getSingInstance().sdcardIsFull(Const.EVENT_DIR)){
                     Const.IS_SDCARD_FOLDER_LIMIT = true;
