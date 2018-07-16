@@ -214,7 +214,6 @@ public class MediaScanner {
                         DATE_MODIFIED = String.valueOf(mFile.lastModified());
                         Logg.i(TAG,"==path=="+path);
                         if(!type.equals(Const.NORMAL_DIR)){
-                            Logg.i(TAG,"==type=="+type);
                             long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
                             ItemData itemData= new ItemData();
                             itemData.setFileTime(fileCreateTime);
@@ -224,8 +223,7 @@ public class MediaScanner {
                             itemData.setMediaID(Integer.valueOf(id));
                             fileList.add(itemData);
                         }else{
-                            String yyyyMMDD = name.substring(0,8);
-                            Logg.i(TAG,"==type=="+type);
+                            String yyyyMMDD = name.substring(0,6);
                             long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
 
                             if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
@@ -238,7 +236,6 @@ public class MediaScanner {
                                 group.add(groupitem);
                             }else{
                                 currentYYYYMMDD = yyyyMMDD;
-
                                 group= new ArrayList<ItemData>();
                                 ItemData groupitem = new ItemData();
                                 groupitem.setFileTime(fileCreateTime);
