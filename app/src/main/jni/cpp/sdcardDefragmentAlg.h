@@ -31,6 +31,22 @@ using namespace std;
 
 #define NORULE_SIZE 128
 
+#define FILE_MAX_LENGTH  17
+#define FILE_MINI_LENGTH 16
+
+#define MONTH_LIMIT  12
+#define DAYS_LIMIT   31
+#define HOUR_LIMIT   23
+#define MINUTE_LIMIT 59
+#define SECOND_LIMIT 59
+
+#define SUCCESS 0
+#define SDCARD_PATH_ERROR 2
+#define OPEN_FOLDER_ERROR 3
+#define FOLDER_SPACE_OVER_LIMIT 4
+#define EXIST_FILE_NUM_OVER_LIMIT 5
+#define NO_SPACE_NO_NUMBER_TO_RECYCLE 6
+
 #define KILOBYTE (1 << 10)
 #define MEGABYTE (1 << 20)
 
@@ -57,7 +73,7 @@ struct file_struct{
 
 };
 
-//Purpose: Check config file exist or not 
+//Purpose: Check config file exist or not
 //
 //Input:  mount path
 //Output: bool, true = 1, false = 0;
@@ -76,11 +92,11 @@ bool FH_Init(char* mount_path);
 // Purpose: 1.Choice enum folderType to openfile
 //          2.Get file_num from "Table.config"
 //          3.If "Free" folder have extension for folderType, use it to open file.
-// Input:  filename,    
+// Input:  filename,
 //         folderType: eunm eFolderType
 // Output: FILE Pointer
 // ** If file number > Table.config file_num, return NULL; **
-char* FH_Open(char* filename, eFolderType folderType);
+string FH_Open(char* filename, eFolderType folderType);
 
 //
 // not use
@@ -107,11 +123,22 @@ bool FH_Delete(const char* absolute_filepath);
 string FH_FindOldest(eFolderType folderType);
 
 //
-// Purpose: 
+// Purpose:
 // Input: enum eFolderType
 // Output: The number of videos that can be recorded
-// ** if number < 2, return 0. 
+// ** if number < 2, return 0.
 int FH_CanUseFilenumber(eFolderType folderType);
+
+//
+// Purpose: before FH_Open, Check sdcard and folder status.
+// Input: enum eFolderType
+// Output: (Error situation)(look #define)
+//         SDCARD_PATH_ERROR
+//         EXIST_FILE_NUM_OVER_LIMIT
+//         NO_SPACE_NO_NUMBER_TO_RECYCLE
+//         OPEN_FOLDER_ERROR
+//         FOLDER_SPACE_OVER_LIMIT
+int FH_CheckFolderStatus(eFolderType folderType);
 
 //
 // not use
