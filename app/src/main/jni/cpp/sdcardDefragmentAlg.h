@@ -96,7 +96,7 @@ bool FH_Init(char* mount_path);
 //         folderType: eunm eFolderType
 // Output: FILE Pointer
 // ** If file number > Table.config file_num, return NULL; **
-string FH_Open(char* filename, eFolderType folderType);
+char* FH_Open(char* filename, eFolderType folderType);
 
 //
 // not use
