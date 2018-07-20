@@ -240,15 +240,6 @@ int SDA_write_table_in_config(char* mount_path){
     for(i=0; i<TABLE_SIZE; i++){
         fwrite(&FH_Table[i], sizeof(struct file_struct), 1, fp);
     }
-
-    if(fwrite != 0){
-        fclose(fp);
-        return 0;
-    }else{
-        cout << "failed" << endl;
-        fclose(fp);
-        return -1;
-    }
 }
 
 int SDA_read_table_file_num_from_config(char* mount_path, eFolderType folderType){
@@ -389,7 +380,7 @@ bool FH_Init(char* mount_path){
     if (statvfs(mount_path, &buf) == -1){
         ALOGE("Sdcard path error. func: %s, line:%d \n", __func__, __LINE__);
         pthread_mutex_unlock(&g_mutex);
-        return -1;
+        return false;
     } else {
         ALOGE("Sdcard available space = %" PRIu64 ". func: %s, line:%d \n", ((uint64_t)buf.f_bavail * buf.f_bsize), __func__, __LINE__);
         mount_path_avail_size = ((uint64_t)buf.f_bavail * buf.f_bsize);
@@ -837,7 +828,7 @@ int FH_CheckFolderStatus(eFolderType folderType){
     ALOGE("this is jni call1-->%s, %s, %f, %" PRId64", %" PRId64 ", %d, %d, %d \n",FH_Table[folderType].folder_type, FH_Table[folderType].folder_extension, FH_Table[folderType].percent, FH_Table[folderType].every_block_space, FH_Table[folderType].avail_space, FH_Table[folderType].max_file_num, FH_Table[folderType].file_num, FH_Table[folderType].exist_flag);
 
     pthread_mutex_unlock(&g_mutex);
-    return SUCCESS;
+    return FH_Table[folderType].file_num;
 }
 
 //
