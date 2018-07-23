@@ -525,20 +525,20 @@ bool FH_Init(char* mount_path){
 }
 
 
-char* FH_Open(char* filename, eFolderType folderType){
+string FH_Open(char* filename, eFolderType folderType){
 
     pthread_mutex_lock(&g_mutex);
 
     if(strlen(g_mount_path) == 0){
         pthread_mutex_unlock(&g_mutex);
-        return NULL;
+        return "";
     }
 
     char free_path[NORULE_SIZE];
     snprintf(free_path, NORULE_SIZE, "%s%s", g_mount_path,"/SYSTEM/FREE");
 
     char folder_path[NORULE_SIZE];
-    static char purpose_path[NORULE_SIZE];
+    char purpose_path[NORULE_SIZE];
     string first_filename;
     ALOGE("this is jni call1-->FH_Open filename %s",filename);
     ALOGE("this is jni call1-->FH_Open folderType %d",folderType);
@@ -558,28 +558,27 @@ char* FH_Open(char* filename, eFolderType folderType){
         rename(first_path, purpose_path);
 
         pthread_mutex_unlock(&g_mutex);
-        return purpose_path;
+        return string(purpose_path);
 
         // if no .eve extension in System/Free & folder file number < Event.file_num
     }else if(SDA_get_recoder_file_num(folder_path) < max_file_number){
         snprintf(purpose_path, NORULE_SIZE, "%s/%s", folder_path, filename);
 
         pthread_mutex_unlock(&g_mutex);
-        return purpose_path;
+        return string(purpose_path);
     }else{
         cout << "file was full, please delete some file." << endl;
 
         ALOGE("this is jni call1-->FH_Open file was full, please delete some file.");
 
         pthread_mutex_unlock(&g_mutex);
-        return NULL;
+        return "";
     }
 }
 
 //
 // true = 1, false = 0;
 bool FH_Close(void){
-
     pthread_mutex_lock(&g_mutex);
     pthread_mutex_unlock(&g_mutex);
     return true;

@@ -4,9 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -17,9 +14,6 @@ import com.askey.dvr.cdr7010.filemanagement.util.DateUtil;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,29 +50,6 @@ public class MediaScanner {
         }catch (Exception e){
             Logg.e(TAG,"scanFileAsync->Exception="+e.getMessage());
         }
-    }
-
-    public static final String ACTION_MEDIA_SCANNER_SCAN_DIR = "android.intent.action.MEDIA_SCANNER_SCAN_DIR";
-
-    /**
-     * android.intent.action.MEDIA_SCANNER_SCAN_DIR
-     * 扫描指定目录
-     * */
-    public static void scanDirAsync(Context ctx, String dir) {
-        try {
-            Intent scanIntent = new Intent(ACTION_MEDIA_SCANNER_SCAN_DIR);
-            File file = new File(dir);
-            if(file!=null){
-                Uri uri = Uri.fromFile(file);
-//        Uri uri = FileProvider.getUriForFile(ctx, BuildConfig.APPLICATION_ID, file);
-                scanIntent.setData(uri);
-//                ctx.sendBroadcast(scanIntent);
-                ctx.sendBroadcastAsUser(scanIntent, android.os.Process.myUserHandle());
-            }
-        }catch (Exception e){
-            Logg.e(TAG,"scanDirAsync->Exception="+e.getMessage());
-        }
-
     }
 
     /**
@@ -268,20 +239,6 @@ public class MediaScanner {
         return fileList;
     }
 
-    public static Bitmap getVideoThumbnail(String videoPath, int width, int height, int kind) {
-        Bitmap  bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
-        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-        return bitmap;
-    }
-
-    public static Bitmap getVideoThumbnail(String videoPath) {
-        MediaMetadataRetriever media =new MediaMetadataRetriever();
-        media.setDataSource(videoPath);
-        Bitmap bitmap = media.getFrameAtTime();
-        return bitmap;
-    }
-
-
     /**
      * 根据类型获取图片文件列表
      * */
@@ -405,17 +362,26 @@ public class MediaScanner {
         if (file.exists() && file.isFile()) {
             boolean result = FileManager.getSingInstance().FH_Delete(fileName);
             Logg.i(TAG,"-->deleteFile --> FH_Delete fileName"+fileName+" result =="+result);
-            String nmeaPath = null;
-            if(fileName.contains("EVENT")){
-                nmeaPath = fileName.replaceAll("mp4", "nmea").replaceAll("EVENT", "SYSTEM/NMEA/EVENT");
-            }else if(fileName.contains("NORMAL")){
-                nmeaPath = fileName.replaceAll("mp4", "nmea").replaceAll("NORMAL", "SYSTEM/NMEA/NORMAL");
+            if(!fileName.contains(".jpg")){
+                String nmeaPath = null;
+                if(fileName.contains("EVENT")){
+                    nmeaPath = fileName.replaceAll("mp4", "nmea").replaceAll("EVENT", "SYSTEM/NMEA/EVENT");
+                }else if(fileName.contains("NORMAL")){
+                    nmeaPath = fileName.replaceAll("mp4", "nmea").replaceAll("NORMAL", "SYSTEM/NMEA/NORMAL");
+                }
+                //这里还需要删除李纳所创建的文件
+
+
+
+
+                //SYSTEM/NMEA/NORMAL
+                boolean nmeaResult = false;
+                if(nmeaPath!=null){
+                    nmeaResult = FileManager.getSingInstance().FH_Delete(nmeaPath);
+                    Logg.i(TAG,"-->deleteFile --> FH_Delete nmeaPath"+nmeaPath+" nmeaResult =="+nmeaResult);
+                }
             }
-            //SYSTEM/NMEA/NORMAL
-            if(nmeaPath!=null){
-                boolean nmeaResult = FileManager.getSingInstance().FH_Delete(nmeaPath);
-                Logg.i(TAG,"-->deleteFile --> FH_Delete nmeaPath"+nmeaPath+" nmeaResult =="+nmeaResult);
-            }
+
             //之后会使用底层提供的方法进行删除
             if (/*file.delete()*/result) {
                 Logg.i(TAG,"-->deleteFile --> delete "+fileName+" success");
@@ -423,20 +389,9 @@ public class MediaScanner {
                 syncDeleteFile(file);
 //                scanFileAsync(FileManagerApplication.getAppContext(),fileName);
                 return true;
-            } else {
-                if(file.delete()){
-                    Logg.i(TAG,"-->deleteFile --> delete "+fileName+" success");
-                    //这里清除ContentProvader数据库
-                    syncDeleteFile(file);
-                    return true;
-                }
-                Logg.e(TAG,"-->deleteFile --> delete "+fileName+" failed");
-                return false;
             }
-        } else {
-            Logg.e(TAG,"-->deleteFile --> delete "+fileName+" not exists");
-            return false;
         }
+        return false;
     }
 
     public static void syncDeleteFile(File file) {
@@ -528,15 +483,7 @@ public class MediaScanner {
             Logg.e(TAG,"-->deleteDirectory --> delete "+dir+" failed");
             return false;
         }
-
-        // 删除当前目录     这里需要不需要还待确认
-        if (dirFile.delete()) {
-            Logg.i(TAG,"-->deleteDirectory --> delete "+dir+" success");
-            return true;
-        } else {
-            Logg.e(TAG,"=====dirFile.delete()==false==");
-            return false;
-        }
+        return dirFile.delete();
     }
 
     public static boolean deleteDirectoryByType(String dir) {

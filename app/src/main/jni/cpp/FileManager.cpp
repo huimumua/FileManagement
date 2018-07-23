@@ -31,15 +31,16 @@ jboolean FileManager_FH_Init(JNIEnv *env, jclass object,jstring mount_path){
 }
 
 jstring FileManager_FH_Open(JNIEnv *env, jclass object, jstring file_name, jint type){
-     char *filename = (char *) env->GetStringUTFChars(file_name, 0);
-     char* str = FH_Open(filename,(eFolderType)type);
-    if(str !=NULL ){
-        env->ReleaseStringUTFChars(file_name, filename);
-//        return env->NewString((const jchar *)str, sizeof(str));
-        return env->NewStringUTF(str);
-    }
-    env->ReleaseStringUTFChars(file_name, filename);
-    return NULL;
+    char *filename = (char *) env->GetStringUTFChars(file_name, 0);
+    string result = FH_Open(filename,(eFolderType)type);
+    return env->NewStringUTF(result.c_str());
+//     char* str = FH_Open(filename,(eFolderType)type);
+//    if(str !=NULL ){
+//        env->ReleaseStringUTFChars(file_name, filename);
+//        return env->NewStringUTF(str);
+//    }
+//    env->ReleaseStringUTFChars(file_name, filename);
+//    return NULL;
  }
 
 jboolean FileManager_FH_Close(JNIEnv *env, jclass object){
@@ -65,6 +66,13 @@ jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,jint type){
 jint FileManager_FH_FolderCanUseFilenumber(JNIEnv *env, jclass object,jint type){
     jint  numb = FH_CanUseFilenumber((eFolderType)type);
     ALOGE("this is jni call1-->FileManager_FH_CanUseFilenumber= %d" , numb);
+//    return FH_FolderCanUseFilenumber((eFolderType)type);
+    return numb;
+}
+
+jint FileManager_FH_CheckFolderStatus(JNIEnv *env, jclass object,jint type){
+    jint  numb = FH_CheckFolderStatus((eFolderType)type);
+    ALOGE("this is jni call1-->FileManager_FH_CheckFolderStatus= %d" , numb);
 //    return FH_FolderCanUseFilenumber((eFolderType)type);
     return numb;
 }
@@ -102,6 +110,7 @@ static const JNINativeMethod gMethods[] = {
         { "FH_Delete", "(Ljava/lang/String;)Z", (void *)FileManager_FH_Delete },
         { "FH_FindOldest", "(I)Ljava/lang/String;", (void *)FileManager_FH_FindOldest },
         { "FH_FolderCanUseFilenumber", "(I)I", (void *)FileManager_FH_FolderCanUseFilenumber },
+        { "FH_CheckFolderStatus", "(I)I", (void *)FileManager_FH_CheckFolderStatus },
         { "FH_lock", "(J)Z", (void *)FileManager_FH_lock },
         { "FH_unlock", "(J)Z", (void *)FileManager_FH_unlock },
 };

@@ -32,6 +32,7 @@ public class BroadcastUtils {
         intent.putExtra("data", broadcastStr);
         intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 //        context.sendBroadcast(intent);
+        Logg.i(TAG,"===sendBroadcastAsUser=="+broadcastStr);
         context.sendBroadcastAsUser(intent, android.os.Process.myUserHandle());
     }
 

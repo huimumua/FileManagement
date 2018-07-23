@@ -38,12 +38,32 @@ public class FileManagerService extends Service {
         startService(startIntent);
 
         Const.SDCARD_IS_EXIST = SdcardUtil.checkSdcardExist();
-
         if(Const.SDCARD_IS_EXIST){
             //获取sdcard状态信息
             Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(FileManagerApplication.getAppContext());
-            Const.SDCARD_INIT_SUCCESS = FileManager.getSingInstance().sdcardInit();
-            Logg.i(LOG_TAG,"=sdcardInit=result=="+Const.SDCARD_INIT_SUCCESS);
+            boolean result = FileManager.getSingInstance().sdcardInit();
+            if(result){
+                Logg.i(LOG_TAG,"=sdcardInit=result=="+result);
+                int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(Const.EVENT_DIR);
+                Logg.i(LOG_TAG,"checkFolderStatus-》"+sdcardStatus);
+                if(sdcardStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
+                    Const.IS_SDCARD_FULL_LIMIT = true;
+                }else if(sdcardStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                    Const.SDCARD_EVENT_FOLDER_OVER_LIMIT = true;
+                    Const.IS_SDCARD_FOLDER_LIMIT = true;
+                }else if(sdcardStatus >=2){
+                    Const.IS_SDCARD_FULL_LIMIT = false;
+                }
+
+                if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.IS_SDCARD_FULL_LIMIT && result){
+                    Const.SDCARD_INIT_SUCCESS=true;
+                }else{
+                    Const.SDCARD_INIT_SUCCESS=false;
+                }
+            }else{
+                 Const.SDCARD_INIT_SUCCESS = false;
+            }
+
         }
 
         return new MyBinder();
@@ -185,18 +205,60 @@ public class FileManagerService extends Service {
             return false;
         }
 
+        /**
+         * show_sdcard_not_supported   0
+         * show_sdcard_unrecognizable  1
+         * show_sdcard_not_exist       2
+         * show_sdcard_mounted         3
+         * show_sdcard_init_success    4
+         * show_sdcard_init_fail       5
+         * show_reach_event_file_limit           6
+         * show_reach_event_file_over_limit      7
+         * show_reach_picture_file_limit         8
+         * show_reach_picture_file_over_limit    9
+         * show_sdcard_full_limit                10
+         * */
         @Override
-        public boolean checkSdcardAvailable() throws RemoteException {
-            if(Const.SDCARD_IS_EXIST){
-                Boolean result = SdcardUtils.sdcardAvailable();
-                Logg.i(LOG_TAG,"====checkSdcardAvailable==="+result);
-                return result;
-            }else{
-                Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);
-            }
-            return false;
+        public int checkSdcardAvailable() throws RemoteException {
+            int sdcardStatus = getSdcardStatus();
+            Logg.i(LOG_TAG,"=====sdcardStatus===="+sdcardStatus);
+            return sdcardStatus;
         }
 
+    }
+
+    private int getSdcardStatus() {
+        if(Const.SDCARD_IS_EXIST){
+            if(Const.IS_SDCARD_FULL_LIMIT){
+                return 10;
+            }
+            if(Const.SDCARD_EVENT_FOLDER_LIMIT){
+                if(Const.SDCARD_EVENT_FOLDER_OVER_LIMIT){
+                    return 7;
+                }
+                return 6;
+            }
+            if(Const.SDCARD_PICTURE_FOLDER_LIMIT){
+                if(Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT){
+                    return 9;
+                }
+                return 8;
+            }
+            if(Const.SDCARD_INIT_SUCCESS){
+                return 4;
+            }else{
+                return 5;
+            }
+//                return 3;
+        }else{
+            if(Const.SDCARD_NOT_SUPPORTED){
+                return 0;
+            }
+            if(Const.SDCARD_UNRECOGNIZABLE){
+                return 1;
+            }
+            return 2;
+        }
     }
 
     @Override

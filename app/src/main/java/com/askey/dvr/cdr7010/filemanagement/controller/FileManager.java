@@ -97,6 +97,19 @@ public class FileManager {
 
 
     public native int FH_FolderCanUseFilenumber(int type);
+
+
+// Purpose: before FH_Open, Check sdcard and folder status.
+// Input: enum eFolderType
+// Output: (Error situation)(look #define)
+//         SDCARD_PATH_ERROR                       return 2
+//         EXIST_FILE_NUM_OVER_LIMIT               return 5     file_over_limit
+//         NO_SPACE_NO_NUMBER_TO_RECYCLE           return 6     sdcard_full
+//         OPEN_FOLDER_ERROR                       return 3
+//         FOLDER_SPACE_OVER_LIMIT                 return 4     file_limit
+//  4、5、6可以提示format sdcard
+    public native int FH_CheckFolderStatus(int type);
+
     //
 // not implement
 // Return ture
@@ -131,113 +144,136 @@ public class FileManager {
     }
 
     public String openSdcard(String filename, String folderType) {
-        int type = getCurrentType(folderType);
-        Logg.i(LOG_TAG,"=====type====="+type+"==filename=="+filename);
         String result= null;
-//        if(sdcardInit()){
-        if(Const.SDCARD_INIT_SUCCESS && !Const.IS_SDCARD_FULL_LIMIT){
-//            while(result == null || result.equals("")){
-                result = FH_Open(filename,type);
-                Logg.i(LOG_TAG,"=====FH_Open====="+result);
-                if(result == null || result.equals("")){
-                    sendLimitFileBroadcastByType(folderType);
-                    String oldestPath = FH_FindOldest(type);
-                    if(null != oldestPath && !"".equals(oldestPath)){
-                        Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
-                        boolean deleteResult = MediaScanner.delete(oldestPath);
-                        Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
-                        if(deleteResult){
-                            result = FH_Open(filename,type);
-//                        sendUnreachLimitFileBroadcastByType(folderType);
+        if(Const.SDCARD_INIT_SUCCESS && !Const.IS_SDCARD_FULL_LIMIT /*&& !Const.SDCARD_EVENT_FOLDER_OVER_LIMIT
+                && !Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT*/){
+            int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(Const.EVENT_DIR);
+            Logg.i(LOG_TAG,"checkFolderStatus-》"+sdcardStatus);
+            if(sdcardStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
+                Const.IS_SDCARD_FULL_LIMIT = true;
+                String currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
+                BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+            }else if(sdcardStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                String currentAction = "";
+                if(folderType.equals(Const.EVENT_DIR)){
+                    Const.SDCARD_EVENT_FOLDER_OVER_LIMIT =true;
+                    currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_OVER_LIMIT;
+                }else if(folderType.equals(Const.PICTURE_DIR)){
+                    Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT =true;
+                    currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_OVER_LIMIT;
+                }
+                Const.IS_SDCARD_FOLDER_LIMIT = true;
+                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+            }else if(sdcardStatus >=2){
+                result= getRecoderFilePath(filename,folderType,sdcardStatus);
+            }
+            if(!"".equals(result) && null != result){
+                final String finalResult = result;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(2000);
+                            MediaScanner.scanFileAsync(mContext, finalResult);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    }else{
-                        Logg.e(LOG_TAG,"=====oldestPath====="+oldestPath);
                     }
-                }
-//            }
-            final String finalResult = result;
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(2000);
-                        MediaScanner.scanFileAsync(mContext,finalResult);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
+                }).start();
+            }
         }else{
             Logg.e(LOG_TAG,"=====is SDCARD_INIT_SUCCESS====="+Const.SDCARD_INIT_SUCCESS);
             Logg.e(LOG_TAG,"=====is IS_SDCARD_FULL_LIMIT====="+Const.IS_SDCARD_FULL_LIMIT);
 //            BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_FAIL);
         }
-
         return result;
     }
 
-    private void sendLimitFileBroadcastByType(String folderType) {
-        String currentAction = "";
-        if(SdcardUtil.checkSDcardIsFull()){
-            Const.IS_SDCARD_FULL_LIMIT = true;
-            currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
-            BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
-        }else{
-            if(sdcardIsFull(folderType)){
-                if(folderType.equals(Const.EVENT_DIR)){
-                    currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
-                }else if(folderType.equals(Const.NORMAL_DIR)){
-                    currentAction = Const.CMD_SHOW_REACH_NORMAL_FILE_LIMIT;
-                }else if(folderType.equals(Const.PARKING_DIR)){
-                    currentAction = Const.CMD_SHOW_REACH_PARKING_FILE_LIMIT;
-                }else if(folderType.equals(Const.PICTURE_DIR)){
-                    currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_LIMIT;
-                }else if(folderType.equals(Const.SYSTEM_DIR)){
-                    currentAction = Const.CMD_SHOW_REACH_SYSTEM_FILE_LIMIT;
+    private String getRecoderFilePath(String filename, String folderType,int sdcardStatus) {
+        int type = getCurrentType(folderType);
+        Logg.i(LOG_TAG,"=====type====="+type+"==filename=="+filename);
+        String result = FH_Open(filename,type);
+        Logg.i(LOG_TAG,"=====FH_Open====="+result);
+        if(result == null || result.equals("")){
+            sendReachLimitFileBroadcastByType(folderType);
+            String oldestPath = FH_FindOldest(type);
+            if(null != oldestPath && !"".equals(oldestPath)){
+                Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
+                boolean deleteResult = MediaScanner.delete(oldestPath);
+                Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
+                if(deleteResult){
+                    result = FH_Open(filename,type);
                 }
-                Const.IS_SDCARD_FOLDER_LIMIT = true;
-                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+            }else{
+                Logg.e(LOG_TAG,"=====oldestPath====="+oldestPath);
             }
         }
+        return result;
     }
 
-    public boolean sdcardIsFull(String folderType) {
-        try {
-            int type = getCurrentType(folderType);
-            int canUseNumb = FH_FolderCanUseFilenumber(type);
-            Logg.i(LOG_TAG,"=FH_CanUseFilenumber=="+canUseNumb);
-            if(canUseNumb==0){
-                return  true;
-            }
-        }catch (Exception e){
-            Logg.e(LOG_TAG,"sdcardIsFull--->Exception--->"+e.getMessage());
+    private void sendReachLimitFileBroadcastByType(String folderType) {
+        if(folderType.equals(Const.EVENT_DIR)){
+            Const.SDCARD_EVENT_FOLDER_LIMIT =true;
+            String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
+            BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+        }else if(folderType.equals(Const.PICTURE_DIR)){
+            Const.SDCARD_PICTURE_FOLDER_LIMIT =true;
+            String currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_LIMIT;
+            BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
         }
+        Const.IS_SDCARD_FOLDER_LIMIT = true;
+    }
 
-        return false;
+    //         SDCARD_PATH_ERROR                       return -2
+//         EXIST_FILE_NUM_OVER_LIMIT               return -5     file_over_limit
+//         NO_SPACE_NO_NUMBER_TO_RECYCLE           return -6     sdcard_full
+//         OPEN_FOLDER_ERROR                       return -3
+//         FOLDER_SPACE_OVER_LIMIT                 return -4     file_limit
+    public int checkFolderStatus(String folderType) {
+        int type = getCurrentType(folderType);
+        return FH_CheckFolderStatus(type);
     }
 
     public void sendUnreachLimitFileBroadcastByType(String folderType) {
-            String currentAction = "";
-            if(Const.IS_SDCARD_FULL_LIMIT && !SdcardUtil.checkSDcardIsFull()){
-                Const.IS_SDCARD_FULL_LIMIT = false;
-                currentAction = Const.CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT;
+        String currentAction = "";
+        int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(folderType);
+        Logg.i(LOG_TAG,"checkFolderStatus-》"+sdcardStatus);
+        if(Const.IS_SDCARD_FULL_LIMIT && sdcardStatus >=2 ){
+            Const.IS_SDCARD_FULL_LIMIT = false;
+            currentAction = Const.CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT;
+            BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+        }
+
+        if(Const.IS_SDCARD_FOLDER_LIMIT && sdcardStatus >=2){
+            if(folderType.equals(Const.EVENT_DIR)){
+                Const.SDCARD_EVENT_FOLDER_LIMIT = false;
+                Const.SDCARD_EVENT_FOLDER_OVER_LIMIT = false;
+                currentAction = Const.CMD_SHOW_UNREACH_EVENT_FILE_LIMIT;
+                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+            }else if(folderType.equals(Const.NORMAL_DIR)){
+                currentAction = Const.CMD_SHOW_UNREACH_NORMAL_FILE_LIMIT;
+                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+            }else if(folderType.equals(Const.PARKING_DIR)){
+                currentAction = Const.CMD_SHOW_UNREACH_PARKING_FILE_LIMIT;
+                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+            }else if(folderType.equals(Const.PICTURE_DIR)){
+                Const.SDCARD_PICTURE_FOLDER_LIMIT = false;
+                Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT = false;
+                currentAction = Const.CMD_SHOW_UNREACH_PICTURE_FILE_LIMIT;
+                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+            }else if(folderType.equals(Const.SYSTEM_DIR)){
+                currentAction = Const.CMD_SHOW_UNREACH_SYSTEM_FILE_LIMIT;
                 BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
             }
-            if(Const.IS_SDCARD_FOLDER_LIMIT && !sdcardIsFull(folderType)){
-                if(folderType.equals(Const.EVENT_DIR)){
-                    currentAction = Const.CMD_SHOW_UNREACH_EVENT_FILE_LIMIT;
-                }else if(folderType.equals(Const.NORMAL_DIR)){
-                    currentAction = Const.CMD_SHOW_UNREACH_NORMAL_FILE_LIMIT;
-                }else if(folderType.equals(Const.PARKING_DIR)){
-                    currentAction = Const.CMD_SHOW_UNREACH_PARKING_FILE_LIMIT;
-                }else if(folderType.equals(Const.PICTURE_DIR)){
-                    currentAction = Const.CMD_SHOW_UNREACH_PICTURE_FILE_LIMIT;
-                }else if(folderType.equals(Const.SYSTEM_DIR)){
-                    currentAction = Const.CMD_SHOW_UNREACH_SYSTEM_FILE_LIMIT;
-                }
-                Const.IS_SDCARD_FOLDER_LIMIT = false;
-                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
-            }
+            Const.IS_SDCARD_FOLDER_LIMIT = false;
+
+        }
+
+            //取消限制后需要更改inint状态
+        if(!Const.SDCARD_INIT_SUCCESS){
+            Const.SDCARD_INIT_SUCCESS = true;
+            BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_SUCC);
+        }
     }
 
     private int getCurrentType(String folderType) {

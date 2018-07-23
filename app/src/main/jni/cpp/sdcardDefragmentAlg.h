@@ -41,11 +41,11 @@ using namespace std;
 #define SECOND_LIMIT 59
 
 #define SUCCESS 0
-#define SDCARD_PATH_ERROR 2
-#define OPEN_FOLDER_ERROR 3
-#define FOLDER_SPACE_OVER_LIMIT 4
-#define EXIST_FILE_NUM_OVER_LIMIT 5
-#define NO_SPACE_NO_NUMBER_TO_RECYCLE 6
+#define SDCARD_PATH_ERROR -2
+#define OPEN_FOLDER_ERROR -3
+#define FOLDER_SPACE_OVER_LIMIT -4
+#define EXIST_FILE_NUM_OVER_LIMIT -5
+#define NO_SPACE_NO_NUMBER_TO_RECYCLE -6
 
 #define KILOBYTE (1 << 10)
 #define MEGABYTE (1 << 20)
@@ -96,7 +96,7 @@ bool FH_Init(char* mount_path);
 //         folderType: eunm eFolderType
 // Output: FILE Pointer
 // ** If file number > Table.config file_num, return NULL; **
-char* FH_Open(char* filename, eFolderType folderType);
+string FH_Open(char* filename, eFolderType folderType);
 
 //
 // not use

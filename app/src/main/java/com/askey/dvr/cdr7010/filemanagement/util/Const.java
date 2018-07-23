@@ -25,6 +25,20 @@ public class Const {
 
     public static boolean SDCARD_IS_EXIST = false;
     public static boolean SDCARD_INIT_SUCCESS = false;
+    public static boolean SDCARD_NOT_SUPPORTED = false;
+    public static boolean SDCARD_UNRECOGNIZABLE = false;
+    public static boolean IS_SDCARD_FOLDER_LIMIT =false;
+
+    public static boolean SDCARD_EVENT_FOLDER_LIMIT =false;
+    public static boolean SDCARD_EVENT_FOLDER_OVER_LIMIT =false;
+    public static boolean SDCARD_PICTURE_FOLDER_LIMIT =false;
+    public static boolean SDCARD_PICTURE_FOLDER_OVER_LIMIT =false;
+
+    public static int SDCARD_PATH_ERROR = -2;
+    public static int OPEN_FOLDER_ERROR = -3;
+    public static int FOLDER_SPACE_OVER_LIMIT = -4;   //file_over_limit
+    public static int EXIST_FILE_NUM_OVER_LIMIT = -5;  //file_over_limit
+    public static int NO_SPACE_NO_NUMBER_TO_RECYCLE = -6; //sdcard_full
 
     public static final String NORMAL_DIR = "NORMAL";
     public static final String EVENT_DIR = "EVENT";
@@ -90,14 +104,15 @@ public class Const {
     public static final int SDCARD_MAX_EVENT_FILE_SIZE_512Gb = 1000; // unit 个文件
     public static final int SDCARD_MAX_PICTURE_FILE_SIZE_512Gb = 3000; // unit 个文件
 
-    public static boolean IS_SDCARD_FOLDER_LIMIT =false;
-    public static final String CMD_SHOW_REACH_EVENT_FILE_LIMIT ="show_reach_event_file_limit";//超过限制
+    public static final String CMD_SHOW_REACH_EVENT_FILE_OVER_LIMIT ="show_reach_event_file_over_limit";//超过限制
+    public static final String CMD_SHOW_REACH_EVENT_FILE_LIMIT ="show_reach_event_file_limit";//达到限制
     public static final String CMD_SHOW_UNREACH_EVENT_FILE_LIMIT = "show_unreach_event_file_limit";//限制解除
     public static final String CMD_SHOW_REACH_PARKING_FILE_LIMIT = "show_reach_parking_file_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_PARKING_FILE_LIMIT = "show_unreach_parking_file_limit";//限制解除
     public static final String CMD_SHOW_REACH_NORMAL_FILE_LIMIT ="show_reach_normal_file_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_NORMAL_FILE_LIMIT = "show_unreach_normal_file_limit";//限制解除
-    public static final String CMD_SHOW_REACH_PICTURE_FILE_LIMIT ="show_reach_picture_file_limit";//超过限制
+    public static final String CMD_SHOW_REACH_PICTURE_FILE_LIMIT ="show_reach_picture_file_limit";//达到限制
+    public static final String CMD_SHOW_REACH_PICTURE_FILE_OVER_LIMIT ="show_reach_picture_file_over_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_PICTURE_FILE_LIMIT = "show_unreach_picture_file_limit";//限制解除
     public static final String CMD_SHOW_REACH_SYSTEM_FILE_LIMIT ="show_reach_system_file_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_SYSTEM_FILE_LIMIT = "show_unreach_system_file_limit";//限制解除
@@ -107,6 +122,8 @@ public class Const {
     public static final String CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT = "show_unreach_sdcard_full_limit";//sdcard空间不足解除
 
     public static final String ACTION_SDCARD_STATUS = "action_sdcard_status";
+    public static final String CMD_SHOW_SDCARD_NOT_EXIST ="show_sdcard_not_exist";//init 失败
+    public static final String CMD_SHOW_SDCARD_MOUNTED ="show_sdcard_mounted";//sdcard成功挂载
     public static final String CMD_SHOW_SDCARD_NOT_SUPPORTED ="show_sdcard_not_supported";//sdcard格式不支持需要formate
     public static final String CMD_SHOW_SDCARD_INIT_FAIL ="show_sdcard_init_fail";//init 失败
     public static final String CMD_SHOW_SDCARD_INIT_SUCC = "show_sdcard_init_success";//init成功
