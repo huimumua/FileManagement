@@ -57,8 +57,6 @@ public class FileManagerService extends Service {
 
                 if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.IS_SDCARD_FULL_LIMIT && result){
                     Const.SDCARD_INIT_SUCCESS=true;
-                }else{
-                    Const.SDCARD_INIT_SUCCESS=false;
                 }
             }else{
                  Const.SDCARD_INIT_SUCCESS = false;
