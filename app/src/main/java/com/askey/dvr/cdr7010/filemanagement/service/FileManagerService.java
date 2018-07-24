@@ -234,18 +234,19 @@ public class FileManagerService extends Service {
             if(Const.IS_SDCARD_FULL_LIMIT){
                 return 10;
             }
+            if(Const.SDCARD_EVENT_FOLDER_OVER_LIMIT){
+                return 7;
+            }
             if(Const.SDCARD_EVENT_FOLDER_LIMIT){
-                if(Const.SDCARD_EVENT_FOLDER_OVER_LIMIT){
-                    return 7;
-                }
                 return 6;
             }
+            if(Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT){
+                return 9;
+            }
             if(Const.SDCARD_PICTURE_FOLDER_LIMIT){
-                if(Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT){
-                    return 9;
-                }
                 return 8;
             }
+
             if(Const.SDCARD_INIT_SUCCESS){
                 return 4;
             }else{
