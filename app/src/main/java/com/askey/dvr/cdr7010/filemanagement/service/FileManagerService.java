@@ -217,6 +217,7 @@ public class FileManagerService extends Service {
          * show_reach_picture_file_limit         8
          * show_reach_picture_file_over_limit    9
          * show_sdcard_full_limit                10
+         * show_sdcard_askey_not_supported       11
          * */
         @Override
         public int checkSdcardAvailable() throws RemoteException {
@@ -229,6 +230,9 @@ public class FileManagerService extends Service {
 
     private int getSdcardStatus() {
         if(Const.SDCARD_IS_EXIST){
+            if(Const.CURRENT_SDCARD_SIZE==-1){
+                return 11;
+            }
             if(Const.IS_SDCARD_FULL_LIMIT){
                 return 10;
             }

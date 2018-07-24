@@ -86,16 +86,6 @@ public class SdcardManager {
                 sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_128Gb));
                 sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_128Gb));
                 break;
-            case 256:
-                sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_256Gb));
-                sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_256Gb));
-                sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_256Gb));
-                break;
-            case 512:
-                sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_512Gb));
-                sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_512Gb));
-                sdcardInfo.setPictureSize(String.valueOf(Const.SDCARD_MAX_PICTURE_FILE_SIZE_512Gb));
-                break;
             default:
                 sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_8Gb));
                 sdcardInfo.setEventSize(String.valueOf(Const.SDCARD_MAX_EVENT_FILE_SIZE_8Gb));

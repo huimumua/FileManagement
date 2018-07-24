@@ -93,10 +93,12 @@ public class SdcardUtil {
                 String availableSize = SdcardUtil.formatSize(context, String.valueOf(availableSdcardSize));
                 Logg.i(TAG,"==availableSdcardSize==" + availableSize );
 
-                int totalSize = Const.SDCARD_SIZE_512Gb;
+                int totalSize = -1;
                 float totalSdcardSize = Float.parseFloat(currentSdcardSize.substring(0,currentSdcardSize.length()-2));
                 Logg.i(TAG,"==totalSdcardSize==" + totalSdcardSize );
-                if( totalSdcardSize<4){
+                if( totalSdcardSize<3){
+                    totalSize = -1;
+                }else if( totalSdcardSize<4){
                     totalSize = Const.SDCARD_SIZE_4Gb;
                 }else if( totalSdcardSize<8){
                     totalSize = Const.SDCARD_SIZE_8Gb;
@@ -108,10 +110,6 @@ public class SdcardUtil {
                     totalSize = Const.SDCARD_SIZE_64Gb;
                 }else if( totalSdcardSize<128){
                     totalSize = Const.SDCARD_SIZE_128Gb;
-                }else if( totalSdcardSize<256){
-                    totalSize = Const.SDCARD_SIZE_256Gb;
-                }else if( totalSdcardSize<512){
-                    totalSize = Const.SDCARD_SIZE_512Gb;
                 }
                 return totalSize;
             }

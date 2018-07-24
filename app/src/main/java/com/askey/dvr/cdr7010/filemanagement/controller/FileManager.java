@@ -250,27 +250,17 @@ public class FileManager {
                 Const.SDCARD_EVENT_FOLDER_OVER_LIMIT = false;
                 currentAction = Const.CMD_SHOW_UNREACH_EVENT_FILE_LIMIT;
                 BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
-            }else if(folderType.equals(Const.NORMAL_DIR)){
-                currentAction = Const.CMD_SHOW_UNREACH_NORMAL_FILE_LIMIT;
-                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
-            }else if(folderType.equals(Const.PARKING_DIR)){
-                currentAction = Const.CMD_SHOW_UNREACH_PARKING_FILE_LIMIT;
-                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
             }else if(folderType.equals(Const.PICTURE_DIR)){
                 Const.SDCARD_PICTURE_FOLDER_LIMIT = false;
                 Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT = false;
                 currentAction = Const.CMD_SHOW_UNREACH_PICTURE_FILE_LIMIT;
                 BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
-            }else if(folderType.equals(Const.SYSTEM_DIR)){
-                currentAction = Const.CMD_SHOW_UNREACH_SYSTEM_FILE_LIMIT;
-                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
             }
             Const.IS_SDCARD_FOLDER_LIMIT = false;
-
         }
 
             //取消限制后需要更改inint状态
-        if(!Const.SDCARD_INIT_SUCCESS){
+        if(!Const.SDCARD_INIT_SUCCESS && sdcardStatus >=2){
             Const.SDCARD_INIT_SUCCESS = true;
             BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_SUCC);
         }

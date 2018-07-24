@@ -63,6 +63,7 @@ public class SdCardReceiver extends BroadcastReceiver {
                 BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                         Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
             }else{
+                sendOnce = true;
                 Const.SDCARD_UNRECOGNIZABLE = true;
                 BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                         Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_UNRECOGNIZABLE);
@@ -96,7 +97,9 @@ public class SdCardReceiver extends BroadcastReceiver {
                     e.printStackTrace();
                 }
                 Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(context);
-
+                if(Const.CURRENT_SDCARD_SIZE==-1){
+                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_ASKEY_NOT_SUPPORTED);
+                }
                 boolean validFormat = FileManager.getSingInstance().validFormat();
                 Logg.i(TAG,"validFormat-》"+validFormat);
                 int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(Const.EVENT_DIR);
