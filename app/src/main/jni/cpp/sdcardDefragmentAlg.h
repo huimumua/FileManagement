@@ -61,18 +61,6 @@ enum eFolderType{
 	e_NMEA_CAMERA2
 };
 
-struct file_struct{
-	char folder_type[20];
-	char folder_extension[7];
-	float percent;
-	uint64_t every_block_space;
-	uint64_t avail_space;
-	int max_file_num;
-	int file_num;
-	int exist_flag;
-
-};
-
 //Purpose: Check config file exist or not
 //
 //Input:  mount path

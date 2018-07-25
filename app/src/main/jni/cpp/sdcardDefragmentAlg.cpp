@@ -4,6 +4,17 @@
 #define LOG_TAG "sdcardDefragmentAlg.cpp"
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+struct file_struct{
+    char folder_type[32];
+    char folder_extension[32];
+    float percent;
+    uint64_t every_block_space;
+    uint64_t avail_space;
+    int max_file_num;
+    int file_num;
+    int exist_flag;
+};
+
 struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.2, 76*MEGABYTE, 0, 0, 0, 0}, // event
                                            {"NORMAL",  ".nor",  0.4, 76*MEGABYTE, 0, 0, 0, 0}, // normal
                                            {"CAMERA2", ".cam2", 0.2, 55*MEGABYTE, 0, 0, 0, 0}, // parking
