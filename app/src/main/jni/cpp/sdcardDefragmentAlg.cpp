@@ -1,5 +1,6 @@
 #include <android/log.h>
 #include "sdcardDefragmentAlg.h"
+#include <queue>
 
 #define CFG_NAME "table.config"
 const char TABLE_VERSION = 0x01;
@@ -18,13 +19,21 @@ struct file_struct{
 };
 
 struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.3, 76*MEGABYTE, 0, 0, 0, 0}, // event
-                                           {"NORMAL",  ".nor",  0.5, 76*MEGABYTE, 0, 0, 0, 0}, // normal
-                                           {"PICTURE", ".pic",  0.1, 1*MEGABYTE, 0, 0, 0, 0}, // picture
+                                           {"NORMAL",  ".nor",  0.59, 76*MEGABYTE, 0, 0, 0, 0}, // normal
+                                           {"PICTURE", ".pic",  0.01, 1*MEGABYTE, 0, 0, 0, 0}, // picture
                                            {"SYSTEM",  ".sys",  0.1, 76*MEGABYTE, 0, 0, 0, 0}, // system
                                            {"HASH_EVENT", ".hash", 0, 25*KILOBYTE, 0, 0, 0, 1}, // parking
                                            {"HASH_NORMAL",".hash", 0, 25*KILOBYTE, 0, 0, 0, 1}, // parking
                                            {"SYSTEM/NMEA/EVENT",   ".neve",   0, 100*KILOBYTE, 0, 0, 0, 1},
                                            {"SYSTEM/NMEA/NORMAL",  ".nnor",   0, 100*KILOBYTE, 0, 0, 0, 1}};
+
+queue<string> event_files_queue;
+queue<string> normal_files_queue;
+queue<string> picture_files_queue;
+queue<string> hash_event_files_queue;
+queue<string> hash_normal_files_queue;
+queue<string> nmea_event_files_queue;
+queue<string> nmea_normal_files_queue;
 
 char g_mount_path[NORULE_SIZE] = "\0";
 
@@ -380,6 +389,114 @@ int SDA_get_structure_value_from_config(char* mount_path){
     return -1;
 }
 
+void check_queue_status(int old_date_flag, queue<string>& folder_files_queue){
+    cout << "queue first = " << folder_files_queue.front() << endl;
+    if(old_date_flag == 1){
+
+        while(true){
+            cout << " |Queue| queuefront = " << folder_files_queue.front() << endl;
+            cout << " |Queue| queueback  = " << folder_files_queue.back() << endl;
+            string queue_pop = folder_files_queue.front();
+            if(atoi(queue_pop.substr(0,2).c_str()) >= 70){
+                cout << "!! 1970 in front !!" << endl;
+                break;
+            }
+
+            folder_files_queue.pop();
+            folder_files_queue.push(queue_pop);
+        }
+        cout << " |Queue| rotak finish queuefront = " << folder_files_queue.front() << endl;
+        cout << " |Queue| rotak finish queueback  = " << folder_files_queue.back() << endl;
+    }
+
+//     ALOGE("this is jni call1--> Q|| SHOW THE QUEUE ||Q \n");
+//     while(!folder_files_queue.empty()){
+//         string str_queue_top = folder_files_queue.front();
+//         ALOGE("this is jni call1--> %s \n", str_queue_top.c_str());
+//         folder_files_queue.pop();
+//     }
+}
+
+int storage_normal_file_in_queue(eFolderType folderType, queue<string>& folder_files_queue){
+    char file_path[NORULE_SIZE];
+    snprintf(file_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
+
+    vector<string> files = vector<string>();
+
+    DIR *dp = opendir(file_path);
+    struct dirent *dirp;
+
+    int old_date_flag = 0;
+
+    if (dp == NULL){
+        cout << "Error opening " << endl;
+        return 0;
+    }
+
+    while ((dirp = readdir(dp)) != NULL) {
+
+        string inPath_filename = dirp->d_name;
+        // cout << inPath_filename << endl;
+        if(atoi(inPath_filename.substr(0,2).c_str()) >= 70){
+            old_date_flag = 1;
+        }
+
+        if(inPath_filename.length() < FILE_MINI_LENGTH || inPath_filename.length() > FILE_MAX_LENGTH){
+            continue;
+        }
+        if(atoi(inPath_filename.substr(2,2).c_str()) > MONTH_LIMIT){
+            continue;
+        }
+
+        // if filename != Days format
+        if(atoi(inPath_filename.substr(4,2).c_str()) > DAYS_LIMIT){
+            continue;
+        }
+
+        // if filename != Hour format
+        if(atoi(inPath_filename.substr(6,2).c_str()) > HOUR_LIMIT){
+            continue;
+        }
+
+        // if filename != Minute format
+        if(atoi(inPath_filename.substr(8,2).c_str()) > MINUTE_LIMIT){
+            continue;
+        }
+
+        // if filename != second format
+        if(atoi(inPath_filename.substr(10,2).c_str()) > SECOND_LIMIT){
+            continue;
+        }
+        files.push_back(inPath_filename);
+    }
+
+    closedir(dp);
+
+    if(files.empty() == true){
+        return 0;
+    }
+
+    sort (files.begin(), files.end());
+
+    ALOGE("this is jni call1--> vector sort finish, start print \n");
+
+    for (vector<string>::const_iterator i = files.begin(); i != files.end(); ++i){
+        cout << *i << ' ' << endl;
+        string vector_str = *i;
+        ALOGE("this is jni call1--> %s \n", vector_str.c_str());
+        folder_files_queue.push(*i);
+    }
+
+
+    string first_file_name = files.front();
+
+    cout << "first_filename = " << first_file_name << endl;
+
+    check_queue_status(old_date_flag, folder_files_queue);
+
+    return 0;
+}
+
 int checkTableVersion(char* mount_path){
     ALOGE("this jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     char config_file_path[NORULE_SIZE];
@@ -607,19 +724,19 @@ bool FH_Init(char* mount_path){
     /* write file_struct in config file */
     SDA_write_table_in_config(mount_path);
 
+    storage_normal_file_in_queue(e_Event, event_files_queue);
+    storage_normal_file_in_queue(e_Normal, normal_files_queue);
+    storage_normal_file_in_queue(e_Picture, picture_files_queue);
+    storage_normal_file_in_queue(e_HASH_EVENT, hash_event_files_queue);
+    storage_normal_file_in_queue(e_HASH_NORMAL, hash_normal_files_queue);
+    storage_normal_file_in_queue(e_NMEA_EVENT, nmea_event_files_queue);
+    storage_normal_file_in_queue(e_NMEA_NORMAL, nmea_normal_files_queue);
+
     pthread_mutex_unlock(&g_mutex);
     return true;
 }
 
-
-string FH_Open(char* filename, eFolderType folderType){
-
-    pthread_mutex_lock(&g_mutex);
-
-    if(strlen(g_mount_path) == 0){
-        pthread_mutex_unlock(&g_mutex);
-        return "";
-    }
+string open_file_and_save_in_queue(char* filename, eFolderType folderType, queue<string> &now_queue){
 
     char free_path[NORULE_SIZE];
     snprintf(free_path, NORULE_SIZE, "%s%s", g_mount_path,"/SYSTEM/FREE");
@@ -627,12 +744,10 @@ string FH_Open(char* filename, eFolderType folderType){
     char folder_path[NORULE_SIZE];
     char purpose_path[NORULE_SIZE];
     string first_filename;
-    ALOGE("this is jni call1-->FH_Open filename %s",filename);
-    ALOGE("this is jni call1-->FH_Open folderType %d",folderType);
+    // ALOGE("this is jni call1-->FH_Open filename %s",filename);
+    // ALOGE("this is jni call1-->FH_Open folderType %d",folderType);
 
     snprintf(folder_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
-
-    int max_file_number = SDA_read_table_file_num_from_config(g_mount_path, folderType);
 
     // if free folder have .eve extension, rename .eve file to purpose filename
     first_filename = SDA_get_first_filename(free_path, FH_Table[folderType].folder_extension);
@@ -644,23 +759,80 @@ string FH_Open(char* filename, eFolderType folderType){
 
         rename(first_path, purpose_path);
 
+        now_queue.push(filename);
+        ALOGE("this is jni call1-->. exist file in SYSTEM/FREE. func: %s, line:%d \n", __func__, __LINE__);
         pthread_mutex_unlock(&g_mutex);
         return string(purpose_path);
 
         // if no .eve extension in System/Free & folder file number < Event.file_num
-    }else if(SDA_get_recoder_file_num(folder_path) < max_file_number){
+    }else if(now_queue.size() < FH_Table[folderType].file_num){
+        ALOGE("this is jni call1-->now_queue size = %d. func: %s, line:%d \n", now_queue.size(), __func__, __LINE__);
+        ALOGE("this is jni call1-->FH_Table file_num = %d. func: %s, line:%d \n", FH_Table[folderType].file_num, __func__, __LINE__);
         snprintf(purpose_path, NORULE_SIZE, "%s/%s", folder_path, filename);
 
+        now_queue.push(filename);
+        ALOGE("this is jni call1-->. file number not arrive limit. func: %s, line:%d \n", __func__, __LINE__);
         pthread_mutex_unlock(&g_mutex);
         return string(purpose_path);
     }else{
-        cout << "file was full, please delete some file." << endl;
+//        cout << "file was full, please delete some file." << endl;
 
-        ALOGE("this is jni call1-->FH_Open file was full, please delete some file.");
+        ALOGE("this is jni call1-->FH_Open folderType = %d. func: %s, line:%d \n", folderType, __func__, __LINE__);
+        ALOGE("this is jni call1-->FH_Open file was full, please delete some file. unc: %s, line:%d \n", __func__, __LINE__);
 
         pthread_mutex_unlock(&g_mutex);
         return "";
     }
+}
+
+string FH_Open(char* filename, eFolderType folderType){
+
+    pthread_mutex_lock(&g_mutex);
+    ALOGE("this jni call -> func: %s, line:%d \n", __func__, __LINE__);
+
+    if(strlen(g_mount_path) == 0){
+        pthread_mutex_unlock(&g_mutex);
+        return "";
+    }
+
+    string open_filename;
+
+    switch (folderType) {
+        case e_Event:
+            open_filename = open_file_and_save_in_queue(filename, folderType, event_files_queue);
+             ALOGE("open_filename = %s. func: %s, line:%d \n", open_filename.c_str(), __func__, __LINE__);
+            break;
+        case e_Normal:
+            open_filename = open_file_and_save_in_queue(filename, folderType, normal_files_queue);
+             ALOGE("open_filename = %s. func: %s, line:%d \n", open_filename.c_str(), __func__, __LINE__);
+            break;
+        case e_Picture:
+            open_filename = open_file_and_save_in_queue(filename, folderType, picture_files_queue);
+            ALOGE("open_filename = %s. func: %s, line:%d \n", open_filename.c_str(), __func__, __LINE__);
+            break;
+        case e_HASH_EVENT:
+            open_filename = open_file_and_save_in_queue(filename, folderType, hash_event_files_queue);
+            ALOGE("open_filename = %s. func: %s, line:%d \n", open_filename.c_str(), __func__, __LINE__);
+            break;
+        case e_HASH_NORMAL:
+            open_filename = open_file_and_save_in_queue(filename, folderType, hash_normal_files_queue);
+            ALOGE("open_filename = %s. func: %s, line:%d \n", open_filename.c_str(), __func__, __LINE__);
+            break;
+        case e_NMEA_EVENT:
+            open_filename = open_file_and_save_in_queue(filename, folderType, nmea_event_files_queue);
+            ALOGE("open_filename = %s. func: %s, line:%d \n", open_filename.c_str(), __func__, __LINE__);
+            break;
+        case e_NMEA_NORMAL:
+            open_filename = open_file_and_save_in_queue(filename, folderType, nmea_normal_files_queue);
+            ALOGE("open_filename = %s. func: %s, line:%d \n", open_filename.c_str(), __func__, __LINE__);
+            break;
+        default:
+             ALOGE("folderType = %d. func: %s, line:%d \n", folderType, __func__, __LINE__);
+            break;
+    }
+
+    pthread_mutex_unlock(&g_mutex);
+    return open_filename;
 }
 
 //
@@ -731,39 +903,64 @@ bool FH_Delete(const char* absolute_filepath){
 }
 
 string FH_FindOldest(eFolderType folderType){
-
+    ALOGE("this jni call -> folderType: %d func: %s, line:%d \n", folderType, __func__, __LINE__);
     pthread_mutex_lock(&g_mutex);
-
+    ALOGE("this jni call -> folderType: %d func: %s, line:%d \n", folderType, __func__, __LINE__);
     char finding_path[NORULE_SIZE];
     snprintf(finding_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
+    ALOGE("this jni call -> finding_path: %s func: %s, line:%d \n", finding_path, __func__, __LINE__);
     // cout << "findingpath: " << finding_path  << endl;
     int rc = SDA_file_exists(finding_path);
-    if(rc != 1){
-        cout << "finding_path error" << endl;
+    if(rc != 0){
+        ALOGE("this jni call -> folderType: %d func: %s, line:%d \n", folderType, __func__, __LINE__);
         pthread_mutex_unlock(&g_mutex);
         return "";
     }
 
-    map<string, string> fileTable;
-    storge_record_file_in_map(fileTable, finding_path);
+    string oldest_file;
+    oldest_file.append(finding_path);
+//    oldest_file.append("/");
+//    oldest_file.append(FH_Table[folderType].folder_type);
+    oldest_file.append("/");
 
-    if(fileTable.empty()){
-        cout << "No file in path." << endl;
-        pthread_mutex_unlock(&g_mutex);
-        return "";
+    switch (folderType) {
+        case e_Event:
+            oldest_file.append(event_files_queue.front());
+            event_files_queue.pop();
+            break;
+        case e_Normal:
+            oldest_file.append(normal_files_queue.front());
+            normal_files_queue.pop();
+            break;
+        case e_Picture:
+            oldest_file.append(picture_files_queue.front());
+            picture_files_queue.pop();
+            break;
+        case e_HASH_EVENT:
+            oldest_file.append(hash_event_files_queue.front());
+            hash_event_files_queue.pop();
+            break;
+        case e_HASH_NORMAL:
+            oldest_file.append(hash_normal_files_queue.front());
+            hash_normal_files_queue.pop();
+            break;
+        case e_NMEA_EVENT:
+            oldest_file.append(nmea_event_files_queue.front());
+            nmea_event_files_queue.pop();
+            break;
+        case e_NMEA_NORMAL:
+            oldest_file.append(nmea_normal_files_queue.front());
+            nmea_normal_files_queue.pop();
+            break;
+        default:
+             ALOGE("folderType = %d. func: %s, line:%d \n", folderType, __func__, __LINE__);
+            break;
     }
 
-    // default Map is sort (small to big)
-    for(map<string, string>::iterator it = fileTable.begin(); it != fileTable.end(); it++){
-        // cout<<it->first<<" : "<<it->second<<endl;
-        struct stat buf;
-        string filename_inMap = it->second;
-        char oldest_file_path[NORULE_SIZE];
-        snprintf(oldest_file_path, NORULE_SIZE, "%s/%s", finding_path, filename_inMap.c_str());
-
-        pthread_mutex_unlock(&g_mutex);
-        return string(oldest_file_path);
-    }
+    ALOGE("this jni call -> folderType: %d func: %s, line:%d \n", folderType, __func__, __LINE__);
+    pthread_mutex_unlock(&g_mutex);
+    ALOGE("oldest_file = %s. func: %s, line:%d \n", oldest_file.c_str(), __func__, __LINE__);
+    return oldest_file;
 }
 
 int FH_CanUseFilenumber(eFolderType folderType){
