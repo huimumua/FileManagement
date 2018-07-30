@@ -1,6 +1,8 @@
 #include <android/log.h>
 #include "sdcardDefragmentAlg.h"
 
+#define CFG_NAME "table.config"
+const char TABLE_VERSION = 0x01;
 #define LOG_TAG "sdcardDefragmentAlg.cpp"
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -239,7 +241,7 @@ int SDA_get_free_extension_filenumber(eFolderType folderType){
 int SDA_write_table_in_config(char* mount_path){
     int i;
     char table_config_path[NORULE_SIZE];
-    snprintf(table_config_path, NORULE_SIZE, "%s/table.config", mount_path);
+    snprintf(table_config_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
     FILE* fp = fopen(table_config_path, "w");
     if(fp == NULL){
         cout << "open failed" << endl;
@@ -247,7 +249,7 @@ int SDA_write_table_in_config(char* mount_path){
     }
 
     // cout << FH_Table[0].every_block_space << endl;
-
+    fwrite(&TABLE_VERSION, 1 , 1, fp);
     for(i=0; i<TABLE_SIZE; i++){
         fwrite(&FH_Table[i], sizeof(struct file_struct), 1, fp);
     }
@@ -258,7 +260,7 @@ int SDA_write_table_in_config(char* mount_path){
 int SDA_read_table_file_num_from_config(char* mount_path, eFolderType folderType){
 
     char table_config_path[NORULE_SIZE];
-    snprintf(table_config_path, NORULE_SIZE, "%s/table.config", mount_path);
+    snprintf(table_config_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
     FILE* fp = fopen(table_config_path, "r");
     if(fp == NULL){
         return -1;
@@ -289,7 +291,7 @@ int SDA_file_exists(char* filename)
     /* find file */
     if (i == 0)
     {
-        return 1;
+        return 0;
     }
     return -1;
 }
@@ -328,36 +330,92 @@ int SDA_scan_sdcard_folder_exist(char* mount_path){
     return 0;
 }
 
-void SDA_get_structure_value_from_config(char* mount_path){
-
+int SDA_get_structure_value_from_config(char* mount_path){
+    ALOGE("this jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     int i = 0;
     char table_config_path[NORULE_SIZE];
-    snprintf(table_config_path, NORULE_SIZE, "%s/table.config", mount_path);
-    FILE* fp = fopen(table_config_path, "r");
+    snprintf(table_config_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
+    FILE* fp = fopen(table_config_path, "rb");
 
     struct file_struct read_table;
 
-    while(fread(&read_table, sizeof(file_struct), 1, fp)){
-        FH_Table[i].percent           = read_table.percent;
-        FH_Table[i].every_block_space = read_table.every_block_space;
-        FH_Table[i].avail_space       = read_table.avail_space;
-        FH_Table[i].max_file_num      = read_table.max_file_num;
-        FH_Table[i].file_num          = read_table.file_num;
-        FH_Table[i].exist_flag        = read_table.exist_flag;
-
-        i++;
+    char ver;
+    int retlen = fread(&ver, 1, 1, fp);
+    if ( retlen == 1 )
+    {
+        ALOGE("this jni call-> retlen == 1 func: %s, line:%d \n", __func__, __LINE__);
+        if ( ver == TABLE_VERSION )
+        {
+            for(i=0; i<TABLE_SIZE; i++) {
+                retlen = fread(&read_table, sizeof(struct file_struct), 1, fp);
+                if (retlen == sizeof(struct file_struct))
+                {
+                    ALOGE("this jni call-> retlen == sizeof(file_struct) == 1 func: %s, line:%d \n",
+                          __func__, __LINE__);
+                    FH_Table[i].percent = read_table.percent;
+                    FH_Table[i].every_block_space = read_table.every_block_space;
+                    FH_Table[i].avail_space = read_table.avail_space;
+                    FH_Table[i].max_file_num = read_table.max_file_num;
+                    FH_Table[i].file_num = read_table.file_num;
+                    FH_Table[i].exist_flag = read_table.exist_flag;
+                }
+            }
+            retlen = fread(&read_table, sizeof(struct file_struct), 1, fp);
+            if ( retlen == 0 )
+            {
+                retlen = feof(fp);
+                ALOGE("this jni call-> retlen = %d func: %s, line:%d \n", retlen, __func__,
+                      __LINE__);
+                if (retlen == 1) {
+                    ALOGE("this jni call-> read func: %s, line:%d \n", __func__, __LINE__);
+                    fclose(fp);
+                    return 0;
+                }
+            }
+        }
     }
 
+    ALOGE("this jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
     fclose(fp);
+    return -1;
+}
+
+int checkTableVersion(char* mount_path){
+    ALOGE("this jni call-> In func: %s, line:%d \n", __func__, __LINE__);
+    char config_file_path[NORULE_SIZE];
+    snprintf(config_file_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
+
+    FILE* fp = NULL;
+    int n = 0;
+
+    fp=fopen (config_file_path,"rb");
+    if(fp==NULL){
+        ALOGE("this jni call-> Error opening file. func: %s, line:%d \n", __func__, __LINE__);
+        return OPEN_FOLDER_ERROR;
+    }
+    n = fgetc (fp);
+    if(n == 0x45){ // 0x45 == 'E'
+        ALOGE("this jni call-> table format Failed. func: %s, line:%d \n", __func__, __LINE__);
+        fclose(fp);
+        return TABLE_VERSION_TOO_OLD;
+    }
+    if(n == TABLE_VERSION){
+        ALOGE("this jni call-> n = %d. In func: %s, line:%d \n", n, __func__, __LINE__);
+        fclose(fp);
+        return SUCCESS;
+    }
+
+    ALOGE("this jni call-> In func: %s, line:%d \n", __func__, __LINE__);
+    fclose(fp);
+    return TABLE_VERSION_CANNOT_RECOGNIZE;
 }
 
 // true = 1, false = 0;
 bool FH_ValidFormat(char* mount_path){
-
-    int rc;
     pthread_mutex_lock(&g_mutex);
+    int rc;
     char config_file_path[NORULE_SIZE];
-    snprintf(config_file_path, NORULE_SIZE, "%s/table.config", mount_path);
+    snprintf(config_file_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
 
     rc = SDA_file_exists(config_file_path);
     pthread_mutex_unlock(&g_mutex);
@@ -378,12 +436,24 @@ bool FH_Init(char* mount_path){
         strncpy(g_mount_path, mount_path, strlen(mount_path));
     }
 
-    /* If mount_path have "table.config", return true */
+    /* If mount_path doesn't have "CONFIG", return please format sdcard */
     char config_file_path[NORULE_SIZE];
-    snprintf(config_file_path, NORULE_SIZE, "%s/table.config", mount_path);
+    snprintf(config_file_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
     rc = SDA_file_exists(config_file_path);
-    if(rc == 1){
-        SDA_get_structure_value_from_config(mount_path);
+    if(rc == 0){
+        rc = checkTableVersion(mount_path);
+        if(rc != SUCCESS){
+            ALOGE("this jni call-> Sdcard format error. func: %s, line:%d \n", __func__, __LINE__);
+            pthread_mutex_unlock(&g_mutex);
+            return false;
+        }
+        int ret = SDA_get_structure_value_from_config(mount_path);
+        if (ret != 0)
+        {
+            ALOGE("this jni call-> SDA_get_structure_value_from_config fail. func: %s, line:%d \n", __func__, __LINE__);
+            pthread_mutex_unlock(&g_mutex);
+            return false;
+        }
     }
 
     struct statvfs buf;
