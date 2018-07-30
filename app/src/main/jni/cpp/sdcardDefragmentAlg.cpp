@@ -348,10 +348,10 @@ int SDA_get_structure_value_from_config(char* mount_path){
         {
             for(i=0; i<TABLE_SIZE; i++) {
                 retlen = fread(&read_table, sizeof(struct file_struct), 1, fp);
-                if (retlen == sizeof(struct file_struct))
+                if (retlen == 1)
                 {
-                    ALOGE("this jni call-> retlen == sizeof(file_struct) == 1 func: %s, line:%d \n",
-                          __func__, __LINE__);
+                    ALOGE("this jni call-> retlen == sizeof(file_struct) %ld == 1 func: %s, line:%d \n",
+                          sizeof(struct file_struct), __func__, __LINE__);
                     FH_Table[i].percent = read_table.percent;
                     FH_Table[i].every_block_space = read_table.every_block_space;
                     FH_Table[i].avail_space = read_table.avail_space;
