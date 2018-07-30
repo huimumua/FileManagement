@@ -56,12 +56,12 @@ using namespace std;
 enum eFolderType{
 	e_Event=0,
 	e_Normal,
-	e_Camera2,
 	e_Picture,
 	e_System,
+	e_HASH_EVENT,
+	e_HASH_NORMAL,
 	e_NMEA_EVENT,
-	e_NMEA_NORMAL,
-	e_NMEA_CAMERA2
+	e_NMEA_NORMAL
 };
 
 //Purpose: Check config file exist or not

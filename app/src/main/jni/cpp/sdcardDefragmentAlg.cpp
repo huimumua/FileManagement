@@ -17,14 +17,14 @@ struct file_struct{
     int exist_flag;
 };
 
-struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.2, 76*MEGABYTE, 0, 0, 0, 0}, // event
-                                           {"NORMAL",  ".nor",  0.4, 76*MEGABYTE, 0, 0, 0, 0}, // normal
-                                           {"CAMERA2", ".cam2", 0.2, 55*MEGABYTE, 0, 0, 0, 0}, // parking
+struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.3, 76*MEGABYTE, 0, 0, 0, 0}, // event
+                                           {"NORMAL",  ".nor",  0.5, 76*MEGABYTE, 0, 0, 0, 0}, // normal
                                            {"PICTURE", ".pic",  0.1, 1*MEGABYTE, 0, 0, 0, 0}, // picture
                                            {"SYSTEM",  ".sys",  0.1, 76*MEGABYTE, 0, 0, 0, 0}, // system
+                                           {"HASH_EVENT", ".hash", 0, 25*KILOBYTE, 0, 0, 0, 1}, // parking
+                                           {"HASH_NORMAL",".hash", 0, 25*KILOBYTE, 0, 0, 0, 1}, // parking
                                            {"SYSTEM/NMEA/EVENT",   ".neve",   0, 100*KILOBYTE, 0, 0, 0, 1},
-                                           {"SYSTEM/NMEA/NORMAL",  ".nnor",   0, 100*KILOBYTE, 0, 0, 0, 1},
-                                           {"SYSTEM/NMEA/CAMERA2", ".ncam2",  0, 100*KILOBYTE, 0, 0, 0, 1}};
+                                           {"SYSTEM/NMEA/NORMAL",  ".nnor",   0, 100*KILOBYTE, 0, 0, 0, 1}};
 
 char g_mount_path[NORULE_SIZE] = "\0";
 
@@ -522,9 +522,11 @@ bool FH_Init(char* mount_path){
             FH_Table[i].file_num = FH_Table[i].avail_space/FH_Table[i].every_block_space;
         }
     }
+
+    FH_Table[e_HASH_EVENT].file_num = FH_Table[e_Event].file_num; //HASH_EVENT   = EVENT file_num
+    FH_Table[e_HASH_NORMAL].file_num = FH_Table[e_Normal].file_num; //HASH_NORMAL  = NORMAL file_num
     FH_Table[e_NMEA_EVENT].file_num = FH_Table[e_Event].file_num; //NMEA/EVENT   = EVENT file_num
     FH_Table[e_NMEA_NORMAL].file_num = FH_Table[e_Normal].file_num; //NMEA/NORMAL  = NORMAL file_num
-    FH_Table[e_NMEA_CAMERA2].file_num = FH_Table[e_Camera2].file_num; //NMEA/CAMERA2 = CAMERA2 file_num
 
     /* Create folder in SDCARD */
     char create_folder_path[NORULE_SIZE];
@@ -550,13 +552,17 @@ bool FH_Init(char* mount_path){
                 snprintf(create_folder_path, NORULE_SIZE, "%s/%s", mount_path, FH_Table[e_NMEA_NORMAL].folder_type);
                 mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
                 memset(create_folder_path, 0, NORULE_SIZE);
-
-                snprintf(create_folder_path, NORULE_SIZE, "%s/%s", mount_path, FH_Table[e_NMEA_CAMERA2].folder_type);
-                mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
-                memset(create_folder_path, 0, NORULE_SIZE);
             }
         }
     }
+
+    snprintf(create_folder_path, NORULE_SIZE, "%s/%s", mount_path, FH_Table[e_HASH_EVENT].folder_type);
+    mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+    memset(create_folder_path, 0, NORULE_SIZE);
+
+    snprintf(create_folder_path, NORULE_SIZE, "%s/%s", mount_path, FH_Table[e_HASH_NORMAL].folder_type);
+    mkdir(create_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
+    memset(create_folder_path, 0, NORULE_SIZE);
 
     /* Check if SYSTEM exist but SYSTEM/FREE not exist, create FREE*/
     if(FH_Table[e_System].exist_flag == 1){
