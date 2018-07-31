@@ -19,9 +19,9 @@ struct file_struct{
 };
 
 struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.3, 76*MEGABYTE, 0, 0, 0, 0}, // event
-                                           {"NORMAL",  ".nor",  0.59, 76*MEGABYTE, 0, 0, 0, 0}, // normal
+                                           {"NORMAL",  ".nor",  0.5, 76*MEGABYTE, 0, 0, 0, 0}, // normal
                                            {"PICTURE", ".pic",  0.01, 1*MEGABYTE, 0, 0, 0, 0}, // picture
-                                           {"SYSTEM",  ".sys",  0.1, 76*MEGABYTE, 0, 0, 0, 0}, // system
+                                           {"SYSTEM",  ".sys",  0.19, 76*MEGABYTE, 0, 0, 0, 0}, // system
                                            {"HASH_EVENT", ".hash", 0, 25*KILOBYTE, 0, 0, 0, 1}, // parking
                                            {"HASH_NORMAL",".hash", 0, 25*KILOBYTE, 0, 0, 0, 1}, // parking
                                            {"SYSTEM/NMEA/EVENT",   ".neve",   0, 100*KILOBYTE, 0, 0, 0, 1},
@@ -536,11 +536,11 @@ bool FH_ValidFormat(char* mount_path){
 
     rc = SDA_file_exists(config_file_path);
     pthread_mutex_unlock(&g_mutex);
-    return (rc == 1 ? true : false);
+    return (rc == 0 ? true : false);
 }
 
 // true = 1, false = 0;
-bool FH_Init(char* mount_path){
+int FH_Init(char* mount_path){
 
     pthread_mutex_lock(&g_mutex);
     int i;
@@ -548,7 +548,7 @@ bool FH_Init(char* mount_path){
 
     if(mount_path == NULL){
         pthread_mutex_unlock(&g_mutex);
-        return false;
+        return SDCARD_PATH_ERROR;
     }else{
         strncpy(g_mount_path, mount_path, strlen(mount_path));
     }
@@ -562,14 +562,14 @@ bool FH_Init(char* mount_path){
         if(rc != SUCCESS){
             ALOGE("this jni call-> Sdcard format error. func: %s, line:%d \n", __func__, __LINE__);
             pthread_mutex_unlock(&g_mutex);
-            return false;
+            return TABLE_VERSION_TOO_OLD;
         }
         int ret = SDA_get_structure_value_from_config(mount_path);
         if (ret != 0)
         {
             ALOGE("this jni call-> SDA_get_structure_value_from_config fail. func: %s, line:%d \n", __func__, __LINE__);
             pthread_mutex_unlock(&g_mutex);
-            return false;
+            return TABLE_READ_ERROR;
         }
     }
 
@@ -580,7 +580,7 @@ bool FH_Init(char* mount_path){
     if (statvfs(mount_path, &buf) == -1){
         ALOGE("Sdcard path error. func: %s, line:%d \n", __func__, __LINE__);
         pthread_mutex_unlock(&g_mutex);
-        return false;
+        return SDCARD_PATH_ERROR;
     } else {
         ALOGE("Sdcard available space = %" PRIu64 ". func: %s, line:%d \n", ((uint64_t)buf.f_bavail * buf.f_bsize), __func__, __LINE__);
         mount_path_avail_size = ((uint64_t)buf.f_bavail * buf.f_bsize);
@@ -591,7 +591,7 @@ bool FH_Init(char* mount_path){
     if(rc == -1){
         cout << "Scan SDCARD failed." << endl;
         pthread_mutex_unlock(&g_mutex);
-        return false;
+        return SDCARD_PATH_ERROR;
     }
 
     int count = 0;
@@ -608,6 +608,7 @@ bool FH_Init(char* mount_path){
             percent_add += FH_Table[i].percent;
         }
     }
+    ALOGE("this is jni call1-->. percent_add = %f. func: %s, line:%d \n", percent_add, __func__, __LINE__);
 
     /* Calucate folder avail space */
     if(count > 1){
@@ -686,14 +687,14 @@ bool FH_Init(char* mount_path){
         char free_folder_path[NORULE_SIZE];
         sprintf(free_folder_path, "%s/SYSTEM/FREE", mount_path);
         rc = SDA_file_exists(free_folder_path);
-        if(rc != 1){
+        if(rc != 0){
             cout << "Create FREE" << endl;
             mkdir(free_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
         }
         char nmea_folder_path[NORULE_SIZE];
         sprintf(nmea_folder_path, "%s/SYSTEM/NMEA", mount_path);
         rc = SDA_file_exists(nmea_folder_path);
-        if(rc != 1){
+        if(rc != 0){
             cout << "Create NMEA" << endl;
             mkdir(nmea_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
         }
@@ -733,7 +734,7 @@ bool FH_Init(char* mount_path){
     storage_normal_file_in_queue(e_NMEA_NORMAL, nmea_normal_files_queue);
 
     pthread_mutex_unlock(&g_mutex);
-    return true;
+    return SUCCESS;
 }
 
 string open_file_and_save_in_queue(char* filename, eFolderType folderType, queue<string> &now_queue){
@@ -1033,6 +1034,7 @@ int FH_CanUseFilenumber(eFolderType folderType){
 
 int FH_CheckFolderStatus(eFolderType folderType){
     pthread_mutex_lock(&g_mutex);
+    ALOGE("this jni call -> folderType = %d func: %s, line:%d \n", folderType, __func__, __LINE__);
 
     struct statvfs buf;
     if (statvfs(g_mount_path, &buf) == -1) {
@@ -1111,7 +1113,7 @@ int FH_CheckFolderStatus(eFolderType folderType){
     }
 
     ALOGE("this is jni call1-->%s, %s, %f, %" PRId64", %" PRId64 ", %d, %d, %d \n",FH_Table[folderType].folder_type, FH_Table[folderType].folder_extension, FH_Table[folderType].percent, FH_Table[folderType].every_block_space, FH_Table[folderType].avail_space, FH_Table[folderType].max_file_num, FH_Table[folderType].file_num, FH_Table[folderType].exist_flag);
-
+    ALOGE("this is jni call -> folderType = %d, return file_num = %d. func: %s, line:%d \n", folderType, FH_Table[folderType].file_num, __func__, __LINE__);
     pthread_mutex_unlock(&g_mutex);
     return FH_Table[folderType].file_num;
 }

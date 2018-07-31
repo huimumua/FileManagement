@@ -49,6 +49,7 @@ using namespace std;
 #define NO_SPACE_NO_NUMBER_TO_RECYCLE (-6)
 #define TABLE_VERSION_TOO_OLD (-7)
 #define TABLE_VERSION_CANNOT_RECOGNIZE (-8)
+#define TABLE_READ_ERROR (-9)
 
 #define KILOBYTE (1 << 10)
 #define MEGABYTE (1 << 20)
@@ -77,7 +78,7 @@ bool FH_ValidFormat(char* mount_path);
 // Input:  mount path
 // Output: bool, true = 1, false = 0;
 // ** If SDCARD not clear, return false **
-bool FH_Init(char* mount_path);
+int FH_Init(char* mount_path);
 
 //
 // Purpose: 1.Choice enum folderType to openfile
