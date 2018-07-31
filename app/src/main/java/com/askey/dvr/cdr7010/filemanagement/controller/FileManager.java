@@ -302,13 +302,13 @@ public class FileManager {
             type = Const.PICTURE_DIR;
         }else if(path.contains(Const.SYSTEM_DIR)){
             type = Const.SYSTEM_DIR;
-        }else if(path.contains("/HASH/NORMAL")){
+        }else if(path.contains(Const.HASH_NORMAL_DIR)){
             type = Const.HASH_NORMAL_DIR;
         }else if(path.contains("SYSTEM/NMEA/EVENT")){
             type = Const.NMEA_EVENT_DIR;
         }else if(path.contains("SYSTEM/NMEA/NORMAL")){
             type = Const.NMEA_NORMAL_DIR;
-        }else if(path.contains("/HASH/EVENT")){
+        }else if(path.contains(Const.HASH_EVENT_DIR)){
             type = Const.HASH_EVENT_DIR;
         }
         return type;

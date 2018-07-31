@@ -364,21 +364,26 @@ public class MediaScanner {
             Logg.i(TAG,"-->deleteFile --> FH_Delete fileName"+fileName+" result =="+result);
             if(!fileName.contains(".jpg")){
                 String nmeaPath = null;
+                String hashPath = null;
                 if(fileName.contains("EVENT")){
                     nmeaPath = fileName.replaceAll("mp4", "nmea").replaceAll("EVENT", "SYSTEM/NMEA/EVENT");
+                    hashPath = fileName.replaceAll("mp4", "hash").replaceAll("EVENT", "HASH_EVENT");
                 }else if(fileName.contains("NORMAL")){
                     nmeaPath = fileName.replaceAll("mp4", "nmea").replaceAll("NORMAL", "SYSTEM/NMEA/NORMAL");
+                    hashPath = fileName.replaceAll("mp4", "hash").replaceAll("NORMAL", "HASH_NORMAL");
                 }
-                //这里还需要删除李纳所创建的文件
-
-
-
-
                 //SYSTEM/NMEA/NORMAL
                 boolean nmeaResult = false;
                 if(nmeaPath!=null){
                     nmeaResult = FileManager.getSingInstance().FH_Delete(nmeaPath);
                     Logg.i(TAG,"-->deleteFile --> FH_Delete nmeaPath"+nmeaPath+" nmeaResult =="+nmeaResult);
+                }
+
+                //这里还需要删除李纳所创建的文件
+                boolean hashResult = false;
+                if(hashPath!=null){
+                    hashResult = FileManager.getSingInstance().FH_Delete(hashPath);
+                    Logg.i(TAG,"-->deleteFile --> FH_Delete hashPath"+hashPath+" hashResult =="+hashResult);
                 }
             }
 
