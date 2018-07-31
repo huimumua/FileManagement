@@ -93,6 +93,10 @@ public class SdCardReceiver extends BroadcastReceiver {
                     if(initResult == -7 || initResult == -9 ){
                         Const.SDCARD_NOT_SUPPORTED = true;
                         BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(), Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
+                    }else if(initResult == -2){
+                        Const.SDCARD_UNRECOGNIZABLE = true;
+                        BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                                Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_UNRECOGNIZABLE);
                     }
                 }else{
                     try {
@@ -117,6 +121,14 @@ public class SdCardReceiver extends BroadcastReceiver {
                         Const.IS_SDCARD_FOLDER_LIMIT = true;
                         String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_OVER_LIMIT;
                         BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                    }else if(sdcardStatus == Const.OPEN_FOLDER_ERROR ){
+                        Const.SDCARD_NOT_SUPPORTED = true;
+                        BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                                Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
+                    }else if(sdcardStatus == Const.SDCARD_PATH_ERROR ){
+                        Const.SDCARD_UNRECOGNIZABLE = true;
+                        BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                                Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_UNRECOGNIZABLE);
                     }else if(sdcardStatus >=2){
                         Const.IS_SDCARD_FULL_LIMIT = false;
                         String currentAction = Const.CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT;

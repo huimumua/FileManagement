@@ -51,6 +51,10 @@ public class FileManagerService extends Service {
                 }else if(sdcardStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
                     Const.SDCARD_EVENT_FOLDER_OVER_LIMIT = true;
                     Const.IS_SDCARD_FOLDER_LIMIT = true;
+                }else if(sdcardStatus == Const.OPEN_FOLDER_ERROR ){
+                    Const.SDCARD_NOT_SUPPORTED = true;
+                }else if(sdcardStatus == Const.SDCARD_PATH_ERROR ){
+                    Const.SDCARD_UNRECOGNIZABLE = true;
                 }else if(sdcardStatus >=2){
                     Const.IS_SDCARD_FULL_LIMIT = false;
                 }
@@ -62,7 +66,7 @@ public class FileManagerService extends Service {
                 if(initResult== -7 || initResult== -9 ){
                     Const.SDCARD_NOT_SUPPORTED = true;
                 }else if(initResult== -2){
-                    Const.SDCARD_IS_EXIST = false;
+                    Const.SDCARD_UNRECOGNIZABLE = false;
                 }
                  Const.SDCARD_INIT_SUCCESS = false;
             }
