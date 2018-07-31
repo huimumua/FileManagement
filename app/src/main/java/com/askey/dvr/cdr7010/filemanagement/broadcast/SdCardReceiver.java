@@ -57,7 +57,7 @@ public class SdCardReceiver extends BroadcastReceiver {
 //                    若fsType為其它情況(如空值或exfat)..,則該卡被判為異常.
             String fsType = intent.getStringExtra("fsType");
             Logg.i(TAG,"==fsType=="+fsType);
-            if("ntfs".equals(fsType)){
+            if("ntfs".equals(fsType) || "vfat".equals(fsType)){
                 sendOnce = true;
                 Const.SDCARD_NOT_SUPPORTED = true;
                 BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
