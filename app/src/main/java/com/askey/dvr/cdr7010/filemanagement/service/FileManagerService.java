@@ -41,9 +41,9 @@ public class FileManagerService extends Service {
         if(Const.SDCARD_IS_EXIST){
             //获取sdcard状态信息
             Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(FileManagerApplication.getAppContext());
-            boolean result = FileManager.getSingInstance().sdcardInit();
-            if(result){
-                Logg.i(LOG_TAG,"=sdcardInit=result=="+result);
+            int initResult = FileManager.getSingInstance().sdcardInit();
+            if(initResult == 0){
+                Logg.i(LOG_TAG,"=sdcardInit==="+initResult);
                 int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(Const.EVENT_DIR);
                 Logg.i(LOG_TAG,"checkFolderStatus-》"+sdcardStatus);
                 if(sdcardStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
@@ -55,10 +55,15 @@ public class FileManagerService extends Service {
                     Const.IS_SDCARD_FULL_LIMIT = false;
                 }
 
-                if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.IS_SDCARD_FULL_LIMIT && result){
+                if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.IS_SDCARD_FULL_LIMIT){
                     Const.SDCARD_INIT_SUCCESS=true;
                 }
             }else{
+                if(initResult== -7 || initResult== -9 ){
+                    Const.SDCARD_NOT_SUPPORTED = true;
+                }else if(initResult== -2){
+                    Const.SDCARD_IS_EXIST = false;
+                }
                  Const.SDCARD_INIT_SUCCESS = false;
             }
 

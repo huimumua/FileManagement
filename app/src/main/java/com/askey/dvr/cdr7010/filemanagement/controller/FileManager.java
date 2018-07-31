@@ -50,7 +50,7 @@ public class FileManager {
 // Input:  mount path
 // Output: bool, true = 1, false = 0;
 // ** If SDCARD not clear, return false **
-    public native boolean FH_Init(String mount_path);
+    public native int FH_Init(String mount_path);
 
 //
 // Purpose: 1.Choice folderType to openfile
@@ -133,8 +133,11 @@ public class FileManager {
         return result;
     }
 
-    public boolean sdcardInit() {
-        boolean result = false;
+//    SDCARD_PATH_ERROR -2
+//    TABLE_VERSION_TOO_OLD -7
+//    TABLE_READ_ERROR -9
+    public int sdcardInit() {
+        int result = 2;
         if(Const.SDCARD_IS_EXIST){
             Const.SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
             result = FH_Init(Const.SDCARD_PATH);
