@@ -708,8 +708,18 @@ int FH_Init(char* mount_path){
     // 	<< FH_Table[i].max_file_num << " " << FH_Table[i].file_num << " "
     // 	<< FH_Table[i].exist_flag << endl;
     // }
+    ALOGE("this is jni call1--> sizeof percent = %ld. func: %s, line:%d \n", sizeof(FH_Table[0].percent), __func__, __LINE__);
     for(i=0; i<TABLE_SIZE; i++){
-        ALOGE("this is jni call1-->%s, %s, %f, %" PRId64", %" PRId64 ", %d, %d, %d \n",FH_Table[i].folder_type, FH_Table[i].folder_extension, FH_Table[i].percent, FH_Table[i].every_block_space, FH_Table[i].avail_space, FH_Table[i].max_file_num, FH_Table[i].file_num, FH_Table[i].exist_flag);
+         ALOGE("this is jni call1-->%s, %s, %f, %" PRId64", %" PRId64 ", %d, %d, %d, func: %s, line:%d \n",
+                       FH_Table[i].folder_type,
+                       FH_Table[i].folder_extension,
+                       FH_Table[i].percent,
+                       FH_Table[i].every_block_space,
+                       FH_Table[i].avail_space,
+                       FH_Table[i].max_file_num,
+                       FH_Table[i].file_num,
+                       FH_Table[i].exist_flag,
+                       __func__, __LINE__ );
     }
 
 
@@ -1117,6 +1127,39 @@ int FH_CheckFolderStatus(eFolderType folderType){
     pthread_mutex_unlock(&g_mutex);
     return FH_Table[folderType].file_num;
 }
+
+
+int FH_GetSDCardInfo(eFolderType folderType, eGetNum getNumOpt){
+    ALOGE("this jni call-> folderType = %d func: %s, line:%d \n", folderType, __func__, __LINE__);
+    pthread_mutex_lock(&g_mutex);
+    if (getNumOpt == e_getLimitNum){
+        ALOGE("this jni call-> folderType = %d, limit_file_num = %d. func: %s, line:%d \n", folderType, FH_Table[folderType].file_num, __func__, __LINE__);
+        pthread_mutex_unlock(&g_mutex);
+        return FH_Table[folderType].file_num;
+    }
+    int current_num = -1;
+    if (getNumOpt == e_getCurrentNum){
+        switch(folderType){
+            case e_Event:
+                current_num = event_files_queue.size();
+                break;
+            case e_Normal:
+                current_num = normal_files_queue.size();
+                break;
+            case e_Picture:
+                current_num = picture_files_queue.size();
+                break;
+            default:
+                ALOGE("this jni call-> folderType error. func: %s, line:%d \n", __func__, __LINE__);
+                break;
+        }
+    }
+
+    ALOGE("this jni call-> folderType = %d, current_num = %d func: %s, line:%d \n", folderType, current_num, __func__, __LINE__);
+    pthread_mutex_unlock(&g_mutex);
+    return current_num;
+}
+
 
 //
 // true = 1, false = 0;

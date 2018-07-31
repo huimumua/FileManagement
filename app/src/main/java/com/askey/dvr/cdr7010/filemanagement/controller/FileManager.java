@@ -110,6 +110,8 @@ public class FileManager {
 //  4、5、6可以提示format sdcard
     public native int FH_CheckFolderStatus(int type);
 
+    public native int FH_GetSDCardInfo(int type,int numType);
+
     //
 // not implement
 // Return ture

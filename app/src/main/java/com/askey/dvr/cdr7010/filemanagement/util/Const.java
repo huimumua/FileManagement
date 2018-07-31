@@ -50,6 +50,8 @@ public class Const {
     public static final String NMEA_NORMAL_DIR = "NMEA_NORMAL";
     public static final String PARKING_DIR = "PARKING";
 
+    public static final int LIMITNUM = 0;
+    public static final int CURRENTNUM = 1;
 
     public static final int TYPE_EVENT_DIR = 0;
     public static final int TYPE_NORMAL_DIR = 1;

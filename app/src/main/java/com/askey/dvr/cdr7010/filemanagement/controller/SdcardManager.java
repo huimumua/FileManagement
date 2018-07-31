@@ -44,7 +44,41 @@ public class SdcardManager {
         return null;
     }
 
+    /**
+     * 使用jni方法获取sdcard文件信息
+     * **/
     private List<SdcardInfo> getCurrentSdcardInfo(int currentSdcardSize) {
+        ArrayList <SdcardInfo> sdcardInfoList= new ArrayList<SdcardInfo>();
+        //这里要根据当前sdcard大小及规定的最大文件数量填赋值
+        SdcardInfo sdcardInfo = new SdcardInfo();
+
+        int normalCurrentNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_NORMAL_DIR,Const.CURRENTNUM);
+        int normalLimitNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_NORMAL_DIR,Const.LIMITNUM);
+        int eventCurrentNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_EVENT_DIR,Const.CURRENTNUM);
+        int eventLimitNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_EVENT_DIR,Const.LIMITNUM);
+        int pictureCurrentNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_PICTURE_DIR,Const.CURRENTNUM);
+        int pictureLimitNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_PICTURE_DIR,Const.LIMITNUM);
+
+        Logg.i(LOG_TAG,"=normal=current/maxnum=="+normalCurrentNum+"/"+normalLimitNum);
+        Logg.i(LOG_TAG,"=event=current/maxnum=="+eventCurrentNum+"/"+eventLimitNum);
+        Logg.i(LOG_TAG,"=picture=current/maxnum=="+pictureCurrentNum+"/"+pictureLimitNum);
+
+        sdcardInfo.setPictureCurrentSize(String.valueOf(pictureCurrentNum));
+        sdcardInfo.setNormalCurrentSize(String.valueOf(normalCurrentNum));
+        sdcardInfo.setEventCurrentSize(String.valueOf(eventCurrentNum));
+        sdcardInfo.setNormalSize(String.valueOf(normalLimitNum));
+        sdcardInfo.setEventSize(String.valueOf(eventLimitNum));
+        sdcardInfo.setPictureSize(String.valueOf(pictureLimitNum));
+
+        sdcardInfoList.add(sdcardInfo);
+        return sdcardInfoList;
+    }
+
+
+    /**
+     * 使用java方法获取文件个数
+     * **/
+    private List<SdcardInfo> getCurrentSdcardInfo1(int currentSdcardSize) {
         ArrayList <SdcardInfo> sdcardInfoList= new ArrayList<SdcardInfo>();
         //这里要根据当前sdcard大小及规定的最大文件数量填赋值
         SdcardInfo sdcardInfo = new SdcardInfo();
@@ -55,6 +89,7 @@ public class SdcardManager {
         sdcardInfo.setParkingCurrentSize(String.valueOf(fileCountMap.get(Const.PARKING_DIR)));
         List <String> pictureList = MediaScanner.getAllFileList(Const.PICTURE_DIR);
         sdcardInfo.setPictureCurrentSize(String.valueOf(pictureList.size()));
+
         switch (currentSdcardSize){
             case 4:
                 sdcardInfo.setNormalSize(String.valueOf(Const.SDCARD_MAX_NORMAL_FILE_SIZE_4Gb));

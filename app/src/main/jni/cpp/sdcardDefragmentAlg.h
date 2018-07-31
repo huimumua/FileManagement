@@ -65,6 +65,11 @@ enum eFolderType{
 	e_NMEA_NORMAL
 };
 
+enum eGetNum{
+	e_getLimitNum=0,
+	e_getCurrentNum
+};
+
 //Purpose: Check config file exist or not
 //
 //Input:  mount path
@@ -131,6 +136,9 @@ int FH_CanUseFilenumber(eFolderType folderType);
 //         OPEN_FOLDER_ERROR
 //         FOLDER_SPACE_OVER_LIMIT
 int FH_CheckFolderStatus(eFolderType folderType);
+
+
+int FH_GetSDCardInfo(eFolderType folderType, eGetNum getNumOpt);
 
 //
 // not use

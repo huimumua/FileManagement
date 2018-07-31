@@ -75,6 +75,14 @@ jint FileManager_FH_CheckFolderStatus(JNIEnv *env, jclass object,jint type){
     return numb;
 }
 
+jint FileManager_FH_GetSDCardInfo(JNIEnv *env, jclass object,jint type,jint numType){
+    jint  numb = FH_GetSDCardInfo((eFolderType)type,(eGetNum)numType);
+    ALOGE("this is jni call1-->FileManager_FH_GetSDCardInfo= %d" , numb);
+//    return FH_FolderCanUseFilenumber((eFolderType)type);
+    return numb;
+}
+
+
 jboolean FileManager_FH_lock(JNIEnv *env, jclass object,jlong file_pointer){
     return (jboolean)FH_lock((FILE*)file_pointer);
 }
@@ -111,6 +119,8 @@ static const JNINativeMethod gMethods[] = {
         { "FH_CheckFolderStatus", "(I)I", (void *)FileManager_FH_CheckFolderStatus },
         { "FH_lock", "(J)Z", (void *)FileManager_FH_lock },
         { "FH_unlock", "(J)Z", (void *)FileManager_FH_unlock },
+        { "FH_GetSDCardInfo", "(II)I", (void *)FileManager_FH_GetSDCardInfo },
+
 };
 
 static int registerNativeMethods(JNIEnv* env, const char* className,
