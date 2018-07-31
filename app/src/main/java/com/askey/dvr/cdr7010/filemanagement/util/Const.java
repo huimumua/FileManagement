@@ -42,22 +42,23 @@ public class Const {
 
     public static final String NORMAL_DIR = "NORMAL";
     public static final String EVENT_DIR = "EVENT";
-    public static final String CAMERA2_DIR = "CAMERA2";
     public static final String PICTURE_DIR = "PICTURE";
     public static final String SYSTEM_DIR = "SYSTEM";
+    public static final String HASH_EVENT_DIR = "HASH_EVENT";
+    public static final String HASH_NORMAL_DIR = "HASH_NORMAL";
     public static final String NMEA_EVENT_DIR = "NMEA_EVENT";
     public static final String NMEA_NORMAL_DIR = "NMEA_NORMAL";
-    public static final String NMEA_CAMERA_DIR = "NMEA_CAMERA";
     public static final String PARKING_DIR = "PARKING";
+
 
     public static final int TYPE_EVENT_DIR = 0;
     public static final int TYPE_NORMAL_DIR = 1;
-    public static final int TYPE_CAMERA2_DIR = 2;
-    public static final int TYPE_PICTURE_DIR = 3;
-    public static final int TYPE_SYSTEM_DIR = 4;
-    public static final int TYPE_NMEA_EVENT_DIR = 5;
-    public static final int TYPE_NMEA_NORMAL_DIR = 6;
-    public static final int TYPE_NMEA_CAMERA_DIR = 7;
+    public static final int TYPE_PICTURE_DIR = 2;
+    public static final int TYPE_SYSTEM_DIR = 3;
+    public static final int TYPE_HASH_EVENT_DIR = 4;
+    public static final int TYPE_HASH_NORMAL_DIR = 5;
+    public static final int TYPE_NMEA_EVENT_DIR = 6;
+    public static final int TYPE_NMEA_NORMAL_DIR = 7;
     public static final int TYPE_PARKING_DIR = 8;
 
     public static int CURRENT_SDCARD_SIZE = 0; // unit GB
