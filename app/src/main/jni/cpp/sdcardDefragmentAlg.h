@@ -50,9 +50,12 @@ using namespace std;
 #define TABLE_VERSION_TOO_OLD (-7)
 #define TABLE_VERSION_CANNOT_RECOGNIZE (-8)
 #define TABLE_READ_ERROR (-9)
+#define SDCARD_DETECT_SIZE_ERROR (-10)
+#define SDCARD_NOT_SUPPORT (-11)
 
 #define KILOBYTE (1 << 10)
 #define MEGABYTE (1 << 20)
+#define GIGABYTE (1 << 30)
 
 enum eFolderType{
 	e_Event=0,

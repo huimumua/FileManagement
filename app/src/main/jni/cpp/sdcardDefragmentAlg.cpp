@@ -3,29 +3,30 @@
 #include <queue>
 
 #define CFG_NAME "table.config"
-const char TABLE_VERSION = 0x01;
+const char TABLE_VERSION = 0x02;
+
 #define LOG_TAG "sdcardDefragmentAlg.cpp"
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct file_struct{
-    char folder_type[32];
-    char folder_extension[32];
-    float percent;
-    uint64_t every_block_space;
-    uint64_t avail_space;
     int max_file_num;
     int file_num;
     int exist_flag;
+    float percent;
+    uint64_t every_block_space;
+    uint64_t avail_space;
+    char folder_type[32];
+    char folder_extension[32];
 };
 
-struct file_struct FH_Table[TABLE_SIZE] = {{"EVENT", ".eve", 0.3, 76*MEGABYTE, 0, 0, 0, 0}, // event
-                                           {"NORMAL",  ".nor",  0.5, 76*MEGABYTE, 0, 0, 0, 0}, // normal
-                                           {"PICTURE", ".pic",  0.01, 1*MEGABYTE, 0, 0, 0, 0}, // picture
-                                           {"SYSTEM",  ".sys",  0.19, 76*MEGABYTE, 0, 0, 0, 0}, // system
-                                           {"HASH_EVENT", ".hash", 0, 25*KILOBYTE, 0, 0, 0, 1}, // parking
-                                           {"HASH_NORMAL",".hash", 0, 25*KILOBYTE, 0, 0, 0, 1}, // parking
-                                           {"SYSTEM/NMEA/EVENT",   ".neve",   0, 100*KILOBYTE, 0, 0, 0, 1},
-                                           {"SYSTEM/NMEA/NORMAL",  ".nnor",   0, 100*KILOBYTE, 0, 0, 0, 1}};
+struct file_struct FH_Table[TABLE_SIZE] = {{0, 0, 0, 0.3, 76*MEGABYTE, 0, "EVENT", ".eve"}, // event
+                                           {0, 0, 0, 0.5, 76*MEGABYTE, 0, "NORMAL",  ".nor"}, // normal
+                                           {0, 0, 0, 0.01, 1*MEGABYTE, 0, "PICTURE", ".pic"}, // picture
+                                           {0, 0, 0, 0.19,76*MEGABYTE, 0, "SYSTEM",  ".sys"}, // system
+                                           {0, 0, 1, 0,   25*KILOBYTE, 0,"HASH_EVENT", ".hash"}, // parking
+                                           {0, 0, 1, 0,   25*KILOBYTE, 0, "HASH_NORMAL",".hash"}, // parking
+                                           {0, 0, 1, 0,  100*KILOBYTE, 0, "SYSTEM/NMEA/EVENT", ".neve"},
+                                           {0, 0, 1, 0,  100*KILOBYTE, 0, "SYSTEM/NMEA/NORMAL",".nnor"}};
 
 queue<string> event_files_queue;
 queue<string> normal_files_queue;
@@ -389,6 +390,58 @@ int SDA_get_structure_value_from_config(char* mount_path){
     return -1;
 }
 
+int set_max_file_num(uint64_t sdcard_size){
+    ALOGE("this jni call-> In func: %s, line:%d \n", __func__, __LINE__);
+    int sd_size = sdcard_size/GIGABYTE;
+    if(sd_size == 0){
+        return SDCARD_DETECT_SIZE_ERROR;
+    }
+    if(sd_size < 4){
+        ALOGE("this jni call-> 4G func: %s, line:%d \n", __func__, __LINE__);
+        FH_Table[e_Event].max_file_num = 10;
+        FH_Table[e_Normal].max_file_num = 20;
+        FH_Table[e_Picture].max_file_num = 30;
+        return SUCCESS;
+    }else
+    if(sd_size < 8){
+        ALOGE("this jni call-> 8G func: %s, line:%d \n", __func__, __LINE__);
+        FH_Table[e_Event].max_file_num = 20;
+        FH_Table[e_Normal].max_file_num = 40;
+        FH_Table[e_Picture].max_file_num = 60;
+        return SUCCESS;
+    }else
+    if(sd_size < 16){
+        ALOGE("this jni call-> 16G func: %s, line:%d \n", __func__, __LINE__);
+        FH_Table[e_Event].max_file_num = 40;
+        FH_Table[e_Normal].max_file_num = 80;
+        FH_Table[e_Picture].max_file_num = 120;
+        return SUCCESS;
+    }else
+    if(sd_size < 32){
+        ALOGE("this jni call-> 32G func: %s, line:%d \n", __func__, __LINE__);
+        FH_Table[e_Event].max_file_num = 80;
+        FH_Table[e_Normal].max_file_num = 160;
+        FH_Table[e_Picture].max_file_num = 240;
+        return SUCCESS;
+    }else
+    if(sd_size < 64){
+        ALOGE("this jni call-> 64G func: %s, line:%d \n", __func__, __LINE__);
+        FH_Table[e_Event].max_file_num = 160;
+        FH_Table[e_Normal].max_file_num = 320;
+        FH_Table[e_Picture].max_file_num = 480;
+        return SUCCESS;
+    }else
+    if(sd_size < 128){
+        ALOGE("this jni call-> 128G func: %s, line:%d \n", __func__, __LINE__);
+        FH_Table[e_Event].max_file_num = 320;
+        FH_Table[e_Normal].max_file_num = 640;
+        FH_Table[e_Picture].max_file_num = 960;
+        return SUCCESS;
+    }
+    ALOGE("this jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
+    return SDCARD_NOT_SUPPORT;
+}
+
 void check_queue_status(int old_date_flag, queue<string>& folder_files_queue){
     cout << "queue first = " << folder_files_queue.front() << endl;
     if(old_date_flag == 1){
@@ -581,9 +634,15 @@ int FH_Init(char* mount_path){
         ALOGE("Sdcard path error. func: %s, line:%d \n", __func__, __LINE__);
         pthread_mutex_unlock(&g_mutex);
         return SDCARD_PATH_ERROR;
-    } else {
-        ALOGE("Sdcard available space = %" PRIu64 ". func: %s, line:%d \n", ((uint64_t)buf.f_bavail * buf.f_bsize), __func__, __LINE__);
-        mount_path_avail_size = ((uint64_t)buf.f_bavail * buf.f_bsize);
+    }
+    ALOGE("Sdcard available space = %" PRIu64 ". func: %s, line:%d \n", ((uint64_t)buf.f_bavail * buf.f_bsize), __func__, __LINE__);
+    mount_path_avail_size = ((uint64_t)buf.f_bavail * buf.f_bsize);
+
+    rc = set_max_file_num(mount_path_avail_size);
+    if(rc != SUCCESS){
+        ALOGE("this jni call-> sdcard detect failed. func: %s, line:%d \n", __func__, __LINE__);
+        pthread_mutex_unlock(&g_mutex);
+        return SDCARD_DETECT_SIZE_ERROR;
     }
 
     /* Scan which folder not exist */
@@ -640,11 +699,6 @@ int FH_Init(char* mount_path){
             FH_Table[i].file_num = FH_Table[i].avail_space/FH_Table[i].every_block_space;
         }
     }
-
-    FH_Table[e_HASH_EVENT].file_num = FH_Table[e_Event].file_num; //HASH_EVENT   = EVENT file_num
-    FH_Table[e_HASH_NORMAL].file_num = FH_Table[e_Normal].file_num; //HASH_NORMAL  = NORMAL file_num
-    FH_Table[e_NMEA_EVENT].file_num = FH_Table[e_Event].file_num; //NMEA/EVENT   = EVENT file_num
-    FH_Table[e_NMEA_NORMAL].file_num = FH_Table[e_Normal].file_num; //NMEA/NORMAL  = NORMAL file_num
 
     /* Create folder in SDCARD */
     char create_folder_path[NORULE_SIZE];
@@ -708,29 +762,36 @@ int FH_Init(char* mount_path){
     // 	<< FH_Table[i].max_file_num << " " << FH_Table[i].file_num << " "
     // 	<< FH_Table[i].exist_flag << endl;
     // }
+
     ALOGE("this is jni call1--> sizeof percent = %ld. func: %s, line:%d \n", sizeof(FH_Table[0].percent), __func__, __LINE__);
-    for(i=0; i<TABLE_SIZE; i++){
-         ALOGE("this is jni call1-->%s, %s, %f, %" PRId64", %" PRId64 ", %d, %d, %d, func: %s, line:%d \n",
-                       FH_Table[i].folder_type,
-                       FH_Table[i].folder_extension,
-                       FH_Table[i].percent,
-                       FH_Table[i].every_block_space,
-                       FH_Table[i].avail_space,
-                       FH_Table[i].max_file_num,
-                       FH_Table[i].file_num,
-                       FH_Table[i].exist_flag,
-                       __func__, __LINE__ );
-    }
-
-
 
     /* JVC Define */
     /* If file_num > max_file_num, use max_file num */
-    // for(i=0; i<sizeof(FH_Table)/sizeof(file_struct); i++){
-    // 	if(FH_Table[i].file_num > FH_Table[i].max_file_num){
-    // 		FH_Table[i].file_num = FH_Table[i].max_file_num;
-    // 	}
-    // }
+     for(i=0; i<TABLE_SIZE; i++){
+         if(i >= e_System){
+             break;
+         }
+         if(FH_Table[i].file_num > FH_Table[i].max_file_num){
+		FH_Table[i].file_num = FH_Table[i].max_file_num;
+         }
+     }
+     FH_Table[e_HASH_EVENT].file_num = FH_Table[e_Event].file_num; //HASH_EVENT   = EVENT file_num
+     FH_Table[e_HASH_NORMAL].file_num = FH_Table[e_Normal].file_num; //HASH_NORMAL  = NORMAL file_num
+     FH_Table[e_NMEA_EVENT].file_num = FH_Table[e_Event].file_num; //NMEA/EVENT   = EVENT file_num
+     FH_Table[e_NMEA_NORMAL].file_num = FH_Table[e_Normal].file_num; //NMEA/NORMAL  = NORMAL file_num
+
+    for(i=0; i<TABLE_SIZE; i++){
+        ALOGE("this is jni call1-->%s, %s, %f, %" PRId64", %" PRId64 ", %d, %d, %d, func: %s, line:%d \n",
+              FH_Table[i].folder_type,
+              FH_Table[i].folder_extension,
+              FH_Table[i].percent,
+              FH_Table[i].every_block_space,
+              FH_Table[i].avail_space,
+              FH_Table[i].max_file_num,
+              FH_Table[i].file_num,
+              FH_Table[i].exist_flag,
+              __func__, __LINE__ );
+    }
 
     /* write file_struct in config file */
     SDA_write_table_in_config(mount_path);
@@ -788,7 +849,8 @@ string open_file_and_save_in_queue(char* filename, eFolderType folderType, queue
     }else{
 //        cout << "file was full, please delete some file." << endl;
 
-        ALOGE("this is jni call1-->FH_Open folderType = %d. func: %s, line:%d \n", folderType, __func__, __LINE__);
+        ALOGE("this is jni call1-->FH_Open folderType = %d, now_queue size = %d. func: %s, line:%d \n", folderType, now_queue.size(), __func__, __LINE__);
+        ALOGE("this is jni call1-->folderType = %d, FH_Table file_num = %d. func: %s, line:%d \n", folderType, FH_Table[folderType].file_num, __func__, __LINE__);
         ALOGE("this is jni call1-->FH_Open file was full, please delete some file. unc: %s, line:%d \n", __func__, __LINE__);
 
         pthread_mutex_unlock(&g_mutex);
@@ -1128,7 +1190,6 @@ int FH_CheckFolderStatus(eFolderType folderType){
     return FH_Table[folderType].file_num;
 }
 
-
 int FH_GetSDCardInfo(eFolderType folderType, eGetNum getNumOpt){
     ALOGE("this jni call-> folderType = %d func: %s, line:%d \n", folderType, __func__, __LINE__);
     pthread_mutex_lock(&g_mutex);
@@ -1159,7 +1220,6 @@ int FH_GetSDCardInfo(eFolderType folderType, eGetNum getNumOpt){
     pthread_mutex_unlock(&g_mutex);
     return current_num;
 }
-
 
 //
 // true = 1, false = 0;
