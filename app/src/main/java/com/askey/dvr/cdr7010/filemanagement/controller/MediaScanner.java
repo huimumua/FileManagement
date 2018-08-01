@@ -360,6 +360,7 @@ public class MediaScanner {
         File file = new File(fileName);
         // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
         if (file.exists() && file.isFile()) {
+            String filePath = file.getPath();
             boolean result = FileManager.getSingInstance().FH_Delete(fileName);
             Logg.i(TAG,"-->deleteFile --> FH_Delete fileName"+fileName+" result =="+result);
             if(!fileName.contains(".jpg")){
@@ -387,12 +388,10 @@ public class MediaScanner {
                 }
             }
 
-            //之后会使用底层提供的方法进行删除
-            if (/*file.delete()*/result) {
-                Logg.i(TAG,"-->deleteFile --> delete "+fileName+" success");
+            if (result) {
                 //这里清除ContentProvader数据库
                 try {
-                    syncDeleteFile(file);
+                    syncDeleteFile(filePath);
 //                scanFileAsync(FileManagerApplication.getAppContext(),fileName);
                 }catch (Exception e){
                     Logg.e(TAG,"syncDeleteFile->Exception->"+e.getMessage());
@@ -403,30 +402,34 @@ public class MediaScanner {
         return false;
     }
 
-    public static void syncDeleteFile(File file) {
+    public static void syncDeleteFile(String filePath) {
         //删除多媒体数据库中的数据
-        String filePath = file.getPath();
-        if(filePath.endsWith(".mp4")){
-            int res = FileManagerApplication.getAppContext().getContentResolver().delete(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                    MediaStore.Video.Media.DATA + "= \"" + filePath+"\"",
-                    null);
-            if (res>0){
+        try {
+            ContentResolver contentResolver = FileManagerApplication.getAppContext().getContentResolver();
+            if(filePath.endsWith(".mp4")){
+                int res = contentResolver.delete(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                        MediaStore.Video.Media.DATA + "= \"" + filePath+"\"",
+                        null);
+                if (res>0){
+                    Logg.i(TAG, "-->syncDeleteFile-->success");
+                }else{
+                    Logg.e(TAG, "-->syncDeleteFile-->failed");
+                }
+            }else if (filePath.endsWith(".jpg")||filePath.endsWith(".png")||filePath.endsWith(".bmp")){
+                int res = contentResolver.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        MediaStore.Images.Media.DATA + "= \"" + filePath+"\"",
+                        null);
+                if (res>0){
 //                    file.delete();
-                Logg.i(TAG, "-->syncDeleteFile-->success");
-            }else{
-                Logg.e(TAG, "-->syncDeleteFile-->failed");
+                    Logg.i(TAG, "-->syncDeleteFile-->success");
+                }else{
+                    Logg.e(TAG, "-->syncDeleteFile-->failed");
+                }
             }
-        }else if (filePath.endsWith(".jpg")||filePath.endsWith(".png")||filePath.endsWith(".bmp")){
-            int res = FileManagerApplication.getAppContext().getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    MediaStore.Images.Media.DATA + "= \"" + filePath+"\"",
-                    null);
-            if (res>0){
-//                    file.delete();
-                Logg.i(TAG, "-->syncDeleteFile-->success");
-            }else{
-                Logg.e(TAG, "-->syncDeleteFile-->failed");
-            }
+        }catch (Exception e){
+            Logg.e(TAG, "-->syncDeleteFile-->Exception"+e.getMessage());
         }
+
     }
 
     public static boolean deleteFileByFolder(String type) {
