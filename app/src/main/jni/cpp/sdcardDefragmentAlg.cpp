@@ -628,17 +628,17 @@ int FH_Init(char* mount_path){
 
     struct statvfs buf;
 
-    uint64_t mount_path_avail_size;
-
     if (statvfs(mount_path, &buf) == -1){
         ALOGE("Sdcard path error. func: %s, line:%d \n", __func__, __LINE__);
         pthread_mutex_unlock(&g_mutex);
         return SDCARD_PATH_ERROR;
     }
     ALOGE("Sdcard available space = %" PRIu64 ". func: %s, line:%d \n", ((uint64_t)buf.f_bavail * buf.f_bsize), __func__, __LINE__);
-    mount_path_avail_size = ((uint64_t)buf.f_bavail * buf.f_bsize);
 
-    rc = set_max_file_num(mount_path_avail_size);
+    uint64_t mount_path_block_size = ((uint64_t)buf.f_blocks * buf.f_bsize);
+    uint64_t mount_path_avail_size = ((uint64_t)buf.f_bavail * buf.f_bsize);
+
+    rc = set_max_file_num(mount_path_block_size);
     if(rc != SUCCESS){
         ALOGE("this jni call-> sdcard detect failed. func: %s, line:%d \n", __func__, __LINE__);
         pthread_mutex_unlock(&g_mutex);
