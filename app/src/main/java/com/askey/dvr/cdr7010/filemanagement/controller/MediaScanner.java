@@ -410,21 +410,12 @@ public class MediaScanner {
                 int res = contentResolver.delete(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                         MediaStore.Video.Media.DATA + "= \"" + filePath+"\"",
                         null);
-                if (res>0){
-                    Logg.i(TAG, "-->syncDeleteFile-->success");
-                }else{
-                    Logg.e(TAG, "-->syncDeleteFile-->failed");
-                }
+                Logg.i(TAG, "-->syncDeleteFile-->"+res);
             }else if (filePath.endsWith(".jpg")||filePath.endsWith(".png")||filePath.endsWith(".bmp")){
                 int res = contentResolver.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         MediaStore.Images.Media.DATA + "= \"" + filePath+"\"",
                         null);
-                if (res>0){
-//                    file.delete();
-                    Logg.i(TAG, "-->syncDeleteFile-->success");
-                }else{
-                    Logg.e(TAG, "-->syncDeleteFile-->failed");
-                }
+                Logg.i(TAG, "-->syncDeleteFile-->"+res);
             }
         }catch (Exception e){
             Logg.e(TAG, "-->syncDeleteFile-->Exception"+e.getMessage());
