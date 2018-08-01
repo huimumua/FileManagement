@@ -391,8 +391,12 @@ public class MediaScanner {
             if (/*file.delete()*/result) {
                 Logg.i(TAG,"-->deleteFile --> delete "+fileName+" success");
                 //这里清除ContentProvader数据库
-                syncDeleteFile(file);
+                try {
+                    syncDeleteFile(file);
 //                scanFileAsync(FileManagerApplication.getAppContext(),fileName);
+                }catch (Exception e){
+                    Logg.e(TAG,"syncDeleteFile->Exception->"+e.getMessage());
+                }
                 return true;
             }
         }

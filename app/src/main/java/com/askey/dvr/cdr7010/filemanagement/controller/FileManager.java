@@ -206,7 +206,7 @@ public class FileManager {
                 Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
                 boolean deleteResult = MediaScanner.delete(oldestPath);
                 Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
-                if(deleteResult){
+                if(deleteResult && Const.SDCARD_IS_EXIST){
                     result = FH_Open(filename,type);
                 }
             }else{
