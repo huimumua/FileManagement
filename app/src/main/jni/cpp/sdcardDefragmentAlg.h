@@ -52,6 +52,7 @@ using namespace std;
 #define TABLE_READ_ERROR (-9)
 #define SDCARD_DETECT_SIZE_ERROR (-10)
 #define SDCARD_NOT_SUPPORT (-11)
+#define QUEUE_FREE_ERROR (-12)
 
 #define KILOBYTE (1 << 10)
 #define MEGABYTE (1 << 20)

@@ -294,6 +294,14 @@ int SDA_read_table_file_num_from_config(char* mount_path, eFolderType folderType
     return fileNum;
 }
 
+void clear_queue(std::queue<string> &q){
+    ALOGE("this jni call-> In func: %s, line:%d \n", __func__, __LINE__);
+    queue<string> empty;
+    swap(q, empty);
+    ALOGE("this jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
+    return;
+}
+
 int SDA_file_exists(char* filename)
 {
     struct stat buf;
@@ -592,6 +600,18 @@ bool FH_ValidFormat(char* mount_path){
     return (rc == 0 ? true : false);
 }
 
+void queue_Release(void){
+    ALOGE("this jni call-> In func: %s, line:%d \n", __func__, __LINE__);
+    clear_queue(event_files_queue);
+    clear_queue(normal_files_queue);
+    clear_queue(picture_files_queue);
+    clear_queue(hash_event_files_queue);
+    clear_queue(hash_normal_files_queue);
+    clear_queue(nmea_event_files_queue);
+    clear_queue(nmea_normal_files_queue);
+    return;
+}
+
 // true = 1, false = 0;
 int FH_Init(char* mount_path){
 
@@ -795,6 +815,8 @@ int FH_Init(char* mount_path){
 
     /* write file_struct in config file */
     SDA_write_table_in_config(mount_path);
+
+    queue_Release();
 
     storage_normal_file_in_queue(e_Event, event_files_queue);
     storage_normal_file_in_queue(e_Normal, normal_files_queue);
