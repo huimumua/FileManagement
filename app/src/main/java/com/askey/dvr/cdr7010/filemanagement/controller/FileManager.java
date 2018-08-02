@@ -152,7 +152,7 @@ public class FileManager {
         String result= null;
         if(Const.SDCARD_INIT_SUCCESS && !Const.IS_SDCARD_FULL_LIMIT /*&& !Const.SDCARD_EVENT_FOLDER_OVER_LIMIT
                 && !Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT*/){
-            int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(Const.EVENT_DIR);
+            int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(folderType);
             Logg.i(LOG_TAG,"checkFolderStatus-》"+sdcardStatus);
             if(sdcardStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
                 Const.IS_SDCARD_FULL_LIMIT = true;
