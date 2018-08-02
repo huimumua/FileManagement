@@ -152,25 +152,29 @@ public class FileManager {
         String result= null;
         if(Const.SDCARD_INIT_SUCCESS && !Const.IS_SDCARD_FULL_LIMIT /*&& !Const.SDCARD_EVENT_FOLDER_OVER_LIMIT
                 && !Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT*/){
-            int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(folderType);
-            Logg.i(LOG_TAG,"checkFolderStatus-》"+sdcardStatus);
-            if(sdcardStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
-                Const.IS_SDCARD_FULL_LIMIT = true;
-                String currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
-                BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
-            }else if(sdcardStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
-                String currentAction = "";
-                if(folderType.equals(Const.EVENT_DIR)){
-                    Const.SDCARD_EVENT_FOLDER_OVER_LIMIT =true;
-                    currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_OVER_LIMIT;
-                }else if(folderType.equals(Const.PICTURE_DIR)){
-                    Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT =true;
-                    currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_OVER_LIMIT;
+            if(folderType.equals(Const.EVENT_DIR) || folderType.equals(Const.NORMAL_DIR) || folderType.equals(Const.PICTURE_DIR)){
+                int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(folderType);
+                Logg.i(LOG_TAG,"checkFolderStatus-》"+sdcardStatus);
+                if(sdcardStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
+                    Const.IS_SDCARD_FULL_LIMIT = true;
+                    String currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
+                    BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                }else if(sdcardStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                    String currentAction = "";
+                    if(folderType.equals(Const.EVENT_DIR)){
+                        Const.SDCARD_EVENT_FOLDER_OVER_LIMIT =true;
+                        currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_OVER_LIMIT;
+                    }else if(folderType.equals(Const.PICTURE_DIR)){
+                        Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT =true;
+                        currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_OVER_LIMIT;
+                    }
+                    Const.IS_SDCARD_FOLDER_LIMIT = true;
+                    BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
+                }else if(sdcardStatus >=2){
+                    result= getRecoderFilePath(filename,folderType);
                 }
-                Const.IS_SDCARD_FOLDER_LIMIT = true;
-                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
-            }else if(sdcardStatus >=2){
-                result= getRecoderFilePath(filename,folderType,sdcardStatus);
+            }else{
+                result= getRecoderFilePath(filename,folderType);
             }
             if(!"".equals(result) && null != result){
                 final String finalResult = result;
@@ -194,7 +198,7 @@ public class FileManager {
         return result;
     }
 
-    private String getRecoderFilePath(String filename, String folderType,int sdcardStatus) {
+    private String getRecoderFilePath(String filename, String folderType) {
         int type = getCurrentType(folderType);
         Logg.i(LOG_TAG,"=====type====="+type+"==filename=="+filename);
         String result = FH_Open(filename,type);
