@@ -110,28 +110,36 @@ public class SdCardReceiver extends BroadcastReceiver {
                     }
                     boolean validFormat = FileManager.getSingInstance().validFormat();
                     Logg.i(TAG,"validFormat-》"+validFormat);
-                    int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(Const.EVENT_DIR);
-                    Logg.i(TAG,"checkFolderStatus-》"+sdcardStatus);
-                    if(sdcardStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
+                    int sdcardEventStatus = FileManager.getSingInstance().checkFolderStatus(Const.EVENT_DIR);
+                    Logg.i(TAG,"checkFolderStatus-》"+sdcardEventStatus);
+                    if(sdcardEventStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
                         Const.IS_SDCARD_FULL_LIMIT = true;
                         String currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
                         BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
-                    }else if(sdcardStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                    }else if(sdcardEventStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardEventStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
                         Const.SDCARD_EVENT_FOLDER_OVER_LIMIT = true;
                         Const.IS_SDCARD_FOLDER_LIMIT = true;
                         String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_OVER_LIMIT;
                         BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
-                    }else if(sdcardStatus == Const.OPEN_FOLDER_ERROR ){
+                    }else if(sdcardEventStatus == Const.OPEN_FOLDER_ERROR ){
                         Const.SDCARD_NOT_SUPPORTED = true;
                         BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                                 Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
-                    }else if(sdcardStatus == Const.SDCARD_PATH_ERROR ){
+                    }else if(sdcardEventStatus == Const.SDCARD_PATH_ERROR ){
                         Const.SDCARD_UNRECOGNIZABLE = true;
                         BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                                 Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_UNRECOGNIZABLE);
-                    }else if(sdcardStatus >=2){
+                    }else if(sdcardEventStatus >=2){
                         Const.IS_SDCARD_FULL_LIMIT = false;
                         String currentAction = Const.CMD_SHOW_UNREACH_SDCARD_FULL_LIMIT;
+                        BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                    }
+
+                    int sdcardPictureStatus = FileManager.getSingInstance().checkFolderStatus(Const.PICTURE_DIR);
+                    if(sdcardPictureStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardPictureStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                        Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT = true;
+                        Const.IS_SDCARD_FOLDER_LIMIT = true;
+                        String currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_OVER_LIMIT;
                         BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
                     }
 

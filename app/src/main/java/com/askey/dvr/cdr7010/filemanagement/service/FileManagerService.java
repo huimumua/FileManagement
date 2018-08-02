@@ -59,6 +59,12 @@ public class FileManagerService extends Service {
                     Const.IS_SDCARD_FULL_LIMIT = false;
                 }
 
+                int sdcardPictureStatus = FileManager.getSingInstance().checkFolderStatus(Const.PICTURE_DIR);
+                if(sdcardPictureStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardPictureStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                    Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT = true;
+                    Const.IS_SDCARD_FOLDER_LIMIT = true;
+                }
+
                 if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.IS_SDCARD_FULL_LIMIT){
                     Const.SDCARD_INIT_SUCCESS=true;
                 }
