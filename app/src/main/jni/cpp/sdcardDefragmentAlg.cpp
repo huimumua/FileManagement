@@ -3,7 +3,7 @@
 #include <queue>
 
 #define CFG_NAME "table.config"
-const char TABLE_VERSION = 0x02;
+const char TABLE_VERSION = 0x03;
 
 #define LOG_TAG "sdcardDefragmentAlg.cpp"
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -23,8 +23,8 @@ struct file_struct FH_Table[TABLE_SIZE] = {{0, 0, 0, 0.3, 76*MEGABYTE, 0, "EVENT
                                            {0, 0, 0, 0.5, 76*MEGABYTE, 0, "NORMAL",  ".nor"}, // normal
                                            {0, 0, 0, 0.01, 1*MEGABYTE, 0, "PICTURE", ".pic"}, // picture
                                            {0, 0, 0, 0.19,76*MEGABYTE, 0, "SYSTEM",  ".sys"}, // system
-                                           {0, 0, 1, 0,   25*KILOBYTE, 0,"HASH_EVENT", ".hash"}, // parking
-                                           {0, 0, 1, 0,   25*KILOBYTE, 0, "HASH_NORMAL",".hash"}, // parking
+                                           {0, 0, 1, 0,   25*KILOBYTE, 0, "HASH_EVENT", ".ehash"},
+                                           {0, 0, 1, 0,   25*KILOBYTE, 0, "HASH_NORMAL",".nhash"},
                                            {0, 0, 1, 0,  100*KILOBYTE, 0, "SYSTEM/NMEA/EVENT", ".neve"},
                                            {0, 0, 1, 0,  100*KILOBYTE, 0, "SYSTEM/NMEA/NORMAL",".nnor"}};
 
@@ -951,11 +951,12 @@ bool FH_Sync(void){
 //
 // true = 1, false = 0;
 bool FH_Delete(const char* absolute_filepath){
-
+    ALOGE("this jni call -> absolute_filepath = %s, func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
     pthread_mutex_lock(&g_mutex);
 
     int fd = open(absolute_filepath, O_RDWR);
     if(fd == -1){
+        ALOGE("this jni call -> absolute_filepath not exist, func: %s, line:%d \n", __func__, __LINE__);
         pthread_mutex_unlock(&g_mutex);
         return false;
     }
@@ -972,8 +973,11 @@ bool FH_Delete(const char* absolute_filepath){
 
     /* If fine "Event" string, get last (number).eve in Free folder,
       then rename absolute_filepath with (number+1).eve in Free folder */
+    if(filename.find("HASH") != -1){
+        i=e_HASH_EVENT;
+    }
     if(filename.find("NMEA") != -1){
-        i=5;
+        i=e_NMEA_EVENT;
     }
 
     for(i; i<TABLE_SIZE; i++){
@@ -986,13 +990,14 @@ bool FH_Delete(const char* absolute_filepath){
             snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, FH_Table[i].folder_extension);
             // cout << "new last_filename: " << new_last_file << endl;
             rc = rename(absolute_filepath, new_last_file);
-
+            ALOGE("this jni call -> Out func. rename %s to new_last_file = %s, func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
             pthread_mutex_unlock(&g_mutex);
             return (rc == 0 ? true : false);
         }
     }
 
     // not find any about folderType
+    ALOGE("this jni call -> return false. Out func: %s, line:%d \n", __func__, __LINE__);
     pthread_mutex_unlock(&g_mutex);
     return false;
 }
@@ -1147,6 +1152,8 @@ int FH_CheckFolderStatus(eFolderType folderType){
     int recoder_file_already_exist_num = SDA_get_recoder_file_num(folder_path);
     int extension_number = SDA_get_free_extension_filenumber(folderType);
     int recoder_file_num = recoder_file_already_exist_num + extension_number;
+    ALOGE("Existing record file and over limit number. recoder_file_num = %d. func: %s, line:%d \n", recoder_file_num, __func__, __LINE__);
+
     // file over limit
     if (recoder_file_num > FH_Table[folderType].file_num){
         ALOGE("Existing record file and over limit number. func: %s, line:%d \n", __func__, __LINE__);
