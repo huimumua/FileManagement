@@ -267,33 +267,6 @@ int SDA_write_table_in_config(char* mount_path){
     return 0;
 }
 
-int SDA_read_table_file_num_from_config(char* mount_path, eFolderType folderType){
-
-    char table_config_path[NORULE_SIZE];
-    snprintf(table_config_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
-    FILE* fp = fopen(table_config_path, "r");
-    if(fp == NULL){
-        return -1;
-    }
-
-    int count = 0;
-    int fileNum = 0;
-    struct file_struct read_table;
-
-    while(fread(&read_table, sizeof(file_struct), 1, fp)){
-
-        if(count == folderType){
-            fileNum = read_table.file_num;
-            break;
-        }
-        count++;
-
-    }
-
-    fclose(fp);
-    return fileNum;
-}
-
 void clear_queue(std::queue<string> &q){
     ALOGE("this jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     queue<string> empty;
@@ -1061,74 +1034,6 @@ string FH_FindOldest(eFolderType folderType){
     pthread_mutex_unlock(&g_mutex);
     ALOGE("oldest_file = %s. func: %s, line:%d \n", oldest_file.c_str(), __func__, __LINE__);
     return oldest_file;
-}
-
-int FH_CanUseFilenumber(eFolderType folderType){
-    pthread_mutex_lock(&g_mutex);
-
-    char folder_path[NORULE_SIZE];
-    snprintf(folder_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
-
-    DIR *dp = opendir(folder_path);
-    struct dirent *dirp;
-    struct stat attrib;
-
-    if (dp == NULL){
-        pthread_mutex_unlock(&g_mutex);
-        return -1;
-    }
-
-    int count = 0;
-    int can_use_num = 0;
-    uint64_t using_file_size = 0;
-
-    while (dirp = readdir(dp)){
-        // puts(dirp->d_name);
-        string filename = dirp->d_name;
-        if((filename.compare(".") == 0) || (filename.compare("..") == 0)){
-            continue;
-        }
-
-        char path_and_filename[NORULE_SIZE];
-        snprintf(path_and_filename, NORULE_SIZE, "%s/%s", folder_path, filename.c_str());
-
-        stat(path_and_filename, &attrib);
-        using_file_size = using_file_size + attrib.st_size;
-        count = count + 1;
-    }
-    ALOGE("FH_CanUseFilenumber====folderType== %d",folderType);
-    ALOGE("FH_CanUseFilenumber====FH_Table[folderType].avail_space== %"  PRIu64 "",FH_Table[folderType].avail_space);
-    ALOGE("FH_CanUseFilenumber====using_file_size== %"  PRIu64 "",using_file_size);
-    ALOGE("FH_CanUseFilenumber====FH_Table[folderType].every_block_space== %"  PRIu64 "",FH_Table[folderType].every_block_space);
-
-    int calucate_space_recoder_num;
-    if(FH_Table[folderType].avail_space < using_file_size){
-        calucate_space_recoder_num = 0;
-    }else{
-        calucate_space_recoder_num = (FH_Table[folderType].avail_space - using_file_size)/FH_Table[folderType].every_block_space;
-    }
-
-    int extension_number = SDA_get_free_extension_filenumber(folderType);
-    // cout << "extension_number: " << extension_number << endl;
-
-    int recoder_file_already_exist_num = SDA_get_recoder_file_num(folder_path);
-
-    if(folderType >= 5){
-        // NMEA folder
-        can_use_num = FH_Table[folderType].file_num - count + recoder_file_already_exist_num;
-    }else{
-        can_use_num = calucate_space_recoder_num + extension_number + recoder_file_already_exist_num;
-    }
-
-    if(can_use_num < 2){
-        closedir(dp);
-        pthread_mutex_unlock(&g_mutex);
-        return 0;
-    }
-
-    closedir(dp);
-    pthread_mutex_unlock(&g_mutex);
-    return can_use_num;
 }
 
 int FH_CheckFolderStatus(eFolderType folderType){
