@@ -45,7 +45,7 @@ public class FileManagerService extends Service {
             if(initResult == 0){
                 Logg.i(LOG_TAG,"=sdcardInit==="+initResult);
                 int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(Const.EVENT_DIR);
-                Logg.i(LOG_TAG,"checkFolderStatus-》"+sdcardStatus);
+                Logg.i(LOG_TAG,"checkFolderStatus-EVENT》"+sdcardStatus);
                 if(sdcardStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
                     Const.IS_SDCARD_FULL_LIMIT = true;
                 }else if(sdcardStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
@@ -60,10 +60,16 @@ public class FileManagerService extends Service {
                 }
 
                 int sdcardPictureStatus = FileManager.getSingInstance().checkFolderStatus(Const.PICTURE_DIR);
-                Logg.i(LOG_TAG,"checkFolderStatus-》"+sdcardPictureStatus);
+                Logg.i(LOG_TAG,"checkFolderStatus-PICTURE》"+sdcardPictureStatus);
                 if(sdcardPictureStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardPictureStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
                     Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT = true;
                     Const.IS_SDCARD_FOLDER_LIMIT = true;
+                }
+
+                int sdcardNormalStatus = FileManager.getSingInstance().checkFolderStatus(Const.NORMAL_DIR);
+                Logg.i(LOG_TAG,"checkFolderStatus-normal》"+sdcardNormalStatus);
+                if(sdcardNormalStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardNormalStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+
                 }
 
                 if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.IS_SDCARD_FULL_LIMIT){
