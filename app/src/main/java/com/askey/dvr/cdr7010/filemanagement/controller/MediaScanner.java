@@ -391,6 +391,7 @@ public class MediaScanner {
             if (result) {
                 //这里清除ContentProvader数据库
                 try {
+                    FileManager.getSingInstance().FH_Sync();
                     syncDeleteFile(filePath);
 //                scanFileAsync(FileManagerApplication.getAppContext(),fileName);
                 }catch (Exception e){

@@ -78,7 +78,7 @@ public class FileManager {
 // Output: bool, true = 1, false = 0;
 
 //    public native boolean FH_Sync(File file);
-    public native boolean FH_Sync();
+    public native void FH_Sync();
 
     //
 // Purpose: 1.Compare absolute_filepath, if have folderType String, rename file to Free folder

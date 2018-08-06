@@ -938,14 +938,7 @@ bool FH_Close(void){
     return true;
 }
 
-//
-// true = 1, false = 0;
-bool FH_Sync(void){
 
-    pthread_mutex_lock(&g_mutex);
-    pthread_mutex_unlock(&g_mutex);
-    return true;
-}
 
 
 //
@@ -1248,6 +1241,12 @@ int FH_GetSDCardInfo(eFolderType folderType, eGetNum getNumOpt){
     ALOGE("this jni call-> folderType = %d, current_num = %d func: %s, line:%d \n", folderType, current_num, __func__, __LINE__);
     pthread_mutex_unlock(&g_mutex);
     return current_num;
+}
+
+void FH_Sync(void){
+    pthread_mutex_lock(&g_mutex);
+    sync();
+    pthread_mutex_unlock(&g_mutex);
 }
 
 //

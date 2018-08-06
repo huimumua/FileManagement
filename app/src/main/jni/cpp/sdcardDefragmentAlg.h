@@ -107,7 +107,7 @@ bool FH_Close(void);
 //
 // not use
 // Return ture
-bool FH_Sync(void);
+void FH_Sync(void);
 
 //
 // Purpose: 1.Compare absolute_filepath, if have folderType String, rename file to Free folder

@@ -45,8 +45,8 @@ jboolean FileManager_FH_Close(JNIEnv *env, jclass object){
     return (jboolean)FH_Close();
 }
 
-jboolean  FileManager_FH_Sync(JNIEnv *env, jclass object){
-    return (jboolean)FH_Sync();
+void  FileManager_FH_Sync(JNIEnv *env, jclass object){
+    return FH_Sync();
 }
 
 jboolean  FileManager_FH_Delete(JNIEnv *env, jclass object,jstring absolute_filepath){
@@ -105,7 +105,7 @@ static const JNINativeMethod gMethods[] = {
         { "FH_Init", "(Ljava/lang/String;)I", (void *)FileManager_FH_Init },
         { "FH_Open", "(Ljava/lang/String;I)Ljava/lang/String;", (void *)FileManager_FH_Open },
         { "FH_Close", "()Z", (void *)FileManager_FH_Close },
-        { "FH_Sync", "()Z", (void *)FileManager_FH_Sync },
+        { "FH_Sync", "()V", (void *)FileManager_FH_Sync },
         { "FH_Delete", "(Ljava/lang/String;)Z", (void *)FileManager_FH_Delete },
         { "FH_FindOldest", "(I)Ljava/lang/String;", (void *)FileManager_FH_FindOldest },
         { "FH_CheckFolderStatus", "(I)I", (void *)FileManager_FH_CheckFolderStatus },
