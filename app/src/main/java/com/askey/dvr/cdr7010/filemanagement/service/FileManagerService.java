@@ -72,7 +72,7 @@ public class FileManagerService extends Service {
 
                 }
 
-                if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.IS_SDCARD_FULL_LIMIT){
+                if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.IS_SDCARD_FULL_LIMIT && ! Const.SDCARD_NOT_SUPPORTED && ! Const.SDCARD_UNRECOGNIZABLE){
                     Const.SDCARD_INIT_SUCCESS=true;
                 }
             }else{
@@ -250,6 +250,9 @@ public class FileManagerService extends Service {
 
     private int getSdcardStatus() {
         if(Const.SDCARD_IS_EXIST){
+            if(Const.SDCARD_NOT_SUPPORTED){
+                return 0;
+            }
             if(Const.CURRENT_SDCARD_SIZE==-1){
                 return 11;
             }
