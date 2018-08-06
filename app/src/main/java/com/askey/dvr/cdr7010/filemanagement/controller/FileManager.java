@@ -96,9 +96,6 @@ public class FileManager {
     public native String FH_FindOldest(int type);
 
 
-    public native int FH_FolderCanUseFilenumber(int type);
-
-
 // Purpose: before FH_Open, Check sdcard and folder status.
 // Input: enum eFolderType
 // Output: (Error situation)(look #define)
@@ -233,7 +230,7 @@ public class FileManager {
         Const.IS_SDCARD_FOLDER_LIMIT = true;
     }
 
-    //         SDCARD_PATH_ERROR                       return -2
+//         SDCARD_PATH_ERROR                       return -2
 //         EXIST_FILE_NUM_OVER_LIMIT               return -5     file_over_limit
 //         NO_SPACE_NO_NUMBER_TO_RECYCLE           return -6     sdcard_full
 //         OPEN_FOLDER_ERROR                       return -3

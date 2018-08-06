@@ -61,13 +61,6 @@ jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,jint type){
     return env->NewStringUTF(result.c_str());
 }
 
-jint FileManager_FH_FolderCanUseFilenumber(JNIEnv *env, jclass object,jint type){
-    jint  numb = FH_CanUseFilenumber((eFolderType)type);
-    ALOGE("this is jni call1-->FileManager_FH_CanUseFilenumber= %d" , numb);
-//    return FH_FolderCanUseFilenumber((eFolderType)type);
-    return numb;
-}
-
 jint FileManager_FH_CheckFolderStatus(JNIEnv *env, jclass object,jint type){
     jint  numb = FH_CheckFolderStatus((eFolderType)type);
     ALOGE("this is jni call1-->FileManager_FH_CheckFolderStatus= %d" , numb);
@@ -115,7 +108,6 @@ static const JNINativeMethod gMethods[] = {
         { "FH_Sync", "()Z", (void *)FileManager_FH_Sync },
         { "FH_Delete", "(Ljava/lang/String;)Z", (void *)FileManager_FH_Delete },
         { "FH_FindOldest", "(I)Ljava/lang/String;", (void *)FileManager_FH_FindOldest },
-        { "FH_FolderCanUseFilenumber", "(I)I", (void *)FileManager_FH_FolderCanUseFilenumber },
         { "FH_CheckFolderStatus", "(I)I", (void *)FileManager_FH_CheckFolderStatus },
         { "FH_lock", "(J)Z", (void *)FileManager_FH_lock },
         { "FH_unlock", "(J)Z", (void *)FileManager_FH_unlock },
