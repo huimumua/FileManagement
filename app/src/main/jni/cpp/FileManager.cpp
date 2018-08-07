@@ -56,8 +56,8 @@ jboolean  FileManager_FH_Delete(JNIEnv *env, jclass object,jstring absolute_file
     return result;
 }
 
-jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,jint type){
-    string result = FH_FindOldest((eFolderType)type);
+jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,jint type,jint cameraType){
+    string result = FH_FindOldest((eFolderType)type,(eCameraType)cameraType);
     return env->NewStringUTF(result.c_str());
 }
 
@@ -107,7 +107,7 @@ static const JNINativeMethod gMethods[] = {
         { "FH_Close", "()Z", (void *)FileManager_FH_Close },
         { "FH_Sync", "()V", (void *)FileManager_FH_Sync },
         { "FH_Delete", "(Ljava/lang/String;)Z", (void *)FileManager_FH_Delete },
-        { "FH_FindOldest", "(I)Ljava/lang/String;", (void *)FileManager_FH_FindOldest },
+        { "FH_FindOldest", "(II)Ljava/lang/String;", (void *)FileManager_FH_FindOldest },
         { "FH_CheckFolderStatus", "(I)I", (void *)FileManager_FH_CheckFolderStatus },
         { "FH_lock", "(J)Z", (void *)FileManager_FH_lock },
         { "FH_unlock", "(J)Z", (void *)FileManager_FH_unlock },

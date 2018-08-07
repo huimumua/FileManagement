@@ -93,7 +93,7 @@ public class FileManager {
 // Output: oldest_filepath, ""
 // ** Oldest file, means the file which is earliest modification time **
 
-    public native String FH_FindOldest(int type);
+    public native String FH_FindOldest(int type,int cameraType);
 
 
 // Purpose: before FH_Open, Check sdcard and folder status.
@@ -202,7 +202,12 @@ public class FileManager {
         Logg.i(LOG_TAG,"=====FH_Open====="+result);
         if(result == null || result.equals("")){
             sendReachLimitFileBroadcastByType(folderType);
-            String oldestPath = FH_FindOldest(type);
+            String oldestPath = null;
+            if(filename.contains("_2")){
+                oldestPath = FH_FindOldest(type,2);
+            }else{
+                oldestPath = FH_FindOldest(type,1);
+            }
             if(null != oldestPath && !"".equals(oldestPath)){
                 Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
                 boolean deleteResult = MediaScanner.delete(oldestPath);
