@@ -977,7 +977,7 @@ bool FH_Delete(const char* absolute_filepath){
     return false;
 }
 
-string FH_FindOldest(eFolderType folderType){
+string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
     ALOGE("this is jni call-> before mutex_lock. folderType: %d. In func: %s, line:%d \n", folderType, __func__, __LINE__);
     pthread_mutex_lock(&g_mutex);
     ALOGE("this is jni call-> after mutex_lock. folderType: %d. In func: %s, line:%d \n", folderType, __func__, __LINE__);

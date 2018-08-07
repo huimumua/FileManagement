@@ -58,6 +58,11 @@ using namespace std;
 #define MEGABYTE (1 << 20)
 #define GIGABYTE (1 << 30)
 
+enum eCameraType{
+	e_CameraOne=1,
+	e_CameraTwo
+};
+
 enum eFolderType{
 	e_Event=0,
 	e_Normal,
@@ -121,7 +126,7 @@ bool FH_Delete(const char* absolute_filepath);
 // Input:  enum eFolderType
 // Output: oldest_filepath, ""
 // ** Oldest file, means the file which is earliest modification time **
-string FH_FindOldest(eFolderType folderType);
+string FH_FindOldest(eFolderType folderType, eCameraType cameraType);
 
 //
 // Purpose:
