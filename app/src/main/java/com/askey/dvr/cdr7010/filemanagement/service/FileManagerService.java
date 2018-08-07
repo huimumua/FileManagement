@@ -44,6 +44,14 @@ public class FileManagerService extends Service {
             int initResult = FileManager.getSingInstance().sdcardInit();
             if(initResult == 0){
                 Logg.i(LOG_TAG,"=sdcardInit==="+initResult);
+
+                int sdcardPictureStatus = FileManager.getSingInstance().checkFolderStatus(Const.PICTURE_DIR);
+                Logg.i(LOG_TAG,"checkFolderStatus-PICTURE》"+sdcardPictureStatus);
+                if(sdcardPictureStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardPictureStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                    Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT = true;
+                    Const.IS_SDCARD_FOLDER_LIMIT = true;
+                }
+
                 int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(Const.EVENT_DIR);
                 Logg.i(LOG_TAG,"checkFolderStatus-EVENT》"+sdcardStatus);
                 if(sdcardStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
@@ -59,17 +67,16 @@ public class FileManagerService extends Service {
                     Const.IS_SDCARD_FULL_LIMIT = false;
                 }
 
-                int sdcardPictureStatus = FileManager.getSingInstance().checkFolderStatus(Const.PICTURE_DIR);
-                Logg.i(LOG_TAG,"checkFolderStatus-PICTURE》"+sdcardPictureStatus);
-                if(sdcardPictureStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardPictureStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
-                    Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT = true;
-                    Const.IS_SDCARD_FOLDER_LIMIT = true;
-                }
-
                 int sdcardNormalStatus = FileManager.getSingInstance().checkFolderStatus(Const.NORMAL_DIR);
                 Logg.i(LOG_TAG,"checkFolderStatus-normal》"+sdcardNormalStatus);
                 if(sdcardNormalStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardNormalStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
 
+                }
+
+                int eventCurrentNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_EVENT_DIR,Const.CURRENTNUM);
+                int eventLimitNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_EVENT_DIR,Const.LIMITNUM);
+                if(eventCurrentNum == eventLimitNum){
+                    Const.SDCARD_EVENT_FOLDER_LIMIT =true;
                 }
 
                 if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.IS_SDCARD_FULL_LIMIT && ! Const.SDCARD_NOT_SUPPORTED && ! Const.SDCARD_UNRECOGNIZABLE){
