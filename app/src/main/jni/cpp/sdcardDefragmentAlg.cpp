@@ -957,6 +957,32 @@ bool FH_Delete(const char* absolute_filepath){
 
         if(filename.find(FH_Table[i].folder_type) != -1){
             // cout << "find FH_Table: " << FH_Table[i].folder_type << endl;
+            switch (i) {
+                case e_Event:
+                    event_files_queue.pop();
+                    break;
+                case e_Normal:
+                    normal_files_queue.pop();
+                    break;
+                case e_Picture:
+                    picture_files_queue.pop();
+                    break;
+                case e_HASH_EVENT:
+                    hash_event_files_queue.pop();
+                    break;
+                case e_HASH_NORMAL:
+                    hash_normal_files_queue.pop();
+                    break;
+                case e_NMEA_EVENT:
+                    nmea_event_files_queue.pop();
+                    break;
+                case e_NMEA_NORMAL:
+                    nmea_normal_files_queue.pop();
+                    break;
+                default:
+                    ALOGE("this is jni call -> not find any about folder_type, absolute_filepath = %s. func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
+                    break;
+            }
             last_filename = SDA_get_last_filename(free_path, FH_Table[i].folder_extension);
             int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
             char new_last_file[NORULE_SIZE];
@@ -1000,31 +1026,24 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
     switch (folderType) {
         case e_Event:
             oldest_file.append(event_files_queue.front());
-            event_files_queue.pop();
             break;
         case e_Normal:
             oldest_file.append(normal_files_queue.front());
-            normal_files_queue.pop();
             break;
         case e_Picture:
             oldest_file.append(picture_files_queue.front());
-            picture_files_queue.pop();
             break;
         case e_HASH_EVENT:
             oldest_file.append(hash_event_files_queue.front());
-            hash_event_files_queue.pop();
             break;
         case e_HASH_NORMAL:
             oldest_file.append(hash_normal_files_queue.front());
-            hash_normal_files_queue.pop();
             break;
         case e_NMEA_EVENT:
             oldest_file.append(nmea_event_files_queue.front());
-            nmea_event_files_queue.pop();
             break;
         case e_NMEA_NORMAL:
             oldest_file.append(nmea_normal_files_queue.front());
-            nmea_normal_files_queue.pop();
             break;
         default:
             ALOGE("this is jni call -> folderType error, folderType = %d. func: %s, line:%d \n", folderType, __func__, __LINE__);
