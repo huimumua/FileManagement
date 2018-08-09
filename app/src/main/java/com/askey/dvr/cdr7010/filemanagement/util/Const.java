@@ -33,6 +33,8 @@ public class Const {
     public static boolean SDCARD_EVENT_FOLDER_OVER_LIMIT =false;
     public static boolean SDCARD_PICTURE_FOLDER_LIMIT =false;
     public static boolean SDCARD_PICTURE_FOLDER_OVER_LIMIT =false;
+    public static boolean SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =false;
+    public static boolean SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT =false;
 
     public static int SDCARD_PATH_ERROR = -2;
     public static int OPEN_FOLDER_ERROR = -3;

@@ -45,13 +45,6 @@ public class FileManagerService extends Service {
             if(initResult == 0){
                 Logg.i(LOG_TAG,"=sdcardInit==="+initResult);
 
-                int sdcardPictureStatus = FileManager.getSingInstance().checkFolderStatus(Const.PICTURE_DIR);
-                Logg.i(LOG_TAG,"checkFolderStatus-PICTURE》"+sdcardPictureStatus);
-                if(sdcardPictureStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardPictureStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
-                    Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT = true;
-                    Const.IS_SDCARD_FOLDER_LIMIT = true;
-                }
-
                 int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(Const.EVENT_DIR);
                 Logg.i(LOG_TAG,"checkFolderStatus-EVENT》"+sdcardStatus);
                 if(sdcardStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
@@ -67,6 +60,17 @@ public class FileManagerService extends Service {
                     Const.IS_SDCARD_FULL_LIMIT = false;
                 }
 
+                int sdcardPictureStatus = FileManager.getSingInstance().checkFolderStatus(Const.PICTURE_DIR);
+                Logg.i(LOG_TAG,"checkFolderStatus-PICTURE》"+sdcardPictureStatus);
+                if(sdcardPictureStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardPictureStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                    Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT = true;
+                    Const.IS_SDCARD_FOLDER_LIMIT = true;
+                }
+
+                if(Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT){
+                    Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT =true;
+                }
+
                 int sdcardNormalStatus = FileManager.getSingInstance().checkFolderStatus(Const.NORMAL_DIR);
                 Logg.i(LOG_TAG,"checkFolderStatus-normal》"+sdcardNormalStatus);
                 if(sdcardNormalStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardNormalStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
@@ -77,6 +81,18 @@ public class FileManagerService extends Service {
                 int eventLimitNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_EVENT_DIR,Const.LIMITNUM);
                 if(eventCurrentNum == eventLimitNum){
                     Const.SDCARD_EVENT_FOLDER_LIMIT =true;
+                    Const.IS_SDCARD_FOLDER_LIMIT = true;
+                }
+
+                int pictureCurrentNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_PICTURE_DIR,Const.CURRENTNUM);
+                int pictureLimitNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_PICTURE_DIR,Const.LIMITNUM);
+                if(pictureCurrentNum == pictureLimitNum){
+                    Const.SDCARD_PICTURE_FOLDER_LIMIT =true;
+                    Const.IS_SDCARD_FOLDER_LIMIT = true;
+                }
+
+                if(Const.SDCARD_EVENT_FOLDER_LIMIT && Const.SDCARD_PICTURE_FOLDER_LIMIT){
+                    Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
                 }
 
                 if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.IS_SDCARD_FULL_LIMIT && ! Const.SDCARD_NOT_SUPPORTED && ! Const.SDCARD_UNRECOGNIZABLE){
@@ -245,6 +261,8 @@ public class FileManagerService extends Service {
          * show_reach_picture_file_over_limit    9
          * show_sdcard_full_limit                10
          * show_sdcard_askey_not_supported       11
+         * show_reach_event&picture_file_limit           12
+         * show_reach_event&picture_file_over_limit      13
          * */
         @Override
         public int checkSdcardAvailable() throws RemoteException {
@@ -266,14 +284,20 @@ public class FileManagerService extends Service {
             if(Const.IS_SDCARD_FULL_LIMIT){
                 return 10;
             }
+            if(Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT){
+                return 13;
+            }
             if(Const.SDCARD_EVENT_FOLDER_OVER_LIMIT){
                 return 7;
             }
-            if(Const.SDCARD_EVENT_FOLDER_LIMIT){
-                return 6;
+            if(Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT){
+                return 12;
             }
             if(Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT){
                 return 9;
+            }
+            if(Const.SDCARD_EVENT_FOLDER_LIMIT){
+                return 6;
             }
             if(Const.SDCARD_PICTURE_FOLDER_LIMIT){
                 return 8;

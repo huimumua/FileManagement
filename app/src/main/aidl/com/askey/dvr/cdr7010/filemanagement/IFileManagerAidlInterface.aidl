@@ -81,6 +81,8 @@ interface IFileManagerAidlInterface {
          * show_reach_picture_file_over_limit    9
          * show_sdcard_full_limit                10
          * show_sdcard_askey_not_supported       11
+         * show_reach_both_event_and_picture_file_limit           12
+         * show_reach_both_event_and_picture_file_over_limit      13
          * */
      int checkSdcardAvailable();
 

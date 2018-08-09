@@ -160,9 +160,15 @@ public class FileManager {
                     String currentAction = "";
                     if(folderType.equals(Const.EVENT_DIR)){
                         Const.SDCARD_EVENT_FOLDER_OVER_LIMIT =true;
+                        if(Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT){
+                            Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT =true;
+                        }
                         currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_OVER_LIMIT;
                     }else if(folderType.equals(Const.PICTURE_DIR)){
                         Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT =true;
+                        if(Const.SDCARD_EVENT_FOLDER_OVER_LIMIT){
+                            Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT =true;
+                        }
                         currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_OVER_LIMIT;
                     }
                     Const.IS_SDCARD_FOLDER_LIMIT = true;
@@ -225,10 +231,16 @@ public class FileManager {
     private void sendReachLimitFileBroadcastByType(String folderType) {
         if(folderType.equals(Const.EVENT_DIR)){
             Const.SDCARD_EVENT_FOLDER_LIMIT =true;
+            if(Const.SDCARD_PICTURE_FOLDER_LIMIT){
+                Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
+            }
             String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
             BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
         }else if(folderType.equals(Const.PICTURE_DIR)){
             Const.SDCARD_PICTURE_FOLDER_LIMIT =true;
+            if(Const.SDCARD_EVENT_FOLDER_LIMIT){
+                Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
+            }
             String currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_LIMIT;
             BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
         }
@@ -267,6 +279,8 @@ public class FileManager {
                 currentAction = Const.CMD_SHOW_UNREACH_PICTURE_FILE_LIMIT;
                 BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
             }
+            Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =false;
+            Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT =false;
             Const.IS_SDCARD_FOLDER_LIMIT = false;
         }
 
