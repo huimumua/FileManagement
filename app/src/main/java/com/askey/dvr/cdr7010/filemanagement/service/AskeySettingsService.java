@@ -45,6 +45,7 @@ public class AskeySettingsService extends Service {
     private String imei;
     private String userTag = "_user";//用于拼接setting的key
     private boolean isSettingsBind = false;//判断setting是否绑定了服务
+    private MyObserver myObserver;
 
     public AskeySettingsService() {
 
@@ -53,8 +54,10 @@ public class AskeySettingsService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        myObserver = new MyObserver(null);
         contentResolver = FileManagerApplication.getAppContext().getContentResolver();
         mPhoneManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        initSettingChangeObserver(contentResolver);
     }
 
     @Nullable
@@ -104,7 +107,7 @@ public class AskeySettingsService extends Service {
             try {
                 isSettingsBind = true;
                 mCommunication.settingsUpdateRequest(settingsJson());
-                Log.d(LOG_TAG, "onServiceConnected: "+settingsJson());
+                Log.d(LOG_TAG, "onServiceConnected: " + settingsJson());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -200,6 +203,12 @@ public class AskeySettingsService extends Service {
         return super.onUnbind(intent);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        contentResolver.unregisterContentObserver(myObserver);
+    }
+
     private String getImei(TelephonyManager manager) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             return null;
@@ -207,4 +216,11 @@ public class AskeySettingsService extends Service {
         return manager.getDeviceId() == null ? "null" : manager.getDeviceId();
     }
 
+    private void initSettingChangeObserver(ContentResolver contentResolver) {
+        contentResolver.registerContentObserver(Settings.Global.getUriFor(AskeySettings.Global.SYSSET_NOTIFY_VOL), true, myObserver);
+        contentResolver.registerContentObserver(Settings.Global.getUriFor(AskeySettings.Global.SYSSET_MONITOR_BRIGHTNESS), true, myObserver);
+        contentResolver.registerContentObserver(Settings.Global.getUriFor(AskeySettings.Global.SYSSET_PLAYBACK_VOL), true, myObserver);
+        contentResolver.registerContentObserver(Settings.Global.getUriFor(AskeySettings.Global.SYSSET_POWERSAVE_ACTION), true, myObserver);
+        contentResolver.registerContentObserver(Settings.Global.getUriFor(AskeySettings.Global.SYSSET_POWERSAVE_TIME), true, myObserver);
+    }
 }
