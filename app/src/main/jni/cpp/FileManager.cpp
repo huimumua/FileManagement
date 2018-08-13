@@ -49,9 +49,9 @@ void  FileManager_FH_Sync(JNIEnv *env, jclass object){
     return FH_Sync();
 }
 
-jboolean  FileManager_FH_Delete(JNIEnv *env, jclass object,jstring absolute_filepath){
+jboolean  FileManager_FH_Delete(JNIEnv *env, jclass object,jstring absolute_filepath,jint cameraType){
     char *absoluteFilePath = (char *) env->GetStringUTFChars(absolute_filepath, 0);
-    jboolean result = (jboolean)FH_Delete(absoluteFilePath);
+    jboolean result = (jboolean)FH_Delete(absoluteFilePath,(eCameraType)cameraType);
     env->ReleaseStringUTFChars(absolute_filepath, absoluteFilePath);
     return result;
 }
@@ -106,7 +106,7 @@ static const JNINativeMethod gMethods[] = {
         { "FH_Open", "(Ljava/lang/String;I)Ljava/lang/String;", (void *)FileManager_FH_Open },
         { "FH_Close", "()Z", (void *)FileManager_FH_Close },
         { "FH_Sync", "()V", (void *)FileManager_FH_Sync },
-        { "FH_Delete", "(Ljava/lang/String;)Z", (void *)FileManager_FH_Delete },
+        { "FH_Delete", "(Ljava/lang/String;I)Z", (void *)FileManager_FH_Delete },
         { "FH_FindOldest", "(II)Ljava/lang/String;", (void *)FileManager_FH_FindOldest },
         { "FH_CheckFolderStatus", "(I)I", (void *)FileManager_FH_CheckFolderStatus },
         { "FH_lock", "(J)Z", (void *)FileManager_FH_lock },

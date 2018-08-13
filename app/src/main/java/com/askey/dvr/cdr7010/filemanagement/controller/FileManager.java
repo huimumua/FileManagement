@@ -85,7 +85,7 @@ public class FileManager {
 //          2.The file will be change to (number) + folderType extension
 // Input:  mount path, Delete file absolute path
 // Output: bool, true = 1, false = 0;
-    public native boolean FH_Delete(String absolute_filepath);
+    public native boolean FH_Delete(String absolute_filepath,int cameraType);
 
     //
 // Purpose: Finding the path oldest file ,and return absolute_filepath string
@@ -162,14 +162,18 @@ public class FileManager {
                         Const.SDCARD_EVENT_FOLDER_OVER_LIMIT =true;
                         if(Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT){
                             Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT =true;
+                            currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT;
+                        }else{
+                            currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_OVER_LIMIT;
                         }
-                        currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_OVER_LIMIT;
                     }else if(folderType.equals(Const.PICTURE_DIR)){
                         Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT =true;
                         if(Const.SDCARD_EVENT_FOLDER_OVER_LIMIT){
                             Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT =true;
+                            currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT;
+                        }else{
+                            currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_OVER_LIMIT;
                         }
-                        currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_OVER_LIMIT;
                     }
                     Const.IS_SDCARD_FOLDER_LIMIT = true;
                     BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
@@ -233,16 +237,22 @@ public class FileManager {
             Const.SDCARD_EVENT_FOLDER_LIMIT =true;
             if(Const.SDCARD_PICTURE_FOLDER_LIMIT){
                 Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
+                String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT;
+                BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+            }else{
+                String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
+                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
             }
-            String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
-            BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
         }else if(folderType.equals(Const.PICTURE_DIR)){
             Const.SDCARD_PICTURE_FOLDER_LIMIT =true;
             if(Const.SDCARD_EVENT_FOLDER_LIMIT){
                 Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
+                String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT;
+                BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+            }else{
+                String currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_LIMIT;
+                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
             }
-            String currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_LIMIT;
-            BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
         }
         Const.IS_SDCARD_FOLDER_LIMIT = true;
     }

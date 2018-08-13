@@ -122,8 +122,6 @@ public class SdCardReceiver extends BroadcastReceiver {
                     }else if(sdcardEventStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardEventStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
                         Const.SDCARD_EVENT_FOLDER_OVER_LIMIT = true;
                         Const.IS_SDCARD_FOLDER_LIMIT = true;
-                        String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_OVER_LIMIT;
-                        BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
                     }else if(sdcardEventStatus == Const.OPEN_FOLDER_ERROR ){
                         Const.SDCARD_NOT_SUPPORTED = true;
                         BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
@@ -143,12 +141,18 @@ public class SdCardReceiver extends BroadcastReceiver {
                     if(sdcardPictureStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardPictureStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
                         Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT = true;
                         Const.IS_SDCARD_FOLDER_LIMIT = true;
-                        String currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_OVER_LIMIT;
-                        BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
                     }
 
                     if(Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT){
                         Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT =true;
+                        String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT;
+                        BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                    }else if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT){
+                        String currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_OVER_LIMIT;
+                        BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                    }else if(Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT){
+                        String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_OVER_LIMIT;
+                        BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
                     }
 
                     int sdcardNormalStatus = FileManager.getSingInstance().checkFolderStatus(Const.NORMAL_DIR);
@@ -162,8 +166,6 @@ public class SdCardReceiver extends BroadcastReceiver {
                     if(eventCurrentNum == eventLimitNum){
                         Const.IS_SDCARD_FOLDER_LIMIT = true;
                         Const.SDCARD_EVENT_FOLDER_LIMIT =true;
-                        String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
-                        BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
                     }
 
                     int pictureCurrentNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_PICTURE_DIR,Const.CURRENTNUM);
@@ -175,6 +177,11 @@ public class SdCardReceiver extends BroadcastReceiver {
 
                     if(Const.SDCARD_EVENT_FOLDER_LIMIT && Const.SDCARD_PICTURE_FOLDER_LIMIT){
                         Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
+                        String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT;
+                        BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                    }else if(Const.SDCARD_EVENT_FOLDER_LIMIT && !Const.SDCARD_PICTURE_FOLDER_LIMIT){
+                        String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
+                        BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
                     }
 
                     if(!Const.SDCARD_EVENT_FOLDER_OVER_LIMIT && !Const.IS_SDCARD_FULL_LIMIT && ! Const.SDCARD_NOT_SUPPORTED && ! Const.SDCARD_UNRECOGNIZABLE){

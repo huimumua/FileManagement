@@ -361,7 +361,13 @@ public class MediaScanner {
         // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
         if (file.exists() && file.isFile()) {
             String filePath = file.getPath();
-            boolean result = FileManager.getSingInstance().FH_Delete(fileName);
+            String file_name = file.getName();
+            boolean result = false;
+            if(file_name.contains("_2")){
+                result = FileManager.getSingInstance().FH_Delete(fileName,2);
+            }else{
+                result = FileManager.getSingInstance().FH_Delete(fileName,1);
+            }
             Logg.i(TAG,"-->deleteFile --> FH_Delete fileName"+fileName+" result =="+result);
             if(!fileName.contains(".jpg")){
                 String nmeaPath = null;
@@ -374,18 +380,9 @@ public class MediaScanner {
                     hashPath = fileName.replaceAll("mp4", "hash").replaceAll("NORMAL", "HASH_NORMAL");
                 }
                 //SYSTEM/NMEA/NORMAL
-                boolean nmeaResult = false;
-                if(nmeaPath!=null){
-                    nmeaResult = FileManager.getSingInstance().FH_Delete(nmeaPath);
-                    Logg.i(TAG,"-->deleteFile --> FH_Delete nmeaPath"+nmeaPath+" nmeaResult =="+nmeaResult);
-                }
-
-                //这里还需要删除李纳所创建的文件
-                boolean hashResult = false;
-                if(hashPath!=null){
-                    hashResult = FileManager.getSingInstance().FH_Delete(hashPath);
-                    Logg.i(TAG,"-->deleteFile --> FH_Delete hashPath"+hashPath+" hashResult =="+hashResult);
-                }
+                deleteNmeaFile(nmeaPath);
+                //这里还需要删除所创建的hash文件
+                deleteNmeaFile(hashPath);
             }
 
             if (result) {
@@ -401,6 +398,23 @@ public class MediaScanner {
             }
         }
         return false;
+    }
+
+    private static void deleteNmeaFile(String filePath) {
+        boolean fileResult = false;
+        if(filePath!=null){
+            File mFile = new File(filePath);
+            // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
+            if (mFile.exists()) {
+                String fileName = mFile.getName();
+                if(fileName.contains("_2")){
+                    fileResult = FileManager.getSingInstance().FH_Delete(filePath,2);
+                }else{
+                    fileResult = FileManager.getSingInstance().FH_Delete(filePath,1);
+                }
+            }
+            Logg.i(TAG,"-->deleteFile --> FH_Delete filePath"+filePath+" fileResult =="+fileResult);
+        }
     }
 
     public static void syncDeleteFile(String filePath) {

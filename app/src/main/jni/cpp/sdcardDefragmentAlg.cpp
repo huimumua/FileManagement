@@ -920,11 +920,10 @@ bool FH_Close(void){
 
 //
 // true = 1, false = 0;
-bool FH_Delete(const char* absolute_filepath){
+bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
     ALOGE("this is jni call-> before mutex_lock. absolute_filepath = %s. In func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
     pthread_mutex_lock(&g_mutex);
     ALOGE("this is jni call-> after mutex_lock. absolute_filepath = %s. In func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
-
     /* !!!! modify to exist func */
     int fd = open(absolute_filepath, O_RDWR);
     if(fd == -1){

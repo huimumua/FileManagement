@@ -105,6 +105,8 @@ public class Const {
     public static final String CMD_SHOW_REACH_PICTURE_FILE_LIMIT ="show_reach_picture_file_limit";//达到限制
     public static final String CMD_SHOW_REACH_PICTURE_FILE_OVER_LIMIT ="show_reach_picture_file_over_limit";//超过限制
     public static final String CMD_SHOW_UNREACH_PICTURE_FILE_LIMIT = "show_unreach_picture_file_limit";//限制解除
+    public static final String CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT ="show_both_event_and_picture_file_limit";//超过限制
+    public static final String CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT ="show_both_event_and_picture_file_over_limit";//超过限制
 
     public static boolean IS_SDCARD_FULL_LIMIT =false;
     public static final String CMD_SHOW_SDCARD_FULL_LIMIT ="show_sdcard_full_limit";//sdcard空间不足

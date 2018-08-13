@@ -119,7 +119,7 @@ void FH_Sync(void);
 //          2.The file will be change to (number) + folderType extension
 // Input:  Delete file absolute path
 // Output: bool, true = 1, false = 0;
-bool FH_Delete(const char* absolute_filepath);
+bool FH_Delete(const char* absolute_filepath, eCameraType cameraType);
 
 //
 // Purpose: Finding the path oldest file ,and return absolute_filepath string
