@@ -54,7 +54,7 @@ public class MyObserver extends ContentObserver {
                 }
                 break;
             case SCREEN_BRIGHTNESS:
-                setScreenBrightness(contentResolver, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_MONITOR_BRIGHTNESS, 125));
+                setScreenBrightness(contentResolver, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_MONITOR_BRIGHTNESS, 125) * 250 / 10);
                 break;
             case SYSTEM_POWERSAVE_TIME:
                 if (Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_ACTION, 0) == 0) {//Always ON
