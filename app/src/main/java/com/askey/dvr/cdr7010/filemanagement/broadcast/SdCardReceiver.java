@@ -70,14 +70,6 @@ public class SdCardReceiver extends BroadcastReceiver {
                 BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
                         Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_UNRECOGNIZABLE);
             }
-        } else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)){//开始扫描
-
-        }else if (action.equals(Intent.ACTION_MEDIA_SCANNER_FINISHED)){//扫描完成
-
-        }else if (action.equals(Intent.ACTION_MEDIA_SHARED)){//扩展介质的挂载被解除 (unmount)。因为它已经作为 USB 大容量存储被共享
-
-        }else {
-            Logg.i(TAG, "=sdcard other status=");
         }
     }
 

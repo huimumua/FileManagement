@@ -236,9 +236,11 @@ public class FileManager {
         if(folderType.equals(Const.EVENT_DIR)){
             Const.SDCARD_EVENT_FOLDER_LIMIT =true;
             if(Const.SDCARD_PICTURE_FOLDER_LIMIT){
-                Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
-                String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT;
-                BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                if(!Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT){
+                    Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
+                    String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT;
+                    BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                }
             }else{
                 String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
                 BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
@@ -246,9 +248,11 @@ public class FileManager {
         }else if(folderType.equals(Const.PICTURE_DIR)){
             Const.SDCARD_PICTURE_FOLDER_LIMIT =true;
             if(Const.SDCARD_EVENT_FOLDER_LIMIT){
-                Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
-                String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT;
-                BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                if(!Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT){
+                    Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
+                    String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT;
+                    BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+                }
             }else{
                 String currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_LIMIT;
                 BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
