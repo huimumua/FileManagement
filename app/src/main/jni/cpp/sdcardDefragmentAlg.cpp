@@ -3,7 +3,7 @@
 #include <queue>
 
 #define CFG_NAME "table.config"
-const char TABLE_VERSION = 0x03;
+const char TABLE_VERSION = 0x04;
 
 #define LOG_TAG "sdcardDefragmentAlg.cpp"
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -19,10 +19,10 @@ struct file_struct{
     char folder_extension[32];
 };
 
-struct file_struct FH_Table[TABLE_SIZE] = {{0, 0, 0, 0.3, 76*MEGABYTE, 0, "EVENT", ".eve"}, // event
-                                           {0, 0, 0, 0.5, 76*MEGABYTE, 0, "NORMAL",  ".nor"}, // normal
+struct file_struct FH_Table[TABLE_SIZE] = {{0, 0, 0, 0.07, 20*MEGABYTE, 0, "EVENT", ".eve"}, // event
+                                           {0, 0, 0, 0.82, 76*MEGABYTE, 0, "NORMAL",  ".nor"}, // normal
                                            {0, 0, 0, 0.01, 1*MEGABYTE, 0, "PICTURE", ".pic"}, // picture
-                                           {0, 0, 0, 0.19,76*MEGABYTE, 0, "SYSTEM",  ".sys"}, // system
+                                           {0, 0, 0, 0.1 ,76*MEGABYTE, 0, "SYSTEM",  ".sys"}, // system
                                            {0, 0, 1, 0,   25*KILOBYTE, 0, "HASH_EVENT", ".ehash"},
                                            {0, 0, 1, 0,   25*KILOBYTE, 0, "HASH_NORMAL",".nhash"},
                                            {0, 0, 1, 0,  100*KILOBYTE, 0, "SYSTEM/NMEA/EVENT", ".neve"},
@@ -380,42 +380,42 @@ int set_max_file_num(uint64_t sdcard_size){
     }
     if(sd_size < 4){
         FH_Table[e_Event].max_file_num = 10;
-        FH_Table[e_Normal].max_file_num = 20;
+        FH_Table[e_Normal].max_file_num = 40;
         FH_Table[e_Picture].max_file_num = 30;
         ALOGE("this jni call-> sd_size = %d, close to 4G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
     }else
     if(sd_size < 8){
         FH_Table[e_Event].max_file_num = 20;
-        FH_Table[e_Normal].max_file_num = 40;
+        FH_Table[e_Normal].max_file_num = 80;
         FH_Table[e_Picture].max_file_num = 60;
         ALOGE("this jni call-> sd_size = %d, close to 8G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
     }else
     if(sd_size < 16){
         FH_Table[e_Event].max_file_num = 40;
-        FH_Table[e_Normal].max_file_num = 80;
+        FH_Table[e_Normal].max_file_num = 160;
         FH_Table[e_Picture].max_file_num = 120;
         ALOGE("this jni call-> sd_size = %d, close to 16G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
     }else
     if(sd_size < 32){
         FH_Table[e_Event].max_file_num = 80;
-        FH_Table[e_Normal].max_file_num = 160;
+        FH_Table[e_Normal].max_file_num = 320;
         FH_Table[e_Picture].max_file_num = 240;
         ALOGE("this jni call-> sd_size = %d, close to 32G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
     }else
     if(sd_size < 64){
         FH_Table[e_Event].max_file_num = 160;
-        FH_Table[e_Normal].max_file_num = 320;
+        FH_Table[e_Normal].max_file_num = 640;
         FH_Table[e_Picture].max_file_num = 480;
         ALOGE("this jni call-> sd_size = %d, close to 64G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
     }else
     if(sd_size < 128){
         FH_Table[e_Event].max_file_num = 320;
-        FH_Table[e_Normal].max_file_num = 640;
+        FH_Table[e_Normal].max_file_num = 1280;
         FH_Table[e_Picture].max_file_num = 960;
         ALOGE("this jni call-> sd_size = %d, close to 128G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
