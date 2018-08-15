@@ -1300,9 +1300,9 @@ int FH_CheckFolderStatus(eFolderType folderType){
         return FOLDER_SPACE_OVER_LIMIT;
     }
 
-    uint64_t folder_avail_size = sdcard_avail_size - using_file_size;
-    if (sdcard_avail_size < using_file_size) {
-        folder_avail_size = 0;
+    uint64_t folder_avail_size = FH_Table[folderType].avail_space - using_file_size;
+    if (sdcard_avail_size < folder_avail_size) {
+        folder_avail_size = sdcard_avail_size;
     }
 
     int avail_record_num = recoder_file_num + (folder_avail_size / FH_Table[folderType].every_block_space);
