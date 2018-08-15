@@ -188,35 +188,6 @@ int SDA_get_recoder_file_num(char* path){
     return file_number;
 }
 
-void storge_record_file_in_map(map<string, string>& fileTable, char* finding_path){
-    DIR *dp = opendir(finding_path);
-    struct dirent *dirp;
-
-    struct stat attrib;
-    char file_timestramp[NORULE_SIZE];
-
-    /* get finding_path "file name" and "file timestamp", store in Map */
-    while (dirp = readdir(dp)){
-        // puts(dirp->d_name);
-        string inPath_filename = dirp->d_name;
-
-        int rc = detect_filename_format(inPath_filename);
-        if(rc == -1){
-            continue;
-        }
-
-        char path_and_filename[NORULE_SIZE];
-        snprintf(path_and_filename, NORULE_SIZE, "%s/%s", finding_path, inPath_filename.c_str());
-
-        stat(path_and_filename, &attrib);
-        strftime(file_timestramp, NORULE_SIZE, "%Y%m%d%H%M%S", localtime((const time_t *)&attrib.st_mtime));
-
-        fileTable.insert(pair<string, string>(file_timestramp, inPath_filename));
-    }
-
-    closedir(dp);
-}
-
 string SDA_get_first_filename(const char* file_path, char* file_extension){
 
     vector<int> files = vector<int>();
