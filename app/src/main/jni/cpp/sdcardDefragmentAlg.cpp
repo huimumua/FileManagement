@@ -1338,6 +1338,50 @@ int FH_GetSDCardInfo(eFolderType folderType, eGetNum getNumOpt){
     return current_num;
 }
 
+int FH_GetFolderCameraTypeNumber(eFolderType folderType, eCameraType cameraType){
+    ALOGE("this is jni call-> before mutex_lock. folderType = %d, cameraType = %d. In func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
+    MUTEX_LOCK(&g_mutex);
+    ALOGE("this is jni call-> after mutex_lock. folderType = %d, cameraType = %d. In func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
+    int camera_number = 0;
+
+    switch (folderType) {
+        case e_Event:
+            if(cameraType == e_CameraOne){
+                camera_number = event_camera_one_queue.size();
+                break;
+            }
+            if(cameraType == e_CameraTwo){
+                camera_number = event_camera_two_queue.size();
+                break;
+            }
+        case e_Normal:
+            if(cameraType == e_CameraOne){
+                camera_number = normal_camera_one_queue.size();
+                break;
+            }
+            if(cameraType == e_CameraTwo){
+                camera_number = normal_camera_two_queue.size();
+                break;
+            }
+        case e_Picture:
+            if(cameraType == e_CameraOne){
+                camera_number = picture_camera_one_queue.size();
+                break;
+            }
+            if(cameraType == e_CameraTwo){
+                camera_number = picture_camera_two_queue.size();
+                break;
+            }
+        default:
+            ALOGE("this is jni call -> folderType error, folderType = %d, cameraType = %d. func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
+            break;
+    }
+    ALOGE("this is jni call-> before mutex_unlock. folderType = %d, cameraType = %d, camera_number = %d. Out func: %s, line:%d \n", folderType, cameraType, camera_number, __func__, __LINE__);
+    MUTEX_UNLOCK(&g_mutex);
+    ALOGE("this is jni call-> after mutex_unlock. folderType = %d, cameraType = %d, camera_number = %d. Out func: %s, line:%d \n", folderType, cameraType, camera_number, __func__, __LINE__);
+    return camera_number;
+}
+
 void FH_Sync(void){
     ALOGE("this is jni call-> before mutex_lock. In func: %s, line:%d \n", __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);

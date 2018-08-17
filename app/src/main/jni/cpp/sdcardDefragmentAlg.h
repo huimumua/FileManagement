@@ -151,6 +151,8 @@ int FH_CheckFolderStatus(eFolderType folderType);
 
 int FH_GetSDCardInfo(eFolderType folderType, eGetNum getNumOpt);
 
+int FH_GetFolderCameraTypeNumber(eFolderType folderType, eCameraType cameraType);
+
 //
 // not use
 // Return ture
