@@ -45,11 +45,10 @@ public class Const {
     public static final int INIT_SUCCESS=0;
     public static final int INIT_SDCARD_PATH_ERROR=-1;   //格式化
     public static final int INIT_SDCARD_SPACE_FULL=-2;  //sdcard空间不足
-    public static final int INIT_SDCARD_DETECT_SIZE_ERROR=-3;   //格式化
-    public static final int INIT_SDCARD_SIZE_NOT_SUPPORT=-4;   //sdcard不支持 小于4G大于128G
-    public static final int INIT_TABLE_VERSION_TOO_OLD=-5;//格式化
-    public static final int INIT_TABLE_VERSION_CANNOT_RECOGNIZE=-6;//格式化
-    public static final int INIT_TABLE_READ_ERROR=-7;//格式化
+    public static final int INIT_SDCARD_SIZE_NOT_SUPPORT=-3;   //sdcard不支持 小于4G大于128G
+    public static final int INIT_TABLE_VERSION_TOO_OLD=-4;//格式化
+    public static final int INIT_TABLE_VERSION_CANNOT_RECOGNIZE=-5;//格式化
+    public static final int INIT_TABLE_READ_ERROR=-6;//格式化
 
     public static final String NORMAL_DIR = "NORMAL";
     public static final String EVENT_DIR = "EVENT";

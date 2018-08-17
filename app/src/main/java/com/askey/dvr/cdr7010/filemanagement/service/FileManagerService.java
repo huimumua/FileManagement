@@ -97,7 +97,7 @@ public class FileManagerService extends Service {
                     Const.SDCARD_INIT_SUCCESS=true;
                 }
             }else{
-                if(initResult == Const.INIT_SDCARD_DETECT_SIZE_ERROR || initResult == Const.INIT_TABLE_VERSION_TOO_OLD || initResult == Const.INIT_TABLE_VERSION_CANNOT_RECOGNIZE
+                if(initResult == Const.INIT_TABLE_VERSION_TOO_OLD || initResult == Const.INIT_TABLE_VERSION_CANNOT_RECOGNIZE
                         || initResult == Const.INIT_TABLE_READ_ERROR  ||initResult == Const.INIT_SDCARD_PATH_ERROR){
                     Const.SDCARD_NOT_SUPPORTED = true;
                 }else if(initResult == Const.INIT_SDCARD_SPACE_FULL){

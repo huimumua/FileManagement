@@ -85,7 +85,7 @@ public class SdCardReceiver extends BroadcastReceiver {
                 if(initResult!=Const.INIT_SUCCESS){
                     Const.SDCARD_INIT_SUCCESS=false;
                     BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_INIT_FAIL);
-                    if(initResult == Const.INIT_SDCARD_DETECT_SIZE_ERROR || initResult == Const.INIT_TABLE_VERSION_TOO_OLD || initResult == Const.INIT_TABLE_VERSION_CANNOT_RECOGNIZE
+                    if(initResult == Const.INIT_TABLE_VERSION_TOO_OLD || initResult == Const.INIT_TABLE_VERSION_CANNOT_RECOGNIZE
                             || initResult == Const.INIT_TABLE_READ_ERROR  ||initResult == Const.INIT_SDCARD_PATH_ERROR ||initResult == Const.INIT_SDCARD_SIZE_NOT_SUPPORT){
                         Const.SDCARD_NOT_SUPPORTED = true;
                         BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(), Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
