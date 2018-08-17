@@ -63,8 +63,14 @@ public class SdcardManager {
         Logg.i(LOG_TAG,"=event=current/maxnum=="+eventCurrentNum+"/"+eventLimitNum);
         Logg.i(LOG_TAG,"=picture=current/maxnum=="+pictureCurrentNum+"/"+pictureLimitNum);
 
+        int camera1NormalFileCount = FileManager.getSingInstance().FH_GetFolderCameraTypeNumber(Const.TYPE_NORMAL_DIR,1);
+        int camera2NormalFileCount = FileManager.getSingInstance().FH_GetFolderCameraTypeNumber(Const.TYPE_NORMAL_DIR,2);
+        Logg.i(LOG_TAG,"==camera1NormalFileCount=="+camera1NormalFileCount);
+        Logg.i(LOG_TAG,"==camera2NormalFileCount=="+camera2NormalFileCount);
+
         sdcardInfo.setPictureCurrentSize(String.valueOf(pictureCurrentNum));
-        sdcardInfo.setNormalCurrentSize(String.valueOf(normalCurrentNum));
+        sdcardInfo.setNormal1CurrentSize(String.valueOf(normalCurrentNum));
+        sdcardInfo.setNormal2CurrentSize(String.valueOf(normalCurrentNum));
         sdcardInfo.setEventCurrentSize(String.valueOf(eventCurrentNum));
         sdcardInfo.setNormalSize(String.valueOf(normalLimitNum));
         sdcardInfo.setEventSize(String.valueOf(eventLimitNum));
@@ -84,7 +90,8 @@ public class SdcardManager {
         SdcardInfo sdcardInfo = new SdcardInfo();
         sdcardInfo.setEventCurrentSize(currentSdcardSize+Const.SDCARD_SIZE_UNIT);
         Map fileCountMap = MediaScanner.getAllFileCount();
-        sdcardInfo.setNormalCurrentSize(String.valueOf(fileCountMap.get(Const.NORMAL_DIR)));
+        sdcardInfo.setNormal1CurrentSize(String.valueOf(fileCountMap.get(Const.NORMAL_DIR)));
+        sdcardInfo.setNormal2CurrentSize(String.valueOf(fileCountMap.get(Const.NORMAL_DIR)));
         sdcardInfo.setEventCurrentSize(String.valueOf(fileCountMap.get(Const.EVENT_DIR)));
         sdcardInfo.setParkingCurrentSize(String.valueOf(fileCountMap.get(Const.PARKING_DIR)));
         List <String> pictureList = MediaScanner.getAllFileList(Const.PICTURE_DIR);

@@ -42,27 +42,25 @@ public class FileManagerService extends Service {
             //获取sdcard状态信息
             Const.CURRENT_SDCARD_SIZE = SdcardUtil.getCurentSdcardInfo(FileManagerApplication.getAppContext());
             int initResult = FileManager.getSingInstance().sdcardInit();
-            if(initResult == 0){
+            if(initResult == Const.INIT_SUCCESS){
                 Logg.i(LOG_TAG,"=sdcardInit==="+initResult);
 
                 int sdcardStatus = FileManager.getSingInstance().checkFolderStatus(Const.EVENT_DIR);
                 Logg.i(LOG_TAG,"checkFolderStatus-EVENT》"+sdcardStatus);
                 if(sdcardStatus == Const.NO_SPACE_NO_NUMBER_TO_RECYCLE ){
                     Const.IS_SDCARD_FULL_LIMIT = true;
-                }else if(sdcardStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                }else if(sdcardStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
                     Const.SDCARD_EVENT_FOLDER_OVER_LIMIT = true;
                     Const.IS_SDCARD_FOLDER_LIMIT = true;
-                }else if(sdcardStatus == Const.OPEN_FOLDER_ERROR ){
+                }else if(sdcardStatus == Const.OPEN_FOLDER_ERROR || sdcardStatus == Const.GLOBAL_SDCARD_PATH_ERROR || sdcardStatus == Const.FOLDER_SPACE_OVER_LIMIT ){
                     Const.SDCARD_NOT_SUPPORTED = true;
-                }else if(sdcardStatus == Const.SDCARD_PATH_ERROR ){
-                    Const.SDCARD_UNRECOGNIZABLE = true;
                 }else if(sdcardStatus >=2){
                     Const.IS_SDCARD_FULL_LIMIT = false;
                 }
 
                 int sdcardPictureStatus = FileManager.getSingInstance().checkFolderStatus(Const.PICTURE_DIR);
                 Logg.i(LOG_TAG,"checkFolderStatus-PICTURE》"+sdcardPictureStatus);
-                if(sdcardPictureStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardPictureStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                if( sdcardPictureStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
                     Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT = true;
                     Const.IS_SDCARD_FOLDER_LIMIT = true;
                 }
@@ -73,7 +71,7 @@ public class FileManagerService extends Service {
 
                 int sdcardNormalStatus = FileManager.getSingInstance().checkFolderStatus(Const.NORMAL_DIR);
                 Logg.i(LOG_TAG,"checkFolderStatus-normal》"+sdcardNormalStatus);
-                if(sdcardNormalStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardNormalStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                if(sdcardNormalStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
 
                 }
 
@@ -99,10 +97,11 @@ public class FileManagerService extends Service {
                     Const.SDCARD_INIT_SUCCESS=true;
                 }
             }else{
-                if(initResult== -7 || initResult== -9 ){
+                if(initResult == Const.INIT_SDCARD_DETECT_SIZE_ERROR || initResult == Const.INIT_TABLE_VERSION_TOO_OLD || initResult == Const.INIT_TABLE_VERSION_CANNOT_RECOGNIZE
+                        || initResult == Const.INIT_TABLE_READ_ERROR  ||initResult == Const.INIT_SDCARD_PATH_ERROR){
                     Const.SDCARD_NOT_SUPPORTED = true;
-                }else if(initResult== -2){
-                    Const.SDCARD_UNRECOGNIZABLE = false;
+                }else if(initResult == Const.INIT_SDCARD_SPACE_FULL){
+                    Const.IS_SDCARD_FULL_LIMIT = true;
                 }
                  Const.SDCARD_INIT_SUCCESS = false;
             }
@@ -155,13 +154,6 @@ public class FileManagerService extends Service {
                 Logg.i(LOG_TAG,"====getAllFileByType==="+type);
                 List <ItemData>list =MediaScanner.getAllFiles(type);
                 Logg.i(LOG_TAG,"list.size()==="+list.size());
-                for (ItemData item :list){
-                    List <ItemData>group= item.getDirFileItem();
-                    Logg.i(LOG_TAG,"group.size()==="+group.size());
-                    for (ItemData roupItem :group){
-                        Logg.i(LOG_TAG,"roupItem.getFileName()=="+roupItem.getFileName());
-                    }
-                }
                 return list;
             }else{
                 Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);

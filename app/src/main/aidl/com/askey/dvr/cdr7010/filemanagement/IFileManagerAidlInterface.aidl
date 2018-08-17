@@ -30,7 +30,7 @@ interface IFileManagerAidlInterface {
    List <String> getAllFilesByType(String type);
 
     /**
-    * Type : NORMAL EVENT PARKING PICTURE SYSTEM
+    * Type : NORMAL_1  NORMAL_2  EVENT PARKING PICTURE SYSTEM
     * */
    List <ItemData> getAllFileByType(String type);
 

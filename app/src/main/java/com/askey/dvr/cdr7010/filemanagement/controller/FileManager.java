@@ -109,6 +109,8 @@ public class FileManager {
 
     public native int FH_GetSDCardInfo(int type,int numType);
 
+    public native int FH_GetFolderCameraTypeNumber(int type,int cameraType);
+
     //
 // not implement
 // Return ture
@@ -132,9 +134,14 @@ public class FileManager {
         return result;
     }
 
-//    SDCARD_PATH_ERROR -2
-//    TABLE_VERSION_TOO_OLD -7
-//    TABLE_READ_ERROR -9
+//    INIT_SUCCESS=0,
+//    SDCARD_PATH_ERROR=-1,
+//    SDCARD_SPACE_FULL=-2,
+//    SDCARD_DETECT_SIZE_ERROR=-3,
+//    SDCARD_SIZE_NOT_SUPPORT=-4,
+//    TABLE_VERSION_TOO_OLD=-5,
+//    TABLE_VERSION_CANNOT_RECOGNIZE=-6,
+//    TABLE_READ_ERROR=-7
     public int sdcardInit() {
         int result = 2;
         if(Const.SDCARD_IS_EXIST){
@@ -156,7 +163,7 @@ public class FileManager {
                     Const.IS_SDCARD_FULL_LIMIT = true;
                     String currentAction = Const.CMD_SHOW_SDCARD_FULL_LIMIT;
                     BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
-                }else if(sdcardStatus == Const.FOLDER_SPACE_OVER_LIMIT || sdcardStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
+                }else if( sdcardStatus == Const.EXIST_FILE_NUM_OVER_LIMIT ){
                     String currentAction = "";
                     if(folderType.equals(Const.EVENT_DIR)){
                         Const.SDCARD_EVENT_FOLDER_OVER_LIMIT =true;
@@ -261,11 +268,11 @@ public class FileManager {
         Const.IS_SDCARD_FOLDER_LIMIT = true;
     }
 
-//         SDCARD_PATH_ERROR                       return -2
-//         EXIST_FILE_NUM_OVER_LIMIT               return -5     file_over_limit
-//         NO_SPACE_NO_NUMBER_TO_RECYCLE           return -6     sdcard_full
-//         OPEN_FOLDER_ERROR                       return -3
-//         FOLDER_SPACE_OVER_LIMIT                 return -4     file_limit
+//    GLOBAL_SDCARD_PATH_ERROR=-1,      format
+//    OPEN_FOLDER_ERROR=-2,             format
+//    EXIST_FILE_NUM_OVER_LIMIT=-3,     file_over_limit
+//    FOLDER_SPACE_OVER_LIMIT=-4,       format
+//    NO_SPACE_NO_NUMBER_TO_RECYCLE=-5   sdcard_full
     public int checkFolderStatus(String folderType) {
         int type = getCurrentType(folderType);
         return FH_CheckFolderStatus(type);

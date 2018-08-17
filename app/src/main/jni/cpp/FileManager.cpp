@@ -75,6 +75,12 @@ jint FileManager_FH_GetSDCardInfo(JNIEnv *env, jclass object,jint type,jint numT
     return numb;
 }
 
+jint FileManager_FH_GetFolderCameraTypeNumber(JNIEnv *env, jclass object,jint type,jint numType){
+    jint  numb = FH_GetFolderCameraTypeNumber((eFolderType)type,(eCameraType)numType);
+    ALOGE("this is jni call1-->FileManager_FH_GetFolderCameraTypeNumber= %d" , numb);
+//    return FH_FolderCanUseFilenumber((eFolderType)type);
+    return numb;
+}
 
 jboolean FileManager_FH_lock(JNIEnv *env, jclass object,jlong file_pointer){
     return (jboolean)FH_lock((FILE*)file_pointer);
@@ -112,7 +118,7 @@ static const JNINativeMethod gMethods[] = {
         { "FH_lock", "(J)Z", (void *)FileManager_FH_lock },
         { "FH_unlock", "(J)Z", (void *)FileManager_FH_unlock },
         { "FH_GetSDCardInfo", "(II)I", (void *)FileManager_FH_GetSDCardInfo },
-
+        { "FH_GetFolderCameraTypeNumber", "(II)I", (void *)FileManager_FH_GetFolderCameraTypeNumber },
 };
 
 static int registerNativeMethods(JNIEnv* env, const char* className,

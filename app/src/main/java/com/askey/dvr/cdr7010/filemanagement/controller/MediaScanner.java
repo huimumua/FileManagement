@@ -72,6 +72,25 @@ public class MediaScanner {
         }
     }
 
+    /**
+     * 分别获取camera1  camera2 normal文件的个数
+     * */
+    public static Map getNormalFileCount() {
+        ArrayList <String> list = getAllVideoList();
+        int normal1Count = 0,normal2Count = 0;
+        for (String path : list ){
+            if(path.contains(Const.NORMAL_DIR) && path.contains("_1") ){
+                normal1Count ++ ;
+            }else if(path.contains(Const.NORMAL_DIR) && path.contains("_2") ){
+                normal2Count ++ ;
+            }
+        }
+        Map fileCountMap =new HashMap();
+        fileCountMap.put(Const.NORMAL_1_DIR,normal1Count);
+        fileCountMap.put(Const.NORMAL_2_DIR,normal2Count);
+        return fileCountMap;
+    }
+
     public static Map getAllFileCount() {
         ArrayList <String> list = getAllVideoList();
         int normalCount = 0,eventCount = 0,parkingCount = 0;
@@ -178,25 +197,17 @@ public class MediaScanner {
 //            Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(resolver,
 //                    Long.valueOf(id), MediaStore.Images.Thumbnails.MICRO_KIND, null);
             Logg.i(TAG,"==name=="+name);
-            if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type)  && path.endsWith(".mp4")){
-                if(name.length()==16 || name.length()==18){
-                    File mFile = new File(path);
-                    if(mFile.exists()){
-                        DATE_MODIFIED = String.valueOf(mFile.lastModified());
-                        Logg.i(TAG,"==path=="+path);
-                        if(!type.equals(Const.NORMAL_DIR)){
-                            long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
-                            ItemData itemData= new ItemData();
-                            itemData.setFileTime(fileCreateTime);
-                            itemData.setFilePath(path);
-                            itemData.setFileName(name);
-                            itemData.setDir(false);
-                            itemData.setMediaID(Integer.valueOf(id));
-                            fileList.add(itemData);
-                        }else{
+            if(Const.NORMAL_1_DIR.equals(type) ){
+                Logg.i(TAG,"==Const.NORMAL_1_DIR.equals(type)==");
+//                normalFileGrouping(path, name, DATE_MODIFIED, id, currentYYYYMMDD,  fileList, group);
+                if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.NORMAL_DIR)  && path.endsWith(".mp4")){
+                    if(name.length()==16 || name.length()==18){
+                        File mFile = new File(path);
+                        if(mFile.exists()){
+                            DATE_MODIFIED = String.valueOf(mFile.lastModified());
+                            Logg.i(TAG,"==path=="+path);
                             String yyyyMMDD = name.substring(0,6);
                             long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
-
                             if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
                                 ItemData groupitem = new ItemData();
                                 groupitem.setFileTime(fileCreateTime);
@@ -221,22 +232,176 @@ public class MediaScanner {
                                 itemData.setFilePath(path);
                                 itemData.setFileName(name);
                                 itemData.setDir(true);
-//                        itemData.setMediaID(Integer.valueOf(id));
                                 itemData.setDirFileItem(group);
                                 fileList.add(itemData);
                             }
                         }
                     }
                 }
-            }else{
-                Logg.i(TAG,"==path=not=add="+path);
-            }
+//                fileGrouping(path, Const.NORMAL_DIR, name, DATE_MODIFIED, id, currentYYYYMMDD,  fileList, group);
+            }else if(Const.NORMAL_2_DIR.equals(type) ){
+                Logg.i(TAG,"==Const.NORMAL_2_DIR.equals(type)==");
+                if(name.contains("_2")){
+                    if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.NORMAL_DIR)  && path.endsWith(".mp4")){
+                        if(name.length()==16 || name.length()==18){
+                            File mFile = new File(path);
+                            if(mFile.exists()){
+                                DATE_MODIFIED = String.valueOf(mFile.lastModified());
+                                Logg.i(TAG,"==path=="+path);
+                                String yyyyMMDD = name.substring(0,6);
+                                long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+                                if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
+                                    ItemData groupitem = new ItemData();
+                                    groupitem.setFileTime(fileCreateTime);
+                                    groupitem.setFilePath(path);
+                                    groupitem.setFileName(name);
+                                    groupitem.setDir(false);
+                                    groupitem.setMediaID(Integer.valueOf(id));
+                                    group.add(groupitem);
+                                }else{
+                                    currentYYYYMMDD = yyyyMMDD;
+                                    group= new ArrayList<ItemData>();
+                                    ItemData groupitem = new ItemData();
+                                    groupitem.setFileTime(fileCreateTime);
+                                    groupitem.setFilePath(path);
+                                    groupitem.setFileName(name);
+                                    groupitem.setDir(false);
+                                    groupitem.setMediaID(Integer.valueOf(id));
+                                    group.add(groupitem);
 
+                                    ItemData itemData= new ItemData();
+                                    itemData.setFileTime(fileCreateTime);
+                                    itemData.setFilePath(path);
+                                    itemData.setFileName(name);
+                                    itemData.setDir(true);
+                                    itemData.setDirFileItem(group);
+                                    fileList.add(itemData);
+                                }
+                            }
+                        }
+                    }
+//                    fileGrouping(path, Const.NORMAL_DIR, name, DATE_MODIFIED, id, currentYYYYMMDD,  fileList, group);
+                }
+            }else{
+                Logg.i(TAG,"==Const.NORMAL_2_DIR.equals(type)=2222=");
+                if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type)  && path.endsWith(".mp4")){
+                    if(name.length()==16 || name.length()==18){
+                        File mFile = new File(path);
+                        if(mFile.exists()){
+                            DATE_MODIFIED = String.valueOf(mFile.lastModified());
+                            Logg.i(TAG,"==path=="+path);
+                            long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+                            ItemData itemData= new ItemData();
+                            itemData.setFileTime(fileCreateTime);
+                            itemData.setFilePath(path);
+                            itemData.setFileName(name);
+                            itemData.setDir(false);
+                            itemData.setMediaID(Integer.valueOf(id));
+                            fileList.add(itemData);
+                        }
+                    }
+                }
+            }
         }
         if(cursor != null && !cursor.isClosed()){
             cursor.close();
         }
         return fileList;
+    }
+
+    private static void normalFileGrouping(String path,String name,String DATE_MODIFIED,String id,String currentYYYYMMDD, ArrayList <ItemData> fileList,List<ItemData> group) {
+        if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.NORMAL_DIR)  && path.endsWith(".mp4")){
+            if(name.length()==16 || name.length()==18){
+                File mFile = new File(path);
+                if(mFile.exists()){
+                    DATE_MODIFIED = String.valueOf(mFile.lastModified());
+                    Logg.i(TAG,"==path=="+path);
+                    String yyyyMMDD = name.substring(0,6);
+                    long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+                    if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
+                        ItemData groupitem = new ItemData();
+                        groupitem.setFileTime(fileCreateTime);
+                        groupitem.setFilePath(path);
+                        groupitem.setFileName(name);
+                        groupitem.setDir(false);
+                        groupitem.setMediaID(Integer.valueOf(id));
+                        group.add(groupitem);
+                    }else{
+                        currentYYYYMMDD = yyyyMMDD;
+                        group= new ArrayList<ItemData>();
+                        ItemData groupitem = new ItemData();
+                        groupitem.setFileTime(fileCreateTime);
+                        groupitem.setFilePath(path);
+                        groupitem.setFileName(name);
+                        groupitem.setDir(false);
+                        groupitem.setMediaID(Integer.valueOf(id));
+                        group.add(groupitem);
+
+                        ItemData itemData= new ItemData();
+                        itemData.setFileTime(fileCreateTime);
+                        itemData.setFilePath(path);
+                        itemData.setFileName(name);
+                        itemData.setDir(true);
+                        itemData.setDirFileItem(group);
+                        fileList.add(itemData);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void fileGrouping(String path,String type,String name,String DATE_MODIFIED,String id,String currentYYYYMMDD, ArrayList <ItemData> fileList,List<ItemData> group) {
+        if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type)  && path.endsWith(".mp4")){
+            if(name.length()==16 || name.length()==18){
+                File mFile = new File(path);
+                if(mFile.exists()){
+                    DATE_MODIFIED = String.valueOf(mFile.lastModified());
+                    Logg.i(TAG,"==path=="+path);
+                    if(!type.equals(Const.NORMAL_DIR)){
+                        long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+                        ItemData itemData= new ItemData();
+                        itemData.setFileTime(fileCreateTime);
+                        itemData.setFilePath(path);
+                        itemData.setFileName(name);
+                        itemData.setDir(false);
+                        itemData.setMediaID(Integer.valueOf(id));
+                        fileList.add(itemData);
+                    }else{
+                        String yyyyMMDD = name.substring(0,6);
+                        long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+
+                        if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
+                            ItemData groupitem = new ItemData();
+                            groupitem.setFileTime(fileCreateTime);
+                            groupitem.setFilePath(path);
+                            groupitem.setFileName(name);
+                            groupitem.setDir(false);
+                            groupitem.setMediaID(Integer.valueOf(id));
+                            group.add(groupitem);
+                        }else{
+                            currentYYYYMMDD = yyyyMMDD;
+                            group= new ArrayList<ItemData>();
+                            ItemData groupitem = new ItemData();
+                            groupitem.setFileTime(fileCreateTime);
+                            groupitem.setFilePath(path);
+                            groupitem.setFileName(name);
+                            groupitem.setDir(false);
+                            groupitem.setMediaID(Integer.valueOf(id));
+                            group.add(groupitem);
+
+                            ItemData itemData= new ItemData();
+                            itemData.setFileTime(fileCreateTime);
+                            itemData.setFilePath(path);
+                            itemData.setFileName(name);
+                            itemData.setDir(true);
+//                        itemData.setMediaID(Integer.valueOf(id));
+                            itemData.setDirFileItem(group);
+                            fileList.add(itemData);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

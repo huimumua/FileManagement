@@ -36,11 +36,20 @@ public class Const {
     public static boolean SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =false;
     public static boolean SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_OVER_LIMIT =false;
 
-    public static int SDCARD_PATH_ERROR = -2;
-    public static int OPEN_FOLDER_ERROR = -3;
-    public static int FOLDER_SPACE_OVER_LIMIT = -4;   //file_over_limit
-    public static int EXIST_FILE_NUM_OVER_LIMIT = -5;  //file_over_limit
-    public static int NO_SPACE_NO_NUMBER_TO_RECYCLE = -6; //sdcard_full
+    public static int GLOBAL_SDCARD_PATH_ERROR = -1; //格式化
+    public static int OPEN_FOLDER_ERROR = -2;   //格式化
+    public static int EXIST_FILE_NUM_OVER_LIMIT = -3;//file_over_limit
+    public static int FOLDER_SPACE_OVER_LIMIT = -4;   //格式化
+    public static int NO_SPACE_NO_NUMBER_TO_RECYCLE = -5;  //sdcard_full
+
+    public static final int INIT_SUCCESS=0;
+    public static final int INIT_SDCARD_PATH_ERROR=-1;   //格式化
+    public static final int INIT_SDCARD_SPACE_FULL=-2;  //sdcard空间不足
+    public static final int INIT_SDCARD_DETECT_SIZE_ERROR=-3;   //格式化
+    public static final int INIT_SDCARD_SIZE_NOT_SUPPORT=-4;   //sdcard不支持 小于4G大于128G
+    public static final int INIT_TABLE_VERSION_TOO_OLD=-5;//格式化
+    public static final int INIT_TABLE_VERSION_CANNOT_RECOGNIZE=-6;//格式化
+    public static final int INIT_TABLE_READ_ERROR=-7;//格式化
 
     public static final String NORMAL_DIR = "NORMAL";
     public static final String EVENT_DIR = "EVENT";
@@ -51,6 +60,9 @@ public class Const {
     public static final String NMEA_EVENT_DIR = "NMEA_EVENT";
     public static final String NMEA_NORMAL_DIR = "NMEA_NORMAL";
     public static final String PARKING_DIR = "PARKING";
+    public static final String NORMAL_1_DIR = "NORMAL_1";
+    public static final String NORMAL_2_DIR = "NORMAL_2";
+
 
     public static final int LIMITNUM = 0;
     public static final int CURRENTNUM = 1;
