@@ -414,12 +414,12 @@ int SDA_get_structure_value_from_config(char* mount_path){
     return -1;
 }
 
-int set_max_file_num(uint64_t sdcard_size){
+int get_sdcard_size_and_set_max_file_num(uint64_t sdcard_size){
     ALOGE("this jni call-> sdcard_size = %" PRIu64 " In func: %s, line:%d \n", sdcard_size, __func__, __LINE__);
     int sd_size = sdcard_size/GIGABYTE;
-    if(sd_size <= 0){
-        ALOGE("this is jni call-> sdcard size = 0, sdcard_size = %" PRIu64 " Out func: %s, line:%d \n", sdcard_size, __func__, __LINE__);
-        return SDCARD_DETECT_SIZE_ERROR;
+    if(sd_size < 3){
+        ALOGE("this is jni call-> sd_size = %d, sdcard_size = %" PRIu64 " Out func: %s, line:%d \n", sd_size, sdcard_size, __func__, __LINE__);
+        return SDCARD_SIZE_NOT_SUPPORT;
     }
     if(sd_size < 4){
         FH_Table[e_Event].max_file_num = 10;
@@ -661,12 +661,12 @@ int FH_Init(char* mount_path){
         return SDCARD_SPACE_FULL;
     }
 
-    rc = set_max_file_num(mount_path_block_size);
+    rc = get_sdcard_size_and_set_max_file_num(mount_path_block_size);
     if(rc != SUCCESS){
         ALOGE("this is jni call-> before mutex_unlock. sdcard detect failed. Out func: %s, line:%d \n", __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
         ALOGE("this is jni call-> after mutex_unlock. sdcard detect failed. Out func: %s, line:%d \n", __func__, __LINE__);
-        return SDCARD_DETECT_SIZE_ERROR;
+        return SDCARD_SIZE_NOT_SUPPORT;
     }
 
     /* If mount_path doesn't have "CONFIG", return please format sdcard */
