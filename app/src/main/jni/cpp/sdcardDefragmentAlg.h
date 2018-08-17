@@ -44,17 +44,6 @@ using namespace std;
 #define SECOND_LIMIT 59
 
 #define SUCCESS (0)
-#define SDCARD_PATH_ERROR (-2)
-#define OPEN_FOLDER_ERROR (-3)
-#define FOLDER_SPACE_OVER_LIMIT (-4)
-#define EXIST_FILE_NUM_OVER_LIMIT (-5)
-#define NO_SPACE_NO_NUMBER_TO_RECYCLE (-6)
-#define TABLE_VERSION_TOO_OLD (-7)
-#define TABLE_VERSION_CANNOT_RECOGNIZE (-8)
-#define TABLE_READ_ERROR (-9)
-#define SDCARD_DETECT_SIZE_ERROR (-10)
-#define SDCARD_NOT_SUPPORT (-11)
-#define QUEUE_FREE_ERROR (-12)
 
 #define KILOBYTE (1 << 10)
 #define MEGABYTE (1 << 20)
@@ -79,6 +68,25 @@ enum eFolderType{
 enum eGetNum{
 	e_getLimitNum=0,
 	e_getCurrentNum
+};
+
+enum FH_Init_error_code{
+	INIT_SUCCESS=0,
+    SDCARD_PATH_ERROR=-1,
+    SDCARD_SPACE_FULL=-2,
+	SDCARD_DETECT_SIZE_ERROR=-3,
+	SDCARD_SIZE_NOT_SUPPORT=-4,
+	TABLE_VERSION_TOO_OLD=-5,
+	TABLE_VERSION_CANNOT_RECOGNIZE=-6,
+	TABLE_READ_ERROR=-7
+};
+
+enum FH_CheckFolderStatus_error_code{
+    GLOBAL_SDCARD_PATH_ERROR=-1,
+	OPEN_FOLDER_ERROR=-2,
+	EXIST_FILE_NUM_OVER_LIMIT=-3,
+	FOLDER_SPACE_OVER_LIMIT=-4,
+	NO_SPACE_NO_NUMBER_TO_RECYCLE=-5
 };
 
 //Purpose: Check config file exist or not

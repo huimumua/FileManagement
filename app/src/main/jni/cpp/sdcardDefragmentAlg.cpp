@@ -464,7 +464,7 @@ int set_max_file_num(uint64_t sdcard_size){
         return SUCCESS;
     }
     ALOGE("this is jni call-> size bigger than 128G. not Support. Out func: %s, line:%d \n", __func__, __LINE__);
-    return SDCARD_NOT_SUPPORT;
+    return SDCARD_SIZE_NOT_SUPPORT;
 }
 
 void check_queue_status(int old_date_flag, queue<string>& folder_files_queue){
@@ -641,6 +641,34 @@ int FH_Init(char* mount_path){
         strncpy(g_mount_path, mount_path, strlen(mount_path));
     }
 
+    struct statvfs buf;
+
+    if (statvfs(mount_path, &buf) == -1){
+        ALOGE("this is jni call-> before mutex_unlock. Sdcard path error. Out func: %s, line:%d \n", __func__, __LINE__);
+        MUTEX_UNLOCK(&g_mutex);
+        ALOGE("this is jni call-> after mutex_unlock. Sdcard path error. Out func: %s, line:%d \n", __func__, __LINE__);
+        return SDCARD_PATH_ERROR;
+    }
+    ALOGE("this is jni call-> Sdcard available space = %" PRIu64 ". func: %s, line:%d \n", ((uint64_t)buf.f_bavail * buf.f_bsize), __func__, __LINE__);
+
+    uint64_t mount_path_block_size = ((uint64_t)buf.f_blocks * buf.f_bsize);
+    uint64_t mount_path_avail_size = ((uint64_t)buf.f_bavail * buf.f_bsize);
+
+    if(mount_path_avail_size < 76*MEGABYTE){
+        ALOGE("this is jni call-> before mutex_unlock. Sdcard no space to use. mount_path_avail_size = %" PRIu64 ". Out func: %s, line:%d \n", mount_path_avail_size, __func__, __LINE__);
+        MUTEX_UNLOCK(&g_mutex);
+        ALOGE("this is jni call-> after mutex_unlock. Sdcard no space to use. mount_path_avail_size = %" PRIu64 ". Out func: %s, line:%d \n", mount_path_avail_size, __func__, __LINE__);
+        return SDCARD_SPACE_FULL;
+    }
+
+    rc = set_max_file_num(mount_path_block_size);
+    if(rc != SUCCESS){
+        ALOGE("this is jni call-> before mutex_unlock. sdcard detect failed. Out func: %s, line:%d \n", __func__, __LINE__);
+        MUTEX_UNLOCK(&g_mutex);
+        ALOGE("this is jni call-> after mutex_unlock. sdcard detect failed. Out func: %s, line:%d \n", __func__, __LINE__);
+        return SDCARD_DETECT_SIZE_ERROR;
+    }
+
     /* If mount_path doesn't have "CONFIG", return please format sdcard */
     char config_file_path[NORULE_SIZE];
     snprintf(config_file_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
@@ -661,27 +689,6 @@ int FH_Init(char* mount_path){
             ALOGE("this is jni call-> after mutex_unlock. SDA_get_structure_value_from_config fail. Out func: %s, line:%d \n", __func__, __LINE__);
             return TABLE_READ_ERROR;
         }
-    }
-
-    struct statvfs buf;
-
-    if (statvfs(mount_path, &buf) == -1){
-        ALOGE("this is jni call-> before mutex_unlock. Sdcard path error. Out func: %s, line:%d \n", __func__, __LINE__);
-        MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. Sdcard path error. Out func: %s, line:%d \n", __func__, __LINE__);
-        return SDCARD_PATH_ERROR;
-    }
-    ALOGE("this is jni call-> Sdcard available space = %" PRIu64 ". func: %s, line:%d \n", ((uint64_t)buf.f_bavail * buf.f_bsize), __func__, __LINE__);
-
-    uint64_t mount_path_block_size = ((uint64_t)buf.f_blocks * buf.f_bsize);
-    uint64_t mount_path_avail_size = ((uint64_t)buf.f_bavail * buf.f_bsize);
-
-    rc = set_max_file_num(mount_path_block_size);
-    if(rc != SUCCESS){
-        ALOGE("this is jni call-> before mutex_unlock. sdcard detect failed. Out func: %s, line:%d \n", __func__, __LINE__);
-        MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. sdcard detect failed. Out func: %s, line:%d \n", __func__, __LINE__);
-        return SDCARD_DETECT_SIZE_ERROR;
     }
 
     /* Scan which folder not exist */
@@ -840,7 +847,7 @@ int FH_Init(char* mount_path){
     ALOGE("this is jni call-> before mutex_unlock. Init finish. before unlock_mutex. Out func: %s, line:%d \n", __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
     ALOGE("this is jni call-> after mutex_unlock. Init finish. after unlock_mutex. Out func: %s, line:%d \n", __func__, __LINE__);
-    return SUCCESS;
+    return INIT_SUCCESS;
 }
 
 string open_file_and_save_in_queue(char* filename, eFolderType folderType, queue<string>& camera_one_queue, queue<string>& camera_two_queue){
@@ -1210,7 +1217,7 @@ int FH_CheckFolderStatus(eFolderType folderType){
         ALOGE("this is jni call-> before mutex_unlock. Sdcard path error. folderType = %d, g_mount_path = %s. Out func: %s, line:%d \n", folderType, g_mount_path, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
         ALOGE("this is jni call-> after mutex_unlock. Sdcard path error. folderType = %d, g_mount_path = %s. Out func: %s, line:%d \n", folderType, g_mount_path, __func__, __LINE__);
-        return SDCARD_PATH_ERROR;
+        return GLOBAL_SDCARD_PATH_ERROR;
     }
 
     uint64_t mount_path_avail_size = ((uint64_t)buf.f_bavail * buf.f_bsize);
