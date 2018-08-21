@@ -69,8 +69,8 @@ public class SdcardManager {
         Logg.i(LOG_TAG,"==camera2NormalFileCount=="+camera2NormalFileCount);
 
         sdcardInfo.setPictureCurrentSize(String.valueOf(pictureCurrentNum));
-        sdcardInfo.setNormal1CurrentSize(String.valueOf(normalCurrentNum));
-        sdcardInfo.setNormal2CurrentSize(String.valueOf(normalCurrentNum));
+        sdcardInfo.setNormal1CurrentSize(String.valueOf(camera1NormalFileCount));
+        sdcardInfo.setNormal2CurrentSize(String.valueOf(camera2NormalFileCount));
         sdcardInfo.setEventCurrentSize(String.valueOf(eventCurrentNum));
         sdcardInfo.setNormalSize(String.valueOf(normalLimitNum));
         sdcardInfo.setEventSize(String.valueOf(eventLimitNum));
