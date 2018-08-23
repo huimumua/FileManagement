@@ -6,8 +6,10 @@ import android.os.Environment;
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.util.BroadcastUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
+import com.askey.dvr.cdr7010.filemanagement.util.ContentResolverUtil;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
+import com.askey.platform.AskeySettings;
 
 /**
  * 项目名称：filemanagement
@@ -215,7 +217,7 @@ public class FileManager {
     private String getRecoderFilePath(String filename, String folderType) {
         int type = getCurrentType(folderType);
         Logg.i(LOG_TAG,"=====type====="+type+"==filename=="+filename);
-        String result = FH_Open(filename,type);
+        String result = getRecoderPath(filename,type);
         Logg.i(LOG_TAG,"=====FH_Open====="+result);
         if(result == null || result.equals("")){
             sendReachLimitFileBroadcastByType(folderType);
@@ -227,16 +229,34 @@ public class FileManager {
             }
             if(null != oldestPath && !"".equals(oldestPath)){
                 Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
-                boolean deleteResult = MediaScanner.delete(oldestPath);
+                boolean deleteResult = MediaScanner.deleteFile(oldestPath);
                 Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
                 if(deleteResult && Const.SDCARD_IS_EXIST){
-                    result = FH_Open(filename,type);
+                    result = getRecoderPath(filename,type);
                 }
             }else{
                 Logg.e(LOG_TAG,"=====oldestPath====="+oldestPath);
             }
         }
         return result;
+    }
+
+    /**
+     * 处理文件名称，当系统时间未校正时，名称中需要增加_unkonwn,若已经改变则不需要处理
+     * */
+    private String getRecoderPath(String filename, int type) {
+        // SYSSET_last_rectime   19700101000000
+//        String datatime = ContentResolverUtil.getStringSettingValue(AskeySettings.Global.SYSSET_AUTO_DATETIME);
+//        int  time = ContentResolverUtil.getIntSettingValue(AskeySettings.Global.SYSSET_AUTO_DATETIME,0);
+//        Logg.i(LOG_TAG,"===getRecoderPath==datatime====="+datatime);
+//        Logg.i(LOG_TAG,"===getRecoderPath==time====="+time);
+//        String str[] = filename.split(".");
+//        if("700101000000".contains(datatime)){
+//            filename = str[0] +"_unkonwn" + str[1] ;
+//        }else{
+//            ContentResolverUtil.setStringSettingValue(AskeySettings.Global.SYSSET_AUTO_DATETIME,"20"+str[0]);
+//        }
+        return FH_Open(filename,type);
     }
 
     private void sendReachLimitFileBroadcastByType(String folderType) {

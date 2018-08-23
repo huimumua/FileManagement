@@ -488,16 +488,16 @@ public class MediaScanner {
      *            要删除的文件名
      * @return 删除成功返回true，否则返回false
      */
-    public static boolean delete(String fileName) {
+    public static boolean delete(String fileName,String type) {
         File file = new File(fileName);
         if (!file.exists()) {
             Logg.e(TAG,"-->delete --> delete "+fileName+" not exists");
             return false;
         } else {
             if (file.isFile())
-                return deleteFile(fileName);
+                return deleteFile(fileName,type);
             else
-                return deleteDirectory(fileName);
+                return deleteDirectory(fileName,type);
         }
     }
 
@@ -507,7 +507,7 @@ public class MediaScanner {
     public static boolean deleteFileByGroup(List <String> pathArray) {
         if(pathArray.size()>0){
             for (String path : pathArray){
-                if(!delete(path)){
+                if(!deleteFile(path)){
                     return false;
                 }
             }
@@ -567,6 +567,29 @@ public class MediaScanner {
         return false;
     }
 
+    /**
+     * 删除单个文件
+     *
+     * @param fileName
+     *            要删除的文件的文件名
+     * @return 单个文件删除成功返回true，否则返回false
+     */
+    public static boolean deleteFile(String fileName,String type) {
+        if(type.equals(Const.NORMAL_1_DIR)){
+            if(!fileName.contains("_2")){
+                return deleteFile(fileName) ;
+            }
+            return true;
+        }
+        if(type.equals(Const.NORMAL_2_DIR)){
+            if(fileName.contains("_2")){
+                return deleteFile(fileName) ;
+            }
+            return true;
+        }
+        return deleteFile(fileName) ;
+    }
+
     private static void deleteNmeaFile(String filePath) {
         boolean fileResult = false;
         if(filePath!=null){
@@ -617,9 +640,11 @@ public class MediaScanner {
             path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.PARKING_DIR;
         }else if(type.equals(Const.PICTURE_DIR)){
             path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.PICTURE_DIR;
+        }else if(type.equals(Const.NORMAL_1_DIR ) || type.equals(Const.NORMAL_2_DIR) ){
+            path = Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.NORMAL_DIR;
         }
         Logg.i(TAG,"=deleteFileByFolder==path=="+path);
-        return deleteDirectoryByType(path);
+        return deleteDirectoryByType(path,type);
     }
     /**
      * 删除目录及目录下的文件
@@ -628,7 +653,7 @@ public class MediaScanner {
      *            要删除的目录的文件路径
      * @return 目录删除成功返回true，否则返回false
      */
-    public static boolean deleteDirectory(String dir) {
+    public static boolean deleteDirectory(String dir,String type) {
         // 如果dir不以文件分隔符结尾，自动添加文件分隔符
         if (!dir.endsWith(File.separator))
             dir = dir + File.separator;
@@ -644,14 +669,14 @@ public class MediaScanner {
         for (int i = 0; i < files.length; i++) {
             // 删除子文件
             if (files[i].isFile()) {
-                flag = deleteFile(files[i].getAbsolutePath());
+                flag = deleteFile(files[i].getAbsolutePath(),type);
                 if (!flag)
                     break;
             }
             // 删除子目录
             else if (files[i].isDirectory()) {
                 flag = deleteDirectory(files[i]
-                        .getAbsolutePath());
+                        .getAbsolutePath(),type);
                 if (!flag)
                     break;
             }else{
@@ -673,7 +698,7 @@ public class MediaScanner {
         return dirFile.delete();
     }
 
-    public static boolean deleteDirectoryByType(String dir) {
+    public static boolean deleteDirectoryByType(String dir,String type) {
         // 如果dir不以文件分隔符结尾，自动添加文件分隔符
         if (!dir.endsWith(File.separator))
             dir = dir + File.separator;
@@ -690,12 +715,12 @@ public class MediaScanner {
             for (int i = 0; i < files.length; i++) {
                 // 删除子文件
                 if (files[i].isFile()) {
-                    flag = deleteFile(files[i].getAbsolutePath());
+                    flag = deleteFile(files[i].getAbsolutePath(),type);
                     if (!flag){
                         break;
                     }
                 }else if (files[i].isDirectory()) { // 删除子目录
-                    flag = deleteDirectory(files[i].getAbsolutePath());
+                    flag = deleteDirectory(files[i].getAbsolutePath(),type);
                     if (!flag){
                         break;
                     }
