@@ -124,9 +124,10 @@ public class AskeySettingsService extends Service {
      */
     private String settingsJson() {
         try {
+            int num = getIntSettingValue(AskeySettings.Global.SYSSET_USER_NUM, 1);
             JSONObject setting = new JSONObject();
             setting.put("imei", getImei(mPhoneManager));
-            setting.put("num", getIntSettingValue(AskeySettings.Global.SYSSET_USER_NUM, 1));
+            setting.put("num", num);
             setting.put("selectuserid", getIntSettingValue(AskeySettings.Global.SYSSET_USER_ID, 1));
             setting.put("selectdate", getStringSettingValue(AskeySettings.Global.SYSSET_SELECT_USER_DAYS));
 
@@ -140,7 +141,7 @@ public class AskeySettingsService extends Service {
 
             setting.put("userCM", userCM);
 
-            for (int i = 1; i < 6; i++) {
+            for (int i = 1; i < num + 1; i++) {
                 putUserNumSetting(setting, i);//组装user1-5的json
             }
 
