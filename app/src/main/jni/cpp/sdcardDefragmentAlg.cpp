@@ -99,15 +99,29 @@ queue<string> nmea_normal_camera_two_queue;
 
 char g_mount_path[NORULE_SIZE] = "\0";
 
+int check_file_extension(string str){
+    int size = 0;
+    size = str.find(".");
+    string file_extension = str.substr(size+1);
+    if(file_extension.compare("mp4") && file_extension.compare("jpg") && file_extension.compare("hash") && file_extension.compare("nmea") != 0){
+        return ERROR_FILENAME_FORMAT;
+    }
+    return SUCCESS;
+}
+
 int detect_filename_format(string str){
-    if(str.length() < CAMERA_ONE_FILE_MINI_LENGTH || str.length() > CAMERA_TWO_FILE_MAX_LENGTH){
+    if(str.find("_UNKNOWN") != str.npos){
+        if(str.length() < UNKNOWN_TIME_CAMERA_ONE_FILE_MINI_LENGTH || str.length() > UNKNOWN_TIME_CAMERA_TWO_FILE_MAX_LENGTH){
+            return ERROR_FILENAME_FORMAT;
+        }
+    }else if(str.length() < CAMERA_ONE_FILE_MINI_LENGTH || str.length() > CAMERA_TWO_FILE_MAX_LENGTH){
+        return ERROR_FILENAME_FORMAT;
+    }
+    if(check_file_extension(str) != SUCCESS){
         return ERROR_FILENAME_FORMAT;
     }
 
     if((str.substr(12,2).compare("_2")) == 0){
-        if(str.length() < CAMERA_TWO_FILE_MINI_LENGTH){
-            return ERROR_FILENAME_FORMAT;
-        }
         if(atoi(str.substr(2,2).c_str()) > MONTH_LIMIT){
             return ERROR_FILENAME_FORMAT;
         }
@@ -130,13 +144,9 @@ int detect_filename_format(string str){
         return CAMERA_TWO_FORMAT;
     }
 
-    if(str.length() > CAMERA_ONE_FILE_MAX_LENGTH){
-        return ERROR_FILENAME_FORMAT;
-    }
     if(atoi(str.substr(2,2).c_str()) > MONTH_LIMIT){
         return ERROR_FILENAME_FORMAT;
     }
-
     // if filename != Days formant
     if(atoi(str.substr(4,2).c_str()) > DAYS_LIMIT){
         return ERROR_FILENAME_FORMAT;
@@ -145,12 +155,10 @@ int detect_filename_format(string str){
     if(atoi(str.substr(6,2).c_str()) > HOUR_LIMIT){
         return ERROR_FILENAME_FORMAT;
     }
-
     // if filename != Minute formant
     if(atoi(str.substr(8,2).c_str()) > MINUTE_LIMIT){
         return ERROR_FILENAME_FORMAT;
     }
-
     // if filename != second formant
     if(atoi(str.substr(10,2).c_str()) > SECOND_LIMIT){
         return ERROR_FILENAME_FORMAT;
