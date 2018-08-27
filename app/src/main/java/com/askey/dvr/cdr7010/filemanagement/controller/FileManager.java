@@ -266,7 +266,7 @@ public class FileManager {
                         Logg.i(LOG_TAG,"==getRecoderPath====datatime==="+datatime);
                         lastRectime = datatime.substring(2,datatime.length());
                         Logg.i(LOG_TAG,"==getRecoderPath====lastRectime==="+lastRectime);
-                        filename = lastRectime +"_UNKONWN." + str[1] ;
+                        filename = lastRectime +"_UNKNOWN." + str[1] ;
                         Logg.i(LOG_TAG,"==getRecoderPath====filename==="+filename);
                         ContentResolverUtil.setStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME,datatime);
                     } catch (ParseException e) {

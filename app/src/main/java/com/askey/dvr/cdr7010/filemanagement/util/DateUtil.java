@@ -22,8 +22,8 @@ public class DateUtil {
      * */
     public static long getFileCreateTime(String name,String DATE_ADDED) {
         Logg.i(TAG,"=====name==1111==="+name);
-        if(name.contains("_UNKONWN")){
-            name = name.replace("_UNKONWN","");
+        if(name.contains("_UNKNOWN")){
+            name = name.replace("_UNKNOWN","");
         }
         Logg.i(TAG,"=====name==2222==="+name);
         String time;
