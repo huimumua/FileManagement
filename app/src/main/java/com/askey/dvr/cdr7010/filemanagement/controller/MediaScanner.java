@@ -202,7 +202,7 @@ public class MediaScanner {
 //                normalFileGrouping(path, name, DATE_MODIFIED, id, currentYYYYMMDD,  fileList, group);
                 if(!name.contains("_2")){
                     if (path.contains(Const.SDCARD_PATH + Const.BACK_SLASH_1 + Const.NORMAL_DIR) && path.endsWith(".mp4")) {
-                        if (name.length() == 16 || name.length() == 18) {
+                        if (name.length() == 16 || name.length() == 18 || name.length() == 24 || name.length() == 26) {
                             File mFile = new File(path);
                             if (mFile.exists()) {
                                 DATE_MODIFIED = String.valueOf(mFile.lastModified());
@@ -245,7 +245,7 @@ public class MediaScanner {
                 Logg.i(TAG,"==Const.NORMAL_2_DIR.equals(type)==");
                 if(name.contains("_2")){
                     if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.NORMAL_DIR)  && path.endsWith(".mp4")){
-                        if(name.length()==16 || name.length()==18){
+                        if(name.length()==16 || name.length()==18  || name.length() == 24 || name.length() == 26){
                             File mFile = new File(path);
                             if(mFile.exists()){
                                 DATE_MODIFIED = String.valueOf(mFile.lastModified());
@@ -287,7 +287,7 @@ public class MediaScanner {
             }else{
                 Logg.i(TAG,"==Const.NORMAL_2_DIR.equals(type)=2222=");
                 if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type)  && path.endsWith(".mp4")){
-                    if(name.length()==16 || name.length()==18){
+                    if(name.length()==16 || name.length()==18  || name.length() == 24 || name.length() == 26){
                         File mFile = new File(path);
                         if(mFile.exists()){
                             DATE_MODIFIED = String.valueOf(mFile.lastModified());
@@ -313,7 +313,7 @@ public class MediaScanner {
 
     private static void normalFileGrouping(String path,String name,String DATE_MODIFIED,String id,String currentYYYYMMDD, ArrayList <ItemData> fileList,List<ItemData> group) {
         if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+Const.NORMAL_DIR)  && path.endsWith(".mp4")){
-            if(name.length()==16 || name.length()==18){
+            if(name.length()==16 || name.length()==18  || name.length() == 24 || name.length() == 26){
                 File mFile = new File(path);
                 if(mFile.exists()){
                     DATE_MODIFIED = String.valueOf(mFile.lastModified());
@@ -354,7 +354,7 @@ public class MediaScanner {
 
     private static void fileGrouping(String path,String type,String name,String DATE_MODIFIED,String id,String currentYYYYMMDD, ArrayList <ItemData> fileList,List<ItemData> group) {
         if( path.contains(Const.SDCARD_PATH+Const.BACK_SLASH_1+type)  && path.endsWith(".mp4")){
-            if(name.length()==16 || name.length()==18){
+            if(name.length()==16 || name.length()==18  || name.length() == 24 || name.length() == 26){
                 File mFile = new File(path);
                 if(mFile.exists()){
                     DATE_MODIFIED = String.valueOf(mFile.lastModified());

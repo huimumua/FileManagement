@@ -2,6 +2,7 @@ package com.askey.dvr.cdr7010.filemanagement.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -20,6 +21,11 @@ public class DateUtil {
      * 获取文件的创建时间  DATE_ADDED可能不准确有待讨论
      * */
     public static long getFileCreateTime(String name,String DATE_ADDED) {
+        Logg.i(TAG,"=====name==1111==="+name);
+        if(name.contains("_unkonwn")){
+            name = name.replace("_unkonwn","");
+        }
+        Logg.i(TAG,"=====name==2222==="+name);
         String time;
         if(name.contains("_2")){
             time = name.split("_2")[0];
@@ -61,6 +67,21 @@ public class DateUtil {
         }
     }
 
+
+    /**
+     * 时间增加一分钟
+     * **/
+    public static String timeAddOneMinute(String strTime)
+            throws ParseException {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
+        Date dt=sdf.parse(strTime);
+        Calendar rightNow = Calendar.getInstance();
+        rightNow.setTime(dt);
+        rightNow.add(Calendar.MINUTE,1);//分钟加一
+        Date dt1=rightNow.getTime();
+        String reStr = sdf.format(dt1);
+        return reStr;
+    }
 
     // strTime要转换的string类型的时间，formatType要转换的格式yyyy-MM-dd HH:mm:ss//yyyy年MM月dd日
     // HH时mm分ss秒，

@@ -7,9 +7,12 @@ import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.util.BroadcastUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.ContentResolverUtil;
+import com.askey.dvr.cdr7010.filemanagement.util.DateUtil;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
 import com.askey.platform.AskeySettings;
+
+import java.text.ParseException;
 
 /**
  * 项目名称：filemanagement
@@ -241,21 +244,42 @@ public class FileManager {
         return result;
     }
 
+    private String isMp4FileName = "";
     /**
      * 处理文件名称，当系统时间未校正时，名称中需要增加_unkonwn,若已经改变则不需要处理
      * */
     private String getRecoderPath(String filename, int type) {
         // SYSSET_last_rectime   19700101000000
-//        String datatime = ContentResolverUtil.getStringSettingValue(AskeySettings.Global.SYSSET_AUTO_DATETIME);
-//        int  time = ContentResolverUtil.getIntSettingValue(AskeySettings.Global.SYSSET_AUTO_DATETIME,0);
-//        Logg.i(LOG_TAG,"===getRecoderPath==datatime====="+datatime);
-//        Logg.i(LOG_TAG,"===getRecoderPath==time====="+time);
-//        String str[] = filename.split(".");
-//        if("700101000000".contains(datatime)){
-//            filename = str[0] +"_unkonwn" + str[1] ;
-//        }else{
-//            ContentResolverUtil.setStringSettingValue(AskeySettings.Global.SYSSET_AUTO_DATETIME,"20"+str[0]);
-//        }
+        if(filename.contains(".mp4")){
+            String datatime = ContentResolverUtil.getStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME);
+            int  time = ContentResolverUtil.getIntSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME,0);
+            Logg.i(LOG_TAG,"===getRecoderPath==datatime====="+datatime);
+            Logg.i(LOG_TAG,"===getRecoderPath==time====="+time);
+            String str[] = filename.split("\\.");
+            if(datatime.length()==14){
+                String index = datatime.substring(0,4);
+                Logg.i(LOG_TAG,"===getRecoderPath==index====="+index);
+                String lastRectime = "";
+                if(Integer.valueOf(index)<2018){
+                    try {
+                        datatime = DateUtil.timeAddOneMinute(datatime);
+                        Logg.i(LOG_TAG,"==getRecoderPath====datatime==="+datatime);
+                        lastRectime = datatime.substring(2,datatime.length());
+                        Logg.i(LOG_TAG,"==getRecoderPath====lastRectime==="+lastRectime);
+                        filename = lastRectime +"_unkonwn." + str[1] ;
+                        Logg.i(LOG_TAG,"==getRecoderPath====filename==="+filename);
+                        ContentResolverUtil.setStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME,datatime);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    ContentResolverUtil.setStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME,"20"+str[0]);
+                }
+            }
+            isMp4FileName = filename;
+        }else{
+            filename = isMp4FileName;
+        }
         return FH_Open(filename,type);
     }
 
