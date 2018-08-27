@@ -250,16 +250,16 @@ public class FileManager {
      * */
     private String getRecoderPath(String filename, int type) {
         // SYSSET_last_rectime   19700101000000
+        String str[] = filename.split("\\.");
+        String lastRectime = "";
         if(filename.contains(".mp4")){
             String datatime = ContentResolverUtil.getStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME);
             int  time = ContentResolverUtil.getIntSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME,0);
             Logg.i(LOG_TAG,"===getRecoderPath==datatime====="+datatime);
             Logg.i(LOG_TAG,"===getRecoderPath==time====="+time);
-            String str[] = filename.split("\\.");
             if(datatime.length()==14){
                 String index = datatime.substring(0,4);
                 Logg.i(LOG_TAG,"===getRecoderPath==index====="+index);
-                String lastRectime = "";
                 if(Integer.valueOf(index)<2018){
                     try {
                         datatime = DateUtil.timeAddOneMinute(datatime);
@@ -276,10 +276,11 @@ public class FileManager {
                     ContentResolverUtil.setStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME,"20"+str[0]);
                 }
             }
-            isMp4FileName = filename;
+            isMp4FileName = lastRectime +"_UNKNOWN.";
         }else{
-            filename = isMp4FileName;
+            filename = isMp4FileName + str[1] ;
         }
+        Logg.i(LOG_TAG,"==getRecoderPath==FH_Open==filename==="+type);
         return FH_Open(filename,type);
     }
 
