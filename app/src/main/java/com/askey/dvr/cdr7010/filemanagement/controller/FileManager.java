@@ -252,11 +252,11 @@ public class FileManager {
         // SYSSET_last_rectime   19700101000000
         String str[] = filename.split("\\.");
         String lastRectime = "";
+        String datatime = ContentResolverUtil.getStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME);
+        int  time = ContentResolverUtil.getIntSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME,0);
+        Logg.i(LOG_TAG,"===getRecoderPath==datatime====="+datatime);
+        Logg.i(LOG_TAG,"===getRecoderPath==time====="+time);
         if(filename.contains(".mp4")){
-            String datatime = ContentResolverUtil.getStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME);
-            int  time = ContentResolverUtil.getIntSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME,0);
-            Logg.i(LOG_TAG,"===getRecoderPath==datatime====="+datatime);
-            Logg.i(LOG_TAG,"===getRecoderPath==time====="+time);
             if(datatime.length()==14){
                 String index = datatime.substring(0,4);
                 Logg.i(LOG_TAG,"===getRecoderPath==index====="+index);
@@ -277,6 +277,21 @@ public class FileManager {
                 }
             }
             isMp4FileName = lastRectime +"_UNKNOWN.";
+        }else if(filename.contains(".jpg")){
+            if(datatime.length()==14){
+                String index = datatime.substring(0,4);
+                Logg.i(LOG_TAG,"===getRecoderPath==index====="+index);
+                if(Integer.valueOf(index)<2018){
+//                  datatime = DateUtil.timeAddOneMinute(datatime);
+//                  Logg.i(LOG_TAG,"==getRecoderPath====datatime==="+datatime);
+                    lastRectime = datatime.substring(2,datatime.length());
+                    Logg.i(LOG_TAG,"==getRecoderPath====lastRectime==="+lastRectime);
+                    filename = lastRectime +"_UNKNOWN.jpg" ;
+                    Logg.i(LOG_TAG,"==getRecoderPath====filename==="+filename);
+                }else{
+                    ContentResolverUtil.setStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME,"20"+str[0]);
+                }
+            }
         }else{
             filename = isMp4FileName + str[1] ;
         }
