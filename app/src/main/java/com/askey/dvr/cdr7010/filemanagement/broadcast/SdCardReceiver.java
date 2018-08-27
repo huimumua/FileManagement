@@ -117,7 +117,7 @@ public class SdCardReceiver extends BroadcastReceiver {
                                 Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
                     }
 
-                    checkEventAndPictureIsLimit();
+                    FileManager.getSingInstance().checkEventAndPictureIsLimit();
 
                     int sdcardPictureStatus = FileManager.getSingInstance().checkFolderStatus(Const.PICTURE_DIR);
                     Logg.i(TAG,"checkFolderStatus-PICTURE》"+sdcardPictureStatus);
@@ -162,29 +162,6 @@ public class SdCardReceiver extends BroadcastReceiver {
         }).start();
     }
 
-    private void checkEventAndPictureIsLimit() {
-        int eventCurrentNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_EVENT_DIR,Const.CURRENTNUM);
-        int eventLimitNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_EVENT_DIR,Const.LIMITNUM);
-        if(eventCurrentNum == eventLimitNum){
-            Const.IS_SDCARD_FOLDER_LIMIT = true;
-            Const.SDCARD_EVENT_FOLDER_LIMIT =true;
-        }
 
-        int pictureCurrentNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_PICTURE_DIR,Const.CURRENTNUM);
-        int pictureLimitNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_PICTURE_DIR,Const.LIMITNUM);
-        if(pictureCurrentNum == pictureLimitNum){
-            Const.IS_SDCARD_FOLDER_LIMIT = true;
-            Const.SDCARD_PICTURE_FOLDER_LIMIT =true;
-        }
-
-        if(Const.SDCARD_EVENT_FOLDER_LIMIT && Const.SDCARD_PICTURE_FOLDER_LIMIT){
-            Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
-            String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT;
-            BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
-        }else if(Const.SDCARD_EVENT_FOLDER_LIMIT && !Const.SDCARD_PICTURE_FOLDER_LIMIT){
-            String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
-            BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
-        }
-    }
 
 }

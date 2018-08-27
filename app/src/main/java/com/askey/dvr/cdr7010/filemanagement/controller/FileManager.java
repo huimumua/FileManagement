@@ -157,7 +157,7 @@ public class FileManager {
         return result;
     }
 
-    public String openSdcard(String filename, String folderType) {
+    public String openSdcard(String filename, final String folderType) {
         String result= null;
         if(Const.SDCARD_INIT_SUCCESS && !Const.IS_SDCARD_FULL_LIMIT /*&& !Const.SDCARD_EVENT_FOLDER_OVER_LIMIT
                 && !Const.SDCARD_PICTURE_FOLDER_OVER_LIMIT*/){
@@ -201,6 +201,7 @@ public class FileManager {
                     @Override
                     public void run() {
                         try {
+                            checkEventAndPictureIsLimit();
                             Thread.sleep(2000);
                             MediaScanner.scanFileAsync(mContext, finalResult);
                         } catch (InterruptedException e) {
@@ -223,7 +224,6 @@ public class FileManager {
         String result = getRecoderPath(filename,type);
         Logg.i(LOG_TAG,"=====FH_Open====="+result);
         if(result == null || result.equals("")){
-            sendReachLimitFileBroadcastByType(folderType);
             String oldestPath = null;
             if(filename.contains("_2")){
                 oldestPath = FH_FindOldest(type,2);
@@ -266,7 +266,7 @@ public class FileManager {
                         Logg.i(LOG_TAG,"==getRecoderPath====datatime==="+datatime);
                         lastRectime = datatime.substring(2,datatime.length());
                         Logg.i(LOG_TAG,"==getRecoderPath====lastRectime==="+lastRectime);
-                        filename = lastRectime +"_unkonwn." + str[1] ;
+                        filename = lastRectime +"_UNKONWN." + str[1] ;
                         Logg.i(LOG_TAG,"==getRecoderPath====filename==="+filename);
                         ContentResolverUtil.setStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME,datatime);
                     } catch (ParseException e) {
@@ -283,33 +283,29 @@ public class FileManager {
         return FH_Open(filename,type);
     }
 
-    private void sendReachLimitFileBroadcastByType(String folderType) {
-        if(folderType.equals(Const.EVENT_DIR)){
+    public void checkEventAndPictureIsLimit() {
+        int eventCurrentNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_EVENT_DIR,Const.CURRENTNUM);
+        int eventLimitNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_EVENT_DIR,Const.LIMITNUM);
+        if(eventCurrentNum == eventLimitNum){
+            Const.IS_SDCARD_FOLDER_LIMIT = true;
             Const.SDCARD_EVENT_FOLDER_LIMIT =true;
-            if(Const.SDCARD_PICTURE_FOLDER_LIMIT){
-                if(!Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT){
-                    Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
-                    String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT;
-                    BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
-                }
-            }else{
-                String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
-                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
-            }
-        }else if(folderType.equals(Const.PICTURE_DIR)){
-            Const.SDCARD_PICTURE_FOLDER_LIMIT =true;
-            if(Const.SDCARD_EVENT_FOLDER_LIMIT){
-                if(!Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT){
-                    Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
-                    String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT;
-                    BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
-                }
-            }else{
-                String currentAction = Const.CMD_SHOW_REACH_PICTURE_FILE_LIMIT;
-                BroadcastUtils.sendLimitBroadcast(mContext,currentAction);
-            }
         }
-        Const.IS_SDCARD_FOLDER_LIMIT = true;
+
+        int pictureCurrentNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_PICTURE_DIR,Const.CURRENTNUM);
+        int pictureLimitNum = FileManager.getSingInstance().FH_GetSDCardInfo(Const.TYPE_PICTURE_DIR,Const.LIMITNUM);
+        if(pictureCurrentNum == pictureLimitNum){
+            Const.IS_SDCARD_FOLDER_LIMIT = true;
+            Const.SDCARD_PICTURE_FOLDER_LIMIT =true;
+        }
+
+        if(Const.SDCARD_EVENT_FOLDER_LIMIT && Const.SDCARD_PICTURE_FOLDER_LIMIT){
+            Const.SDCARD_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT =true;
+            String currentAction = Const.CMD_SHOW_BOTH_EVENT_AND_PICTURE_FOLDER_LIMIT;
+            BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+        }else if(Const.SDCARD_EVENT_FOLDER_LIMIT && !Const.SDCARD_PICTURE_FOLDER_LIMIT){
+            String currentAction = Const.CMD_SHOW_REACH_EVENT_FILE_LIMIT;
+            BroadcastUtils.sendLimitBroadcast(FileManagerApplication.getAppContext(),currentAction);
+        }
     }
 
 //    GLOBAL_SDCARD_PATH_ERROR=-1,      format
