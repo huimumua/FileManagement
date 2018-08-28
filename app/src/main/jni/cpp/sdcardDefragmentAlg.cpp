@@ -1143,64 +1143,148 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
     switch (folderType) {
         case e_Event:
             if(cameraType == e_CameraOne){
+                if(event_camera_one_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(event_camera_one_queue.front());
                 break;
             }
             if(cameraType == e_CameraTwo){
+                if(event_camera_two_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(event_camera_two_queue.front());
                 break;
             }
         case e_Normal:
             if(cameraType == e_CameraOne){
+                if(normal_camera_one_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(normal_camera_one_queue.front());
                 break;
             }
             if(cameraType == e_CameraTwo){
+                if(normal_camera_two_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(normal_camera_two_queue.front());
                 break;
             }
         case e_Picture:
             if(cameraType == e_CameraOne){
+                if(picture_camera_one_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(picture_camera_one_queue.front());
                 break;
             }
             if(cameraType == e_CameraTwo){
+                if(picture_camera_two_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(picture_camera_two_queue.front());
                 break;
             }
         case e_HASH_EVENT:
             if(cameraType == e_CameraOne){
+                if(hash_event_camera_one_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(hash_event_camera_one_queue.front());
                 break;
             }
             if(cameraType == e_CameraTwo){
+                if(hash_event_camera_two_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(hash_event_camera_two_queue.front());
                 break;
             }
         case e_HASH_NORMAL:
             if(cameraType == e_CameraOne){
+                if(hash_normal_camera_one_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(hash_normal_camera_one_queue.front());
                 break;
             }
             if(cameraType == e_CameraTwo){
+                if(hash_normal_camera_two_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(hash_normal_camera_two_queue.front());
                 break;
             }
         case e_NMEA_EVENT:
             if(cameraType == e_CameraOne){
+                if(nmea_event_camera_one_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(nmea_event_camera_one_queue.front());
                 break;
             }
             if(cameraType == e_CameraTwo){
+                if(nmea_event_camera_two_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(nmea_event_camera_two_queue.front());
                 break;
             }
         case e_NMEA_NORMAL:
             if(cameraType == e_CameraOne){
+                if(nmea_normal_camera_one_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(nmea_normal_camera_one_queue.front());
                 break;
             }
             if(cameraType == e_CameraTwo){
+                if(nmea_normal_camera_two_queue.empty()){
+                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    MUTEX_UNLOCK(&g_mutex);
+                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    return "";
+                }
                 oldest_file.append(nmea_normal_camera_two_queue.front());
                 break;
             }
