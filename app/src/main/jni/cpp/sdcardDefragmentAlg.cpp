@@ -25,15 +25,15 @@ int file_lock()
     }
     if ( NULL == f )
     {
-        ALOGE("this is jni call-> open /sdcard/.sddefrag.lock error. In func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> open /sdcard/.sddefrag.lock error. In func: %s, line:%d \n", __func__, __LINE__);
                 return -1;
     }
     if(0 == flock(fileno(f), LOCK_EX))
     {
-        ALOGE("this is jni call-> Lock success. In func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> Lock success. In func: %s, line:%d \n", __func__, __LINE__);
         return 0;
     }
-    ALOGE("this is jni call-> return 1. In func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> return 1. In func: %s, line:%d \n", __func__, __LINE__);
     return 1;
 }
 
@@ -41,12 +41,12 @@ int file_unlock()
 {
     if ( NULL == f )
     {
-        ALOGE("this is jni call-> Not open /sdcard/.sddefrag.lock yet, error. In func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> Not open /sdcard/.sddefrag.lock yet, error. In func: %s, line:%d \n", __func__, __LINE__);
         return -1;
     }
     if(0 == flock(fileno(f), LOCK_UN))
     {
-        ALOGE("this is jni call-> Un-Lock success. In func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> Un-Lock success. In func: %s, line:%d \n", __func__, __LINE__);
         return 0;
     }
     return 1;
@@ -168,7 +168,7 @@ int detect_filename_format(string str){
 }
 
 int SDA_get_recoder_file_num(char* path){
-    ALOGE("this is jni call-> path = %s. In func: %s, line:%d \n", path, __func__, __LINE__);
+    ALOGD("this is jni call-> path = %s. In func: %s, line:%d \n", path, __func__, __LINE__);
     DIR *dp = opendir(path);
     struct dirent *dirp;
 
@@ -192,7 +192,7 @@ int SDA_get_recoder_file_num(char* path){
     closedir(dp);
 
     // cout << "filenumber= " << file_number << endl;
-    ALOGE("this is jni call-> path = %s, file_number = %d. In func: %s, line:%d \n", path, file_number, __func__, __LINE__);
+    ALOGD("this is jni call-> path = %s, file_number = %d. In func: %s, line:%d \n", path, file_number, __func__, __LINE__);
     return file_number;
 }
 
@@ -319,10 +319,10 @@ int SDA_write_table_in_config(char* mount_path){
 }
 
 void clear_queue(std::queue<string> &q){
-    ALOGE("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     queue<string> empty;
     swap(q, empty);
-    ALOGE("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
     return;
 }
 
@@ -373,7 +373,7 @@ int SDA_scan_sdcard_folder_exist(char* mount_path){
 }
 
 int SDA_get_structure_value_from_config(char* mount_path){
-    ALOGE("this is jni call-> mount_path = %s. In func: %s, line:%d \n", mount_path, __func__, __LINE__);
+    ALOGD("this is jni call-> mount_path = %s. In func: %s, line:%d \n", mount_path, __func__, __LINE__);
     int i = 0;
     char table_config_path[NORULE_SIZE];
     snprintf(table_config_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
@@ -385,14 +385,14 @@ int SDA_get_structure_value_from_config(char* mount_path){
     int retlen = fread(&ver, 1, 1, fp);
     if ( retlen == 1 )
     {
-        ALOGE("this is jni call-> retlen == 1 func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> retlen == 1 func: %s, line:%d \n", __func__, __LINE__);
         if ( ver == TABLE_VERSION )
         {
             for(i=0; i<TABLE_SIZE; i++) {
                 retlen = fread(&read_table, sizeof(struct file_struct), 1, fp);
                 if (retlen == 1)
                 {
-                    ALOGE("this is jni call-> retlen == sizeof(file_struct) %ld == 1 func: %s, line:%d \n",
+                    ALOGD("this is jni call-> retlen == sizeof(file_struct) %ld == 1 func: %s, line:%d \n",
                           sizeof(struct file_struct), __func__, __LINE__);
                     FH_Table[i].percent = read_table.percent;
                     FH_Table[i].every_block_space = read_table.every_block_space;
@@ -406,10 +406,10 @@ int SDA_get_structure_value_from_config(char* mount_path){
             if ( retlen == 0 )
             {
                 retlen = feof(fp);
-                ALOGE("this is jni call-> retlen = %d func: %s, line:%d \n", retlen, __func__,
+                ALOGD("this is jni call-> retlen = %d func: %s, line:%d \n", retlen, __func__,
                       __LINE__);
                 if (retlen == 1) {
-                    ALOGE("this is jni call-> read func: %s, line:%d \n", __func__, __LINE__);
+                    ALOGD("this is jni call-> read func: %s, line:%d \n", __func__, __LINE__);
                     fclose(fp);
                     return 0;
                 }
@@ -417,66 +417,66 @@ int SDA_get_structure_value_from_config(char* mount_path){
         }
     }
 
-    ALOGE("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
     fclose(fp);
     return -1;
 }
 
 int get_sdcard_size_and_set_max_file_num(uint64_t sdcard_size){
-    ALOGE("this jni call-> sdcard_size = %" PRIu64 " In func: %s, line:%d \n", sdcard_size, __func__, __LINE__);
+    ALOGD("this jni call-> sdcard_size = %" PRIu64 " In func: %s, line:%d \n", sdcard_size, __func__, __LINE__);
     int sd_size = sdcard_size/GIGABYTE;
     if(sd_size < 3){
-        ALOGE("this is jni call-> sd_size = %d, sdcard_size = %" PRIu64 " Out func: %s, line:%d \n", sd_size, sdcard_size, __func__, __LINE__);
+        ALOGD("this is jni call-> sd_size = %d, sdcard_size = %" PRIu64 " Out func: %s, line:%d \n", sd_size, sdcard_size, __func__, __LINE__);
         return SDCARD_SIZE_NOT_SUPPORT;
     }
     if(sd_size < 4){
         FH_Table[e_Event].max_file_num = 10;
         FH_Table[e_Normal].max_file_num = 40;
         FH_Table[e_Picture].max_file_num = 30;
-        ALOGE("this is jni call-> sd_size = %d, close to 4G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
+        ALOGD("this is jni call-> sd_size = %d, close to 4G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
     }else
     if(sd_size < 8){
         FH_Table[e_Event].max_file_num = 20;
         FH_Table[e_Normal].max_file_num = 80;
         FH_Table[e_Picture].max_file_num = 60;
-        ALOGE("this is jni call-> sd_size = %d, close to 8G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
+        ALOGD("this is jni call-> sd_size = %d, close to 8G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
     }else
     if(sd_size < 16){
         FH_Table[e_Event].max_file_num = 40;
         FH_Table[e_Normal].max_file_num = 160;
         FH_Table[e_Picture].max_file_num = 120;
-        ALOGE("this is jni call-> sd_size = %d, close to 16G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
+        ALOGD("this is jni call-> sd_size = %d, close to 16G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
     }else
     if(sd_size < 32){
         FH_Table[e_Event].max_file_num = 80;
         FH_Table[e_Normal].max_file_num = 320;
         FH_Table[e_Picture].max_file_num = 240;
-        ALOGE("this is jni call-> sd_size = %d, close to 32G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
+        ALOGD("this is jni call-> sd_size = %d, close to 32G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
     }else
     if(sd_size < 64){
         FH_Table[e_Event].max_file_num = 160;
         FH_Table[e_Normal].max_file_num = 640;
         FH_Table[e_Picture].max_file_num = 480;
-        ALOGE("this is jni call-> sd_size = %d, close to 64G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
+        ALOGD("this is jni call-> sd_size = %d, close to 64G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
     }else
     if(sd_size < 128){
         FH_Table[e_Event].max_file_num = 320;
         FH_Table[e_Normal].max_file_num = 1280;
         FH_Table[e_Picture].max_file_num = 960;
-        ALOGE("this is jni call-> sd_size = %d, close to 128G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
+        ALOGD("this is jni call-> sd_size = %d, close to 128G SDCARD. Out func: %s, line:%d \n", sd_size, __func__, __LINE__);
         return SUCCESS;
     }
-    ALOGE("this is jni call-> size bigger than 128G. not Support. Out func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> size bigger than 128G. not Support. Out func: %s, line:%d \n", __func__, __LINE__);
     return SDCARD_SIZE_NOT_SUPPORT;
 }
 
 void check_queue_status(int old_date_flag, queue<string>& folder_files_queue){
-    ALOGE("this is jni call-> old_date_flag = %d. In func: %s, line:%d \n", old_date_flag, __func__, __LINE__);
+    ALOGD("this is jni call-> old_date_flag = %d. In func: %s, line:%d \n", old_date_flag, __func__, __LINE__);
     if(old_date_flag == 1){
 
         while(true){
@@ -488,9 +488,9 @@ void check_queue_status(int old_date_flag, queue<string>& folder_files_queue){
             folder_files_queue.pop();
             folder_files_queue.push(queue_pop);
         }
-        ALOGE("this is jni call-> folder_files_queue.front() = %s, folder_files_queue.back() = %s. In func: %s, line:%d \n", folder_files_queue.front().c_str(), folder_files_queue.back().c_str(), __func__, __LINE__);
+        ALOGD("this is jni call-> folder_files_queue.front() = %s, folder_files_queue.back() = %s. In func: %s, line:%d \n", folder_files_queue.front().c_str(), folder_files_queue.back().c_str(), __func__, __LINE__);
     }
-    ALOGE("this is jni call-> old_date_flag = %d. Out func: %s, line:%d \n", old_date_flag, __func__, __LINE__);
+    ALOGD("this is jni call-> old_date_flag = %d. Out func: %s, line:%d \n", old_date_flag, __func__, __LINE__);
     return;
 }
 
@@ -530,7 +530,7 @@ int storage_file_in_queue(eFolderType folderType, queue<string>& camera_one_queu
 
     sort (files.begin(), files.end());
 
-    ALOGE("this is jni call-> vector sort finish, start print \n");
+    ALOGD("this is jni call-> vector sort finish, start print \n");
 
     for (vector<string>::const_iterator i = files.begin(); i != files.end(); ++i){
         cout << *i << ' ' << endl;
@@ -539,17 +539,17 @@ int storage_file_in_queue(eFolderType folderType, queue<string>& camera_one_queu
         int rc = detect_filename_format(vector_str);
         if(rc == CAMERA_ONE_FORMAT){
             camera_one_queue.push(*i);
-            ALOGE("this is jni call-> camera one format. %s,  \n", vector_str.c_str());
+            ALOGD("this is jni call-> camera one format. %s,  \n", vector_str.c_str());
             if(atoi(vector_str.substr(0,2).c_str()) >= 70){
-                ALOGE("this is jni call-> camera one format. old date flag.\n");
+                ALOGD("this is jni call-> camera one format. old date flag.\n");
                 camera_one_old_date_flag = 1;
             }
         }
         if(rc == CAMERA_TWO_FORMAT){
             camera_two_queue.push(*i);
-            ALOGE("this is jni call-> camera two format. %s,  \n", vector_str.c_str());
+            ALOGD("this is jni call-> camera two format. %s,  \n", vector_str.c_str());
             if(atoi(vector_str.substr(0,2).c_str()) >= 70){
-                ALOGE("this is jni call-> camera two format. old date flag.\n");
+                ALOGD("this is jni call-> camera two format. old date flag.\n");
                 camera_two_old_date_flag = 1;
             }
         }
@@ -563,12 +563,12 @@ int storage_file_in_queue(eFolderType folderType, queue<string>& camera_one_queu
     check_queue_status(camera_one_old_date_flag, camera_one_queue);
     check_queue_status(camera_two_old_date_flag, camera_two_queue);
 
-    ALOGE("this is jni call-> folderType = %d, Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+    ALOGD("this is jni call-> folderType = %d, Out func: %s, line:%d \n", folderType, __func__, __LINE__);
     return 0;
 }
 
 int checkTableVersion(char* mount_path){
-    ALOGE("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     char config_file_path[NORULE_SIZE];
     snprintf(config_file_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
 
@@ -577,44 +577,44 @@ int checkTableVersion(char* mount_path){
 
     fp=fopen (config_file_path,"rb");
     if(fp==NULL){
-        ALOGE("this is jni call-> Can't not open table config file. Out func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> Can't not open table config file. Out func: %s, line:%d \n", __func__, __LINE__);
         return OPEN_FOLDER_ERROR;
     }
     n = fgetc (fp);
     if(n == 0x45){ // 0x45 == 'E'
-        ALOGE("this is jni call-> table version to old. Out func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> table version to old. Out func: %s, line:%d \n", __func__, __LINE__);
         fclose(fp);
         return TABLE_VERSION_TOO_OLD;
     }
     if(n == TABLE_VERSION){
-        ALOGE("this is jni call-> Right table version, n = %d. Out func: %s, line:%d \n", n, __func__, __LINE__);
+        ALOGD("this is jni call-> Right table version, n = %d. Out func: %s, line:%d \n", n, __func__, __LINE__);
         fclose(fp);
         return SUCCESS;
     }
 
     fclose(fp);
-    ALOGE("this is jni call-> Table version cannot recognize. Out func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> Table version cannot recognize. Out func: %s, line:%d \n", __func__, __LINE__);
     return TABLE_VERSION_CANNOT_RECOGNIZE;
 }
 
 // true = 1, false = 0;
 bool FH_ValidFormat(char* mount_path){
-    ALOGE("this is jni call-> before mutex_lock. mount_path = %s. In func: %s, line:%d \n", mount_path, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_lock. mount_path = %s. In func: %s, line:%d \n", mount_path, __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_lock. mount_path = %s. In func: %s, line:%d \n", mount_path, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_lock. mount_path = %s. In func: %s, line:%d \n", mount_path, __func__, __LINE__);
     int rc;
     char config_file_path[NORULE_SIZE];
     snprintf(config_file_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
 
     rc = SDA_file_exists(config_file_path);
-    ALOGE("this is jni call-> before mutex_unlock. mount_path = %s. func: %s, line:%d \n", mount_path, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_unlock. mount_path = %s. func: %s, line:%d \n", mount_path, __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_unlock. mount_path = %s. func: %s, line:%d \n", mount_path, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_unlock. mount_path = %s. func: %s, line:%d \n", mount_path, __func__, __LINE__);
     return (rc == 0 ? true : false);
 }
 
 void queue_Release(void){
-    ALOGE("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     clear_queue(event_camera_one_queue);
     clear_queue(event_camera_two_queue);
     clear_queue(normal_camera_one_queue);
@@ -634,16 +634,16 @@ void queue_Release(void){
 
 // true = 1, false = 0;
 int FH_Init(char* mount_path){
-    ALOGE("this is jni call-> before mutex_lock. mount_path = %s, g_mutex = %p. In func: %s, line:%d \n", mount_path, g_mutex, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_lock. mount_path = %s, g_mutex = %p. In func: %s, line:%d \n", mount_path, g_mutex, __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_lock. mount_path = %s. g_mutex = %p. In func: %s, line:%d \n", mount_path, g_mutex, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_lock. mount_path = %s. g_mutex = %p. In func: %s, line:%d \n", mount_path, g_mutex, __func__, __LINE__);
     int i;
     int rc;
 
     if(mount_path == NULL){
-        ALOGE("this is jni call-> before mutex_unlock. mount_path == NULL. Out func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> before mutex_unlock. mount_path == NULL. Out func: %s, line:%d \n", __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. mount_path == NULL. Out func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> after mutex_unlock. mount_path == NULL. Out func: %s, line:%d \n", __func__, __LINE__);
         return SDCARD_PATH_ERROR;
     }else{
         strncpy(g_mount_path, mount_path, strlen(mount_path));
@@ -652,28 +652,28 @@ int FH_Init(char* mount_path){
     struct statvfs buf;
 
     if (statvfs(mount_path, &buf) == -1){
-        ALOGE("this is jni call-> before mutex_unlock. Sdcard path error. Out func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> before mutex_unlock. Sdcard path error. Out func: %s, line:%d \n", __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. Sdcard path error. Out func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> after mutex_unlock. Sdcard path error. Out func: %s, line:%d \n", __func__, __LINE__);
         return SDCARD_PATH_ERROR;
     }
-    ALOGE("this is jni call-> Sdcard available space = %" PRIu64 ". func: %s, line:%d \n", ((uint64_t)buf.f_bavail * buf.f_bsize), __func__, __LINE__);
+    ALOGD("this is jni call-> Sdcard available space = %" PRIu64 ". func: %s, line:%d \n", ((uint64_t)buf.f_bavail * buf.f_bsize), __func__, __LINE__);
 
     uint64_t mount_path_block_size = ((uint64_t)buf.f_blocks * buf.f_bsize);
     uint64_t mount_path_avail_size = ((uint64_t)buf.f_bavail * buf.f_bsize);
 
     if(mount_path_avail_size < 76*MEGABYTE){
-        ALOGE("this is jni call-> before mutex_unlock. Sdcard no space to use. mount_path_avail_size = %" PRIu64 ". Out func: %s, line:%d \n", mount_path_avail_size, __func__, __LINE__);
+        ALOGD("this is jni call-> before mutex_unlock. Sdcard no space to use. mount_path_avail_size = %" PRIu64 ". Out func: %s, line:%d \n", mount_path_avail_size, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. Sdcard no space to use. mount_path_avail_size = %" PRIu64 ". Out func: %s, line:%d \n", mount_path_avail_size, __func__, __LINE__);
+        ALOGD("this is jni call-> after mutex_unlock. Sdcard no space to use. mount_path_avail_size = %" PRIu64 ". Out func: %s, line:%d \n", mount_path_avail_size, __func__, __LINE__);
         return SDCARD_SPACE_FULL;
     }
 
     rc = get_sdcard_size_and_set_max_file_num(mount_path_block_size);
     if(rc != SUCCESS){
-        ALOGE("this is jni call-> before mutex_unlock. sdcard detect failed. Out func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> before mutex_unlock. sdcard detect failed. Out func: %s, line:%d \n", __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. sdcard detect failed. Out func: %s, line:%d \n", __func__, __LINE__);
+        ALOGD("this is jni call-> after mutex_unlock. sdcard detect failed. Out func: %s, line:%d \n", __func__, __LINE__);
         return SDCARD_SIZE_NOT_SUPPORT;
     }
 
@@ -684,17 +684,17 @@ int FH_Init(char* mount_path){
     if(rc == 0){
         rc = checkTableVersion(mount_path);
         if(rc != SUCCESS){
-            ALOGE("this is jni call-> before mutex_unlock. Sdcard format error. Out func: %s, line:%d \n", __func__, __LINE__);
+            ALOGD("this is jni call-> before mutex_unlock. Sdcard format error. Out func: %s, line:%d \n", __func__, __LINE__);
             MUTEX_UNLOCK(&g_mutex);
-            ALOGE("this is jni call-> after mutex_unlock. Sdcard format error. Out func: %s, line:%d \n", __func__, __LINE__);
+            ALOGD("this is jni call-> after mutex_unlock. Sdcard format error. Out func: %s, line:%d \n", __func__, __LINE__);
             return TABLE_VERSION_TOO_OLD;
         }
         int ret = SDA_get_structure_value_from_config(mount_path);
         if (ret != 0)
         {
-            ALOGE("this is jni call-> before mutex_unlock. SDA_get_structure_value_from_config fail. Out func: %s, line:%d \n", __func__, __LINE__);
+            ALOGD("this is jni call-> before mutex_unlock. SDA_get_structure_value_from_config fail. Out func: %s, line:%d \n", __func__, __LINE__);
             MUTEX_UNLOCK(&g_mutex);
-            ALOGE("this is jni call-> after mutex_unlock. SDA_get_structure_value_from_config fail. Out func: %s, line:%d \n", __func__, __LINE__);
+            ALOGD("this is jni call-> after mutex_unlock. SDA_get_structure_value_from_config fail. Out func: %s, line:%d \n", __func__, __LINE__);
             return TABLE_READ_ERROR;
         }
     }
@@ -702,9 +702,9 @@ int FH_Init(char* mount_path){
     /* Scan which folder not exist */
     rc = SDA_scan_sdcard_folder_exist(mount_path);
     if(rc == -1){
-        ALOGE("this is jni call-> before mutex_unlock. Sdcard mount_path error, mount_path = %s. Out func: %s, line:%d \n", mount_path, __func__, __LINE__);
+        ALOGD("this is jni call-> before mutex_unlock. Sdcard mount_path error, mount_path = %s. Out func: %s, line:%d \n", mount_path, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. Sdcard mount_path error, mount_path = %s. Out func: %s, line:%d \n", mount_path, __func__, __LINE__);
+        ALOGD("this is jni call-> after mutex_unlock. Sdcard mount_path error, mount_path = %s. Out func: %s, line:%d \n", mount_path, __func__, __LINE__);
         return SDCARD_PATH_ERROR;
     }
 
@@ -722,7 +722,7 @@ int FH_Init(char* mount_path){
             percent_add += FH_Table[i].percent;
         }
     }
-    ALOGE("this is jni call-> every folder percent_add = %f. func: %s, line:%d \n", percent_add, __func__, __LINE__);
+    ALOGD("this is jni call-> every folder percent_add = %f. func: %s, line:%d \n", percent_add, __func__, __LINE__);
 
     /* Calucate folder avail space */
     if(count > 1){
@@ -826,7 +826,7 @@ int FH_Init(char* mount_path){
 
     /* Debug usage: print Structure data */
     for(i=0; i<TABLE_SIZE; i++){
-        ALOGE("this is jni call-> %s, %s, %s, %f, %" PRId64", %" PRId64 ", %d, %d, %d, func: %s, line:%d \n",
+        ALOGD("this is jni call-> %s, %s, %s, %f, %" PRId64", %" PRId64 ", %d, %d, %d, func: %s, line:%d \n",
               FH_Table[i].folder_type,
               FH_Table[i].cam1_extension,
               FH_Table[i].cam2_extension,
@@ -852,14 +852,14 @@ int FH_Init(char* mount_path){
     storage_file_in_queue(e_NMEA_EVENT, nmea_event_camera_one_queue, nmea_event_camera_two_queue);
     storage_file_in_queue(e_NMEA_NORMAL, nmea_normal_camera_one_queue, nmea_normal_camera_two_queue);
 
-    ALOGE("this is jni call-> before mutex_unlock. Init finish. before unlock_mutex. Out func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_unlock. Init finish. before unlock_mutex. Out func: %s, line:%d \n", __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_unlock. Init finish. after unlock_mutex. Out func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_unlock. Init finish. after unlock_mutex. Out func: %s, line:%d \n", __func__, __LINE__);
     return INIT_SUCCESS;
 }
 
 string open_file_and_save_in_queue(char* filename, eFolderType folderType, queue<string>& camera_one_queue, queue<string>& camera_two_queue){
-    ALOGE("this is jni call-> filename = %s, folderType = %d. In func: %s, line:%d \n", filename, folderType, __func__, __LINE__);
+    ALOGD("this is jni call-> filename = %s, folderType = %d. In func: %s, line:%d \n", filename, folderType, __func__, __LINE__);
     char free_path[NORULE_SIZE];
     snprintf(free_path, NORULE_SIZE, "%s%s", g_mount_path,"/SYSTEM/FREE");
 
@@ -872,7 +872,7 @@ string open_file_and_save_in_queue(char* filename, eFolderType folderType, queue
     int recoder_file_already_exist_num = SDA_get_recoder_file_num(folder_path);
     int extension_number = SDA_get_free_extension_filenumber(folderType);
     int recoder_file_num = recoder_file_already_exist_num + extension_number;
-    ALOGE("this is jni call -> folderType = %d, recoder_file_already_exist_num = %d, extension_number = %d, recoder_file_num = %d. func: %s, line:%d \n", folderType, recoder_file_already_exist_num, extension_number, recoder_file_num, __func__, __LINE__);
+    ALOGD("this is jni call -> folderType = %d, recoder_file_already_exist_num = %d, extension_number = %d, recoder_file_num = %d. func: %s, line:%d \n", folderType, recoder_file_already_exist_num, extension_number, recoder_file_num, __func__, __LINE__);
 
     int rc = detect_filename_format(input_filename);
     if(rc == CAMERA_ONE_FORMAT){
@@ -899,11 +899,11 @@ string open_file_and_save_in_queue(char* filename, eFolderType folderType, queue
         }
         int exist_file_number = camera_one_queue.size() + camera_two_queue.size();
 
-        ALOGE("this is jni call-> folderType = %d, exist file in SYSTEM/FREE/%s. exist_file_number = %d, return filename = %s. Out func: %s, line:%d \n", folderType, first_filename.c_str(), exist_file_number, purpose_path, __func__, __LINE__);
+        ALOGD("this is jni call-> folderType = %d, exist file in SYSTEM/FREE/%s. exist_file_number = %d, return filename = %s. Out func: %s, line:%d \n", folderType, first_filename.c_str(), exist_file_number, purpose_path, __func__, __LINE__);
         return string(purpose_path);
     }
     if(recoder_file_num < FH_Table[folderType].file_num){
-        ALOGE("this is jni call-> folderType = %d, recoder_file_num = %d, FH_Table file_num = %d. func: %s, line:%d \n", folderType, recoder_file_num, FH_Table[folderType].file_num, __func__, __LINE__);
+        ALOGD("this is jni call-> folderType = %d, recoder_file_num = %d, FH_Table file_num = %d. func: %s, line:%d \n", folderType, recoder_file_num, FH_Table[folderType].file_num, __func__, __LINE__);
         snprintf(purpose_path, NORULE_SIZE, "%s/%s", folder_path, filename);
 
         int rc = detect_filename_format(input_filename);
@@ -914,22 +914,22 @@ string open_file_and_save_in_queue(char* filename, eFolderType folderType, queue
             camera_two_queue.push(input_filename);
         }
         int exist_file_number = camera_one_queue.size() + camera_two_queue.size();
-        ALOGE("this is jni call->  folderType = %d, exist_file_number = %d, file number not arrive limit. return filename = %s. Out func: %s, line:%d \n", folderType, exist_file_number, filename, __func__, __LINE__);
+        ALOGD("this is jni call->  folderType = %d, exist_file_number = %d, file number not arrive limit. return filename = %s. Out func: %s, line:%d \n", folderType, exist_file_number, filename, __func__, __LINE__);
         return string(purpose_path);
     }
-    ALOGE("this is jni call-> FH_Open file was full, please delete some file. FH_Open folderType = %d, exist_file_number = %d, FH_Table file_num = %d. Out func: %s, line:%d \n", folderType, recoder_file_num, FH_Table[folderType].file_num, __func__, __LINE__);
+    ALOGD("this is jni call-> FH_Open file was full, please delete some file. FH_Open folderType = %d, exist_file_number = %d, FH_Table file_num = %d. Out func: %s, line:%d \n", folderType, recoder_file_num, FH_Table[folderType].file_num, __func__, __LINE__);
     return "";
 }
 
 string FH_Open(char* filename, eFolderType folderType){
-    ALOGE("this is jni call-> before mutex_lock. folderType = %d, g_mutex = %p. PID = %d. In func: %s, line:%d \n", folderType, g_mutex, getpid(), __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_lock. folderType = %d, g_mutex = %p. PID = %d. In func: %s, line:%d \n", folderType, g_mutex, getpid(), __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_lock. folderType = %d, g_mutex = %p. PID = %d. In func: %s, line:%d \n", folderType, g_mutex, getpid(), __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_lock. folderType = %d, g_mutex = %p. PID = %d. In func: %s, line:%d \n", folderType, g_mutex, getpid(), __func__, __LINE__);
 
     if(strlen(g_mount_path) == 0){
-        ALOGE("this is jni call-> before mutex_lock. folderType = %d. global_mount_path = %s. Out func: %s, line:%d \n", folderType, g_mount_path, __func__, __LINE__);
+        ALOGD("this is jni call-> before mutex_lock. folderType = %d. global_mount_path = %s. Out func: %s, line:%d \n", folderType, g_mount_path, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_lock. folderType = %d. global_mount_path = %s. Out func: %s, line:%d \n", folderType, g_mount_path, __func__, __LINE__);
+        ALOGD("this is jni call-> after mutex_lock. folderType = %d. global_mount_path = %s. Out func: %s, line:%d \n", folderType, g_mount_path, __func__, __LINE__);
         return "";
     }
 
@@ -938,40 +938,40 @@ string FH_Open(char* filename, eFolderType folderType){
     switch (folderType) {
         case e_Event:
             open_filename = open_file_and_save_in_queue(filename, folderType, event_camera_one_queue, event_camera_two_queue);
-            ALOGE("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
+            ALOGD("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
             break;
         case e_Normal:
             open_filename = open_file_and_save_in_queue(filename, folderType, normal_camera_one_queue, normal_camera_two_queue);
-            ALOGE("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
+            ALOGD("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
             break;
         case e_Picture:
             open_filename = open_file_and_save_in_queue(filename, folderType, picture_camera_one_queue, picture_camera_two_queue);
-            ALOGE("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
+            ALOGD("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
             break;
         case e_HASH_EVENT:
             open_filename = open_file_and_save_in_queue(filename, folderType, hash_event_camera_one_queue, hash_event_camera_two_queue);
-            ALOGE("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
+            ALOGD("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
             break;
         case e_HASH_NORMAL:
             open_filename = open_file_and_save_in_queue(filename, folderType, hash_normal_camera_one_queue, hash_normal_camera_two_queue);
-            ALOGE("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
+            ALOGD("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
             break;
         case e_NMEA_EVENT:
             open_filename = open_file_and_save_in_queue(filename, folderType, nmea_event_camera_one_queue, nmea_event_camera_two_queue);
-            ALOGE("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
+            ALOGD("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
             break;
         case e_NMEA_NORMAL:
             open_filename = open_file_and_save_in_queue(filename, folderType, nmea_normal_camera_one_queue, nmea_normal_camera_two_queue);
-            ALOGE("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
+            ALOGD("this is jni call-> folderType = %d, open_filename = %s. func: %s, line:%d \n", folderType, open_filename.c_str(), __func__, __LINE__);
             break;
         default:
-            ALOGE("this is jni call-> folerType Error, folderType = %d. func: %s, line:%d \n", folderType, __func__, __LINE__);
+            ALOGD("this is jni call-> folerType Error, folderType = %d. func: %s, line:%d \n", folderType, __func__, __LINE__);
             break;
     }
 
-    ALOGE("this is jni call-> before mutex_unlock. folderType = %d, return filename = %s, g_mutex = %p. Out func: %s, line:%d \n", folderType, open_filename.c_str(), g_mutex, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_unlock. folderType = %d, return filename = %s, g_mutex = %p. Out func: %s, line:%d \n", folderType, open_filename.c_str(), g_mutex, __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_unlock. folderType = %d, return filename = %s, g_mutex = %p. Out func: %s, line:%d \n", folderType, open_filename.c_str(), g_mutex, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_unlock. folderType = %d, return filename = %s, g_mutex = %p. Out func: %s, line:%d \n", folderType, open_filename.c_str(), g_mutex, __func__, __LINE__);
     return open_filename;
 }
 
@@ -989,15 +989,15 @@ bool FH_Close(void){
 //
 // true = 1, false = 0;
 bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
-    ALOGE("this is jni call-> before mutex_lock. absolute_filepath = %s, cameraType = %d. In func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_lock. absolute_filepath = %s, cameraType = %d. In func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_lock. absolute_filepath = %s, cameraType = %d. In func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_lock. absolute_filepath = %s, cameraType = %d. In func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
     /* !!!! modify to exist func */
     int fd = open(absolute_filepath, O_RDWR);
     if(fd == -1){
-        ALOGE("this is jni call-> before mutex_unlock. absolute_filepath not exist, absolute_filepath = %s, cameraType = %d. Out func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
+        ALOGD("this is jni call-> before mutex_unlock. absolute_filepath not exist, absolute_filepath = %s, cameraType = %d. Out func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. absolute_filepath not exist, absolute_filepath = %s, cameraType = %d, Out func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
+        ALOGD("this is jni call-> after mutex_unlock. absolute_filepath not exist, absolute_filepath = %s, cameraType = %d, Out func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
         return false;
     }
     close(fd);
@@ -1088,7 +1088,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
                         break;
                     }
                 default:
-                    ALOGE("this is jni call -> not find any about folder_type, absolute_filepath = %s. func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
+                    ALOGD("this is jni call -> not find any about folder_type, absolute_filepath = %s. func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
                     break;
             }
             char new_last_file[NORULE_SIZE];
@@ -1096,43 +1096,43 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
                 last_filename = SDA_get_last_filename(free_path, FH_Table[i].cam1_extension);
                 int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
                 snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, FH_Table[i].cam1_extension);
-                ALOGE("this is jni call -> CAMERA1 TYPE absolute_filepath = %s, new_last_file = %s. func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
+                ALOGD("this is jni call -> CAMERA1 TYPE absolute_filepath = %s, new_last_file = %s. func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
             }
             if(cameraType == e_CameraTwo){
                 last_filename = SDA_get_last_filename(free_path, FH_Table[i].cam2_extension);
                 int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
                 snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, FH_Table[i].cam2_extension);
-                ALOGE("this is jni call -> CAMERA2 TYPE absolute_filepath = %s, new_last_file = %s. func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
+                ALOGD("this is jni call -> CAMERA2 TYPE absolute_filepath = %s, new_last_file = %s. func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
             }
 
             // cout << "new last_filename: " << new_last_file << endl;
             rc = rename(absolute_filepath, new_last_file);
-            ALOGE("this is jni call-> before mutex_unlock. rename [%s] to [%s], Out func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
+            ALOGD("this is jni call-> before mutex_unlock. rename [%s] to [%s], Out func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
             MUTEX_UNLOCK(&g_mutex);
-            ALOGE("this is jni call-> after mutex_unlock. rename [%s] to [%s], Out func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
+            ALOGD("this is jni call-> after mutex_unlock. rename [%s] to [%s], Out func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
             return (rc == 0 ? true : false);
         }
     }
 
     // not find any about folderType
-    ALOGE("this is jni call-> before mutex_unlock. not find any about folderType. absolute_filepath = %s. Out func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_unlock. not find any about folderType. absolute_filepath = %s. Out func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_unlock. not find any about folderType. absolute_filepath = %s. Out func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_unlock. not find any about folderType. absolute_filepath = %s. Out func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
     return false;
 }
 
 string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
-    ALOGE("this is jni call-> before mutex_lock. folderType: %d. In func: %s, line:%d \n", folderType, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_lock. folderType: %d, cameraType = %d. In func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_lock. folderType: %d. In func: %s, line:%d \n", folderType, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_lock. folderType: %d, cameraType = %d. In func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
     char finding_path[NORULE_SIZE];
     snprintf(finding_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
-    ALOGE("this is jni call-> finding_path: %s. func: %s, line:%d \n", finding_path, __func__, __LINE__);
+    ALOGD("this is jni call-> finding_path: %s. func: %s, line:%d \n", finding_path, __func__, __LINE__);
     int rc = SDA_file_exists(finding_path);
     if(rc != 0){
-        ALOGE("this is jni call-> before mutex_unlock. finding path not exist. folderType: %d, finding_path: %s. Out func: %s, line:%d \n", folderType, finding_path, __func__, __LINE__);
+        ALOGD("this is jni call-> before mutex_unlock. finding path not exist. folderType: %d, cameraType = %d, finding_path: %s. Out func: %s, line:%d \n", folderType, cameraType, finding_path, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. finding path not exist. folderType: %d, finding_path: %s. Out func: %s, line:%d \n", folderType, finding_path, __func__, __LINE__);
+        ALOGD("this is jni call-> after mutex_unlock. finding path not exist. folderType: %d, cameraType = %d, finding_path: %s. Out func: %s, line:%d \n", folderType, cameraType, finding_path, __func__, __LINE__);
         return "";
     }
 
@@ -1144,9 +1144,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
         case e_Event:
             if(cameraType == e_CameraOne){
                 if(event_camera_one_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(event_camera_one_queue.front());
@@ -1154,9 +1154,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 if(event_camera_two_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(event_camera_two_queue.front());
@@ -1165,9 +1165,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
         case e_Normal:
             if(cameraType == e_CameraOne){
                 if(normal_camera_one_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(normal_camera_one_queue.front());
@@ -1175,9 +1175,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 if(normal_camera_two_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(normal_camera_two_queue.front());
@@ -1186,9 +1186,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
         case e_Picture:
             if(cameraType == e_CameraOne){
                 if(picture_camera_one_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(picture_camera_one_queue.front());
@@ -1196,9 +1196,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 if(picture_camera_two_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(picture_camera_two_queue.front());
@@ -1207,9 +1207,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
         case e_HASH_EVENT:
             if(cameraType == e_CameraOne){
                 if(hash_event_camera_one_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(hash_event_camera_one_queue.front());
@@ -1217,9 +1217,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 if(hash_event_camera_two_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(hash_event_camera_two_queue.front());
@@ -1228,9 +1228,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
         case e_HASH_NORMAL:
             if(cameraType == e_CameraOne){
                 if(hash_normal_camera_one_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(hash_normal_camera_one_queue.front());
@@ -1238,9 +1238,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 if(hash_normal_camera_two_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(hash_normal_camera_two_queue.front());
@@ -1249,9 +1249,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
         case e_NMEA_EVENT:
             if(cameraType == e_CameraOne){
                 if(nmea_event_camera_one_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(nmea_event_camera_one_queue.front());
@@ -1259,9 +1259,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 if(nmea_event_camera_two_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(nmea_event_camera_two_queue.front());
@@ -1270,9 +1270,9 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
         case e_NMEA_NORMAL:
             if(cameraType == e_CameraOne){
                 if(nmea_normal_camera_one_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(nmea_normal_camera_one_queue.front());
@@ -1280,35 +1280,35 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 if(nmea_normal_camera_two_queue.empty()){
-                    ALOGE("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> before mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     MUTEX_UNLOCK(&g_mutex);
-                    ALOGE("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+                    ALOGD("this is jni call-> after mutex_unlock. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
                     return "";
                 }
                 oldest_file.append(nmea_normal_camera_two_queue.front());
                 break;
             }
         default:
-            ALOGE("this is jni call -> folderType error, folderType = %d. func: %s, line:%d \n", folderType, __func__, __LINE__);
+            ALOGD("this is jni call -> folderType error, folderType = %d, cameraType = %d. func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
             break;
     }
 
-    ALOGE("this is jni call-> before mutex_unlock. folderType: %d, oldest_file = %s. Out func: %s, line:%d \n", folderType, oldest_file.c_str(), __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_unlock. folderType: %d, oldest_file = %s. Out func: %s, line:%d \n", folderType, oldest_file.c_str(), __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_unlock. folderType: %d, oldest_file = %s. Out func: %s, line:%d \n", folderType, oldest_file.c_str(), __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_unlock. folderType: %d, oldest_file = %s. Out func: %s, line:%d \n", folderType, oldest_file.c_str(), __func__, __LINE__);
     return oldest_file;
 }
 
 int FH_CheckFolderStatus(eFolderType folderType){
-    ALOGE("this is jni call-> before mutex_lock. folderType: %d. In func: %s, line:%d \n", folderType, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_lock. folderType: %d. In func: %s, line:%d \n", folderType, __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_lock. folderType: %d. In func: %s, line:%d \n", folderType, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_lock. folderType: %d. In func: %s, line:%d \n", folderType, __func__, __LINE__);
 
     struct statvfs buf;
     if (statvfs(g_mount_path, &buf) == -1) {
-        ALOGE("this is jni call-> before mutex_unlock. Sdcard path error. folderType = %d, g_mount_path = %s. Out func: %s, line:%d \n", folderType, g_mount_path, __func__, __LINE__);
+        ALOGD("this is jni call-> before mutex_unlock. Sdcard path error. folderType = %d, g_mount_path = %s. Out func: %s, line:%d \n", folderType, g_mount_path, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. Sdcard path error. folderType = %d, g_mount_path = %s. Out func: %s, line:%d \n", folderType, g_mount_path, __func__, __LINE__);
+        ALOGD("this is jni call-> after mutex_unlock. Sdcard path error. folderType = %d, g_mount_path = %s. Out func: %s, line:%d \n", folderType, g_mount_path, __func__, __LINE__);
         return GLOBAL_SDCARD_PATH_ERROR;
     }
 
@@ -1321,13 +1321,13 @@ int FH_CheckFolderStatus(eFolderType folderType){
     int recoder_file_already_exist_num = SDA_get_recoder_file_num(folder_path);
     int extension_number = SDA_get_free_extension_filenumber(folderType);
     int recoder_file_num = recoder_file_already_exist_num + extension_number;
-    ALOGE("this is jni call -> folderType = %d, recoder_file_already_exist_num = %d, extension_number = %d, recoder_file_num = %d. func: %s, line:%d \n", folderType, recoder_file_already_exist_num, extension_number, recoder_file_num, __func__, __LINE__);
+    ALOGD("this is jni call -> folderType = %d, recoder_file_already_exist_num = %d, extension_number = %d, recoder_file_num = %d. func: %s, line:%d \n", folderType, recoder_file_already_exist_num, extension_number, recoder_file_num, __func__, __LINE__);
 
     // file over limit
     if (recoder_file_num > FH_Table[folderType].file_num){
-        ALOGE("this is jni call -> before mutex_unlock. Existing record file and over limit number. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+        ALOGD("this is jni call -> before mutex_unlock. Existing record file and over limit number. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call -> after mutex_unlock. Existing record file and over limit number. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
+        ALOGD("this is jni call -> after mutex_unlock. Existing record file and over limit number. folderType: %d. Out func: %s, line:%d \n", folderType, __func__, __LINE__);
         return EXIST_FILE_NUM_OVER_LIMIT;
     }
 
@@ -1346,9 +1346,9 @@ int FH_CheckFolderStatus(eFolderType folderType){
     struct stat attrib;
 
     if (dp == NULL) {
-        ALOGE("this is jni call -> before mutex_unlock. Open folder error. folderType: %d, folder_path = %s. Out func: %s, line:%d \n", folderType, folder_path, __func__, __LINE__);
+        ALOGD("this is jni call -> before mutex_unlock. Open folder error. folderType: %d, folder_path = %s. Out func: %s, line:%d \n", folderType, folder_path, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call -> after mutex_unlock. Open folder error. folderType: %d, folder_path = %s. Out func: %s, line:%d \n", folderType, folder_path, __func__, __LINE__);
+        ALOGD("this is jni call -> after mutex_unlock. Open folder error. folderType: %d, folder_path = %s. Out func: %s, line:%d \n", folderType, folder_path, __func__, __LINE__);
         return OPEN_FOLDER_ERROR;
     }
     while (dirp = readdir(dp)) {
@@ -1364,9 +1364,9 @@ int FH_CheckFolderStatus(eFolderType folderType){
     }
     closedir(dp);
     if (FH_Table[folderType].avail_space < using_file_size) {
-        ALOGE("this is jni call -> before mutex_unlock. Out of folder space limit. folderType = %d, FH_Table[folderType].avail_space = %" PRId64", using_file_size = %" PRId64". Out func: %s, line:%d \n", folderType, FH_Table[folderType].avail_space, using_file_size, __func__, __LINE__);
+        ALOGD("this is jni call -> before mutex_unlock. Out of folder space limit. folderType = %d, FH_Table[folderType].avail_space = %" PRId64", using_file_size = %" PRId64". Out func: %s, line:%d \n", folderType, FH_Table[folderType].avail_space, using_file_size, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call -> after mutex_unlock. Out of folder space limit. folderType = %d, FH_Table[folderType].avail_space = %" PRId64", using_file_size = %" PRId64". Out func: %s, line:%d \n", folderType, FH_Table[folderType].avail_space, using_file_size, __func__, __LINE__);
+        ALOGD("this is jni call -> after mutex_unlock. Out of folder space limit. folderType = %d, FH_Table[folderType].avail_space = %" PRId64", using_file_size = %" PRId64". Out func: %s, line:%d \n", folderType, FH_Table[folderType].avail_space, using_file_size, __func__, __LINE__);
         return FOLDER_SPACE_OVER_LIMIT;
     }
 
@@ -1377,16 +1377,16 @@ int FH_CheckFolderStatus(eFolderType folderType){
 
     int avail_record_num = recoder_file_num + (folder_avail_size / FH_Table[folderType].every_block_space);
     if (avail_record_num < 2) {
-        ALOGE("this is jni call-> before mutex_unlock. sdcard no space, record file not enough to recycle. folderType = %d, avail_record_num = %d. Out func: %s, line:%d \n", folderType, avail_record_num, __func__, __LINE__);
+        ALOGD("this is jni call-> before mutex_unlock. sdcard no space, record file not enough to recycle. folderType = %d, avail_record_num = %d. Out func: %s, line:%d \n", folderType, avail_record_num, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. sdcard no space, record file not enough to recycle. folderType = %d, avail_record_num = %d. Out func: %s, line:%d \n", folderType, avail_record_num, __func__, __LINE__);
+        ALOGD("this is jni call-> after mutex_unlock. sdcard no space, record file not enough to recycle. folderType = %d, avail_record_num = %d. Out func: %s, line:%d \n", folderType, avail_record_num, __func__, __LINE__);
         return NO_SPACE_NO_NUMBER_TO_RECYCLE;
     }
     if (avail_record_num < FH_Table[folderType].file_num) {
         FH_Table[folderType].file_num = avail_record_num;
     }
 
-    ALOGE("this is jni call-> %s, %s, %s, %f, %" PRId64", %" PRId64 ", %d, %d, %d, func: %s, line:%d \n",
+    ALOGD("this is jni call-> %s, %s, %s, %f, %" PRId64", %" PRId64 ", %d, %d, %d, func: %s, line:%d \n",
           FH_Table[folderType].folder_type,
           FH_Table[folderType].cam1_extension,
           FH_Table[folderType].cam2_extension,
@@ -1397,20 +1397,20 @@ int FH_CheckFolderStatus(eFolderType folderType){
           FH_Table[folderType].file_num,
           FH_Table[folderType].exist_flag,
           __func__, __LINE__);
-    ALOGE("this is jni call-> before mutex_unlock. folderType = %d, return file_num = %d. Out func: %s, line:%d \n", folderType, FH_Table[folderType].file_num, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_unlock. folderType = %d, return file_num = %d. Out func: %s, line:%d \n", folderType, FH_Table[folderType].file_num, __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_unlock. folderType = %d, return file_num = %d. Out func: %s, line:%d \n", folderType, FH_Table[folderType].file_num, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_unlock. folderType = %d, return file_num = %d. Out func: %s, line:%d \n", folderType, FH_Table[folderType].file_num, __func__, __LINE__);
     return FH_Table[folderType].file_num;
 }
 
 int FH_GetSDCardInfo(eFolderType folderType, eGetNum getNumOpt){
-    ALOGE("this is jni call-> before mutex_lock. folderType = %d, getNumOpt = %d. In func: %s, line:%d \n", folderType, getNumOpt, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_lock. folderType = %d, getNumOpt = %d. In func: %s, line:%d \n", folderType, getNumOpt, __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_lock. folderType = %d, getNumOpt = %d. In func: %s, line:%d \n", folderType, getNumOpt, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_lock. folderType = %d, getNumOpt = %d. In func: %s, line:%d \n", folderType, getNumOpt, __func__, __LINE__);
     if (getNumOpt == e_getLimitNum){
-        ALOGE("this is jni call-> before mutex_unlock. folderType = %d, limit_file_num = %d. Out func: %s, line:%d \n", folderType, FH_Table[folderType].file_num, __func__, __LINE__);
+        ALOGD("this is jni call-> before mutex_unlock. folderType = %d, limit_file_num = %d. Out func: %s, line:%d \n", folderType, FH_Table[folderType].file_num, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
-        ALOGE("this is jni call-> after mutex_unlock. folderType = %d, limit_file_num = %d. Out func: %s, line:%d \n", folderType, FH_Table[folderType].file_num, __func__, __LINE__);
+        ALOGD("this is jni call-> after mutex_unlock. folderType = %d, limit_file_num = %d. Out func: %s, line:%d \n", folderType, FH_Table[folderType].file_num, __func__, __LINE__);
         return FH_Table[folderType].file_num;
     }
     int current_num = -1;
@@ -1426,21 +1426,21 @@ int FH_GetSDCardInfo(eFolderType folderType, eGetNum getNumOpt){
                 current_num = picture_camera_one_queue.size() + picture_camera_two_queue.size();
                 break;
             default:
-                ALOGE("this is jni call-> folderType error. folderType = %d. func: %s, line:%d \n", folderType, __func__, __LINE__);
+                ALOGD("this is jni call-> folderType error. folderType = %d. func: %s, line:%d \n", folderType, __func__, __LINE__);
                 break;
         }
     }
 
-    ALOGE("this is jni call-> before mutex_unlock. folderType = %d, current_num = %d. Out func: %s, line:%d \n", folderType, current_num, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_unlock. folderType = %d, current_num = %d. Out func: %s, line:%d \n", folderType, current_num, __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_unlock. folderType = %d, current_num = %d. Out func: %s, line:%d \n", folderType, current_num, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_unlock. folderType = %d, current_num = %d. Out func: %s, line:%d \n", folderType, current_num, __func__, __LINE__);
     return current_num;
 }
 
 int FH_GetFolderCameraTypeNumber(eFolderType folderType, eCameraType cameraType){
-    ALOGE("this is jni call-> before mutex_lock. folderType = %d, cameraType = %d. In func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_lock. folderType = %d, cameraType = %d. In func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_lock. folderType = %d, cameraType = %d. In func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_lock. folderType = %d, cameraType = %d. In func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
     int camera_number = 0;
 
     switch (folderType) {
@@ -1472,23 +1472,23 @@ int FH_GetFolderCameraTypeNumber(eFolderType folderType, eCameraType cameraType)
                 break;
             }
         default:
-            ALOGE("this is jni call -> folderType error, folderType = %d, cameraType = %d. func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
+            ALOGD("this is jni call -> folderType error, folderType = %d, cameraType = %d. func: %s, line:%d \n", folderType, cameraType, __func__, __LINE__);
             break;
     }
-    ALOGE("this is jni call-> before mutex_unlock. folderType = %d, cameraType = %d, camera_number = %d. Out func: %s, line:%d \n", folderType, cameraType, camera_number, __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_unlock. folderType = %d, cameraType = %d, camera_number = %d. Out func: %s, line:%d \n", folderType, cameraType, camera_number, __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_unlock. folderType = %d, cameraType = %d, camera_number = %d. Out func: %s, line:%d \n", folderType, cameraType, camera_number, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_unlock. folderType = %d, cameraType = %d, camera_number = %d. Out func: %s, line:%d \n", folderType, cameraType, camera_number, __func__, __LINE__);
     return camera_number;
 }
 
 void FH_Sync(void){
-    ALOGE("this is jni call-> before mutex_lock. In func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_lock. In func: %s, line:%d \n", __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_lock. In func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_lock. In func: %s, line:%d \n", __func__, __LINE__);
     sync();
-    ALOGE("this is jni call-> before mutex_unlock. Out func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> before mutex_unlock. Out func: %s, line:%d \n", __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
-    ALOGE("this is jni call-> after mutex_unlock. Out func: %s, line:%d \n", __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_unlock. Out func: %s, line:%d \n", __func__, __LINE__);
 }
 
 //
