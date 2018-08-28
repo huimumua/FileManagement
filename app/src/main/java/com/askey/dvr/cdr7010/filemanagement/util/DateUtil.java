@@ -177,5 +177,19 @@ public class DateUtil {
         }
     }
 
+    /**
+     * 时间增加一分钟
+     * **/
+    public static String changeSecondTime(String strTime,int changeSecondTime)
+            throws ParseException {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
+        Date dt=sdf.parse(strTime);
+        Calendar rightNow = Calendar.getInstance();
+        rightNow.setTime(dt);
+        rightNow.add(Calendar.SECOND,changeSecondTime);
+        Date dt1=rightNow.getTime();
+        String reStr = sdf.format(dt1);
+        return reStr;
+    }
 
 }
