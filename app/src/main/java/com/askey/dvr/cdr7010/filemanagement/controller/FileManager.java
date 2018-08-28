@@ -292,7 +292,11 @@ public class FileManager {
                         datatime = DateUtil.timeAddOneMinute(datatime);
                     }
                     String  lastRectime = datatime.substring(2,datatime.length());
-                    filename = lastRectime +"_UNKNOWN." + str[1] ;
+                    if(filename.contains("_2")){
+                        filename = lastRectime +"_2_UNKNOWN." + str[1] ;
+                    }else{
+                        filename = lastRectime +"_UNKNOWN." + str[1] ;
+                    }
                     if(isSave){
                         ContentResolverUtil.setStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME,datatime);
                     }
@@ -316,7 +320,11 @@ public class FileManager {
                 try {
                     datatime = DateUtil.changeSecondTime(datatime, changeSecondTime);
                     String  lastRectime = datatime.substring(2,datatime.length());
-                    filename = lastRectime +"_UNKNOWN." + str[1] ;
+                    if(filename.contains("_2")){
+                        filename = lastRectime +"_2_UNKNOWN." + str[1] ;
+                    }else{
+                        filename = lastRectime +"_UNKNOWN." + str[1] ;
+                    }
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
