@@ -255,31 +255,36 @@ public class FileManager {
     private String getRecoderPath(String filename, int type) {
         // SYSSET_last_rectime   19700101000000
         String Mp4FileTime = ContentResolverUtil.getStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME);
-        NmeaFileTime = Mp4FileTime;
-        HashFileTime = Mp4FileTime;
-        if(type == Const.TYPE_EVENT_DIR){
-            JpgFileTime = Mp4FileTime;
+        if( null != Mp4FileTime && !"".equals(Mp4FileTime)){
+            NmeaFileTime = Mp4FileTime;
+            HashFileTime = Mp4FileTime;
+            if(type == Const.TYPE_EVENT_DIR){
+                JpgFileTime = Mp4FileTime;
+            }
+            if(filename.contains(".mp4")){
+                filename = getRecoderPathByType(filename,Mp4FileTime,true);
+            }else if(filename.contains(".jpg")){
+                JpgFileCount = JpgFileCount+1;
+                if(JpgFileCount == 1){
+                    filename = getRecoderPathByType(filename,JpgFileTime,-3);
+                }
+                if(JpgFileCount == 2){
+                    filename = getRecoderPathByType(filename,JpgFileTime,0);
+                }
+                if(JpgFileCount == 3){
+                    filename = getRecoderPathByType(filename,JpgFileTime,3);
+                    JpgFileCount = 0;
+                }
+            }else if(filename.contains(".nmea")){
+                filename = getRecoderPathByType(filename,NmeaFileTime,false);
+            }else if(filename.contains(".hash")){
+                filename = getRecoderPathByType(filename,HashFileTime,false);
+            }
         }
-        if(filename.contains(".mp4")){
-            filename = getRecoderPathByType(filename,Mp4FileTime,true);
-        }else if(filename.contains(".jpg")){
-            JpgFileCount = JpgFileCount+1;
-            if(JpgFileCount == 1){
-                filename = getRecoderPathByType(filename,JpgFileTime,-3);
-            }
-            if(JpgFileCount == 2){
-                filename = getRecoderPathByType(filename,JpgFileTime,0);
-            }
-            if(JpgFileCount == 3){
-                filename = getRecoderPathByType(filename,JpgFileTime,3);
-                JpgFileCount = 0;
-            }
-        }else if(filename.contains(".nmea")){
-            filename = getRecoderPathByType(filename,NmeaFileTime,false);
-        }else if(filename.contains(".hash")){
-            filename = getRecoderPathByType(filename,HashFileTime,false);
-        }
-        return FH_Open(filename,type);
+//        Logg.i("getRecoderPath","====openSdcard=jni=start==");
+        String filePath = FH_Open(filename,type);
+//        Logg.i("getRecoderPath","====openSdcard=jni=end==");
+        return filePath;
     }
 
     private String getRecoderPathByType(String filename,String datatime,boolean isSave) {
