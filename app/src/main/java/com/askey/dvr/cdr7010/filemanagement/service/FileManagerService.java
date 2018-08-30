@@ -117,7 +117,9 @@ public class FileManagerService extends Service {
         public String openSdcard(String filename, String folderType) throws RemoteException {
             String  result = null;
             if(Const.SDCARD_IS_EXIST){
+                Logg.i("getRecoderPath","====openSdcard=start==filename="+filename+"==folderType=="+folderType);
                 result = FileManager.getSingInstance().openSdcard(filename,folderType);
+                Logg.i("getRecoderPath","====openSdcard=end==filename="+filename+"==folderType=="+folderType);
                 Logg.i(LOG_TAG,"====openSdcard==="+result);
             }else{
                 Logg.e(LOG_TAG,"====SDCARD_IS_EXIST==="+Const.SDCARD_IS_EXIST);

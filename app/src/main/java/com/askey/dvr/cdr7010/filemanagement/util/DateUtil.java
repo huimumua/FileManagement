@@ -20,6 +20,43 @@ public class DateUtil {
     /**
      * 获取文件的创建时间  DATE_ADDED可能不准确有待讨论
      * */
+    public static long getFileCreateTime(String name) {
+        Logg.i(TAG,"=====name==1111==="+name);
+        if(name.contains("_UNKNOWN")){
+            name = name.replace("_UNKNOWN","");
+        }
+        Logg.i(TAG,"=====name==2222==="+name);
+        String time;
+        if(name.contains("_2")){
+            time = name.split("_2")[0];
+        }else{
+            time = name.substring(0,name.length()-4);
+        }
+        long  result = 0;
+        try {
+            if(time.length()==12){
+                int year = Integer.valueOf(name.substring(0,2));
+                if(year>=70){
+                    time = "19"+time;
+                }else{
+                    time = "20"+time;//强行固定20世纪
+                }
+                Logg.i(TAG,"=====time====="+time);
+                result = Long.valueOf(dateToStamp(time));
+            }else if(time.length()==14){
+//                result = stringToLong(time,"yyyyMMddHHmmss");
+                result = Long.valueOf(dateToStamp(time));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Logg.e(TAG,"getFileCreateTime->ParseException="+e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 获取文件的创建时间  DATE_ADDED可能不准确有待讨论
+     * */
     public static long getFileCreateTime(String name,String DATE_ADDED) {
         Logg.i(TAG,"=====name==1111==="+name);
         if(name.contains("_UNKNOWN")){

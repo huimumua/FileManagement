@@ -208,7 +208,7 @@ public class MediaScanner {
                                 DATE_MODIFIED = String.valueOf(mFile.lastModified());
                                 Logg.i(TAG, "==path==" + path);
                                 String yyyyMMDD = name.substring(0, 6);
-                                long fileCreateTime = DateUtil.getFileCreateTime(name, DATE_MODIFIED);
+                                long fileCreateTime = DateUtil.getFileCreateTime(name);
                                 if (currentYYYYMMDD.equals(yyyyMMDD) && group.size() < 10) {
                                     ItemData groupitem = new ItemData();
                                     groupitem.setFileTime(fileCreateTime);
@@ -251,7 +251,7 @@ public class MediaScanner {
                                 DATE_MODIFIED = String.valueOf(mFile.lastModified());
                                 Logg.i(TAG,"==path=="+path);
                                 String yyyyMMDD = name.substring(0,6);
-                                long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+                                long fileCreateTime = DateUtil.getFileCreateTime(name);
                                 if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
                                     ItemData groupitem = new ItemData();
                                     groupitem.setFileTime(fileCreateTime);
@@ -292,7 +292,7 @@ public class MediaScanner {
                         if(mFile.exists()){
                             DATE_MODIFIED = String.valueOf(mFile.lastModified());
                             Logg.i(TAG,"==path=="+path);
-                            long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+                            long fileCreateTime = DateUtil.getFileCreateTime(name);
                             ItemData itemData= new ItemData();
                             itemData.setFileTime(fileCreateTime);
                             itemData.setFilePath(path);
@@ -319,7 +319,7 @@ public class MediaScanner {
                     DATE_MODIFIED = String.valueOf(mFile.lastModified());
                     Logg.i(TAG,"==path=="+path);
                     String yyyyMMDD = name.substring(0,6);
-                    long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+                    long fileCreateTime = DateUtil.getFileCreateTime(name);
                     if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
                         ItemData groupitem = new ItemData();
                         groupitem.setFileTime(fileCreateTime);
@@ -360,7 +360,7 @@ public class MediaScanner {
                     DATE_MODIFIED = String.valueOf(mFile.lastModified());
                     Logg.i(TAG,"==path=="+path);
                     if(!type.equals(Const.NORMAL_DIR)){
-                        long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+                        long fileCreateTime = DateUtil.getFileCreateTime(name);
                         ItemData itemData= new ItemData();
                         itemData.setFileTime(fileCreateTime);
                         itemData.setFilePath(path);
@@ -370,7 +370,7 @@ public class MediaScanner {
                         fileList.add(itemData);
                     }else{
                         String yyyyMMDD = name.substring(0,6);
-                        long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+                        long fileCreateTime = DateUtil.getFileCreateTime(name);
 
                         if(currentYYYYMMDD.equals(yyyyMMDD) && group.size()<10){
                             ItemData groupitem = new ItemData();
@@ -463,7 +463,7 @@ public class MediaScanner {
                 File mFile = new File(path);
                 if(mFile.exists()){
                    String DATE_MODIFIED = String.valueOf(mFile.lastModified());
-                    long fileCreateTime = DateUtil.getFileCreateTime(name,DATE_MODIFIED);
+                    long fileCreateTime = DateUtil.getFileCreateTime(name);
                     ItemData itemData= new ItemData();
                     itemData.setFileTime(fileCreateTime);
                     itemData.setFilePath(path);
