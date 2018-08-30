@@ -55,7 +55,7 @@ public class AskeySettingInitAsyncTask extends AsyncTask<String, Integer, Boolea
         这个userId的格式必须为"_user1、2、3、4、5"
      */
     private void initSettings(String userId) {
-        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_USER_NAME, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_USER_NAME + userId, 1));
+        Settings.Global.putString(contentResolver, AskeySettings.Global.SYSSET_USER_NAME, Settings.Global.getString(contentResolver, AskeySettings.Global.SYSSET_USER_NAME + userId));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_USER_ID, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_USER_ID + userId, 1));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.ADAS_FCWS, Settings.Global.getInt(contentResolver, AskeySettings.Global.ADAS_FCWS + userId, 1));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.ADAS_LDS, Settings.Global.getInt(contentResolver, AskeySettings.Global.ADAS_LDS + userId, 1));
@@ -82,7 +82,7 @@ public class AskeySettingInitAsyncTask extends AsyncTask<String, Integer, Boolea
         Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_TIME, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_TIME + userId, 10));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_ACTION, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_ACTION + userId, 0));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_LANGUAGE, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_LANGUAGE + userId, 0));
-        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS + userId, 0));
+        Settings.Global.putString(contentResolver, AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS, Settings.Global.getString(contentResolver, AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS + userId));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.COMM_EMERGENCY_AUTO, Settings.Global.getInt(contentResolver, AskeySettings.Global.COMM_EMERGENCY_AUTO + userId, 0));
     }
 
