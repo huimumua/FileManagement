@@ -255,7 +255,9 @@ public class FileManager {
     private String getRecoderPath(String filename, int type) {
         // SYSSET_last_rectime   19700101000000
         String Mp4FileTime = ContentResolverUtil.getStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME);
-        if( null != Mp4FileTime && !"".equals(Mp4FileTime)){
+
+        Mp4FileTime = ( null == Mp4FileTime ) ? "19700101000000":Mp4FileTime;
+
             NmeaFileTime = Mp4FileTime;
             HashFileTime = Mp4FileTime;
             if(type == Const.TYPE_EVENT_DIR){
@@ -280,11 +282,7 @@ public class FileManager {
             }else if(filename.contains(".hash")){
                 filename = getRecoderPathByType(filename,HashFileTime,false);
             }
-        }
-//        Logg.i("getRecoderPath","====openSdcard=jni=start==");
-        String filePath = FH_Open(filename,type);
-//        Logg.i("getRecoderPath","====openSdcard=jni=end==");
-        return filePath;
+        return  FH_Open(filename,type);
     }
 
     private String getRecoderPathByType(String filename,String datatime,boolean isSave) {
