@@ -168,7 +168,7 @@ public class FileManagerService extends Service {
         public boolean deleteFile(String path) throws RemoteException {
             if(Const.SDCARD_IS_EXIST){
                 //jni提供的删除方法
-                boolean result = MediaScanner.deleteFile(path);
+                boolean result = MediaScanner.deleteFile(path,true);
                 Logg.i(LOG_TAG,"====deleteFile==="+result);
                 if(result){
                     String type = FileManager.getSingInstance().getTypebyPath(path);

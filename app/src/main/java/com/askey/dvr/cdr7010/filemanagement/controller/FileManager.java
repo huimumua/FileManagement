@@ -225,15 +225,19 @@ public class FileManager {
         Logg.i(LOG_TAG,"=====FH_Open====="+result);
         if(result == null || result.equals("")){
             String oldestPath = null;
+            Logg.i("getRecoderPath","====FH_FindOldest=======start=======");
             if(filename.contains("_2")){
                 oldestPath = FH_FindOldest(type,2);
             }else{
                 oldestPath = FH_FindOldest(type,1);
             }
+            Logg.i("getRecoderPath","====FH_FindOldest=======end=======");
             if(null != oldestPath && !"".equals(oldestPath)){
+                Logg.i("getRecoderPath","====deleteFile=======start=======");
                 Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
-                boolean deleteResult = MediaScanner.deleteFile(oldestPath);
+                boolean deleteResult = MediaScanner.deleteFile(oldestPath,false);
                 Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
+                Logg.i("getRecoderPath","====deleteFile=======end=======");
                 if(deleteResult && Const.SDCARD_IS_EXIST){
                     result = getRecoderPath(filename,type);
                 }
@@ -255,7 +259,6 @@ public class FileManager {
     private String getRecoderPath(String filename, int type) {
         // SYSSET_last_rectime   19700101000000
         String Mp4FileTime = ContentResolverUtil.getStringSettingValue(AskeySettings.Global.SYSSET_LAST_RECTIME);
-        Logg.i("getRecoderPath","====SYSSET_LAST_RECTIME=="+Mp4FileTime);
 
         Mp4FileTime = ( null == Mp4FileTime ) ? "19700101000000":Mp4FileTime;
 
