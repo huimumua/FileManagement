@@ -49,7 +49,7 @@ public class AskeySettingSyncTask extends AsyncTask<Void, Integer, Boolean> {
         这个userId的格式必须为"_user1、2、3、4、5"
      */
     private void syncSettings(String userId) {
-        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_USER_NAME + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_USER_NAME, 1));
+        Settings.Global.putString(contentResolver, AskeySettings.Global.SYSSET_USER_NAME + userId, Settings.Global.getString(contentResolver, AskeySettings.Global.SYSSET_USER_NAME));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_USER_ID + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_USER_ID, 1));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.ADAS_FCWS + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.ADAS_FCWS, 1));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.ADAS_LDS + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.ADAS_LDS, 1));
