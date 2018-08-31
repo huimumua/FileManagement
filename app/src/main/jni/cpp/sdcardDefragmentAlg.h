@@ -53,6 +53,7 @@ using namespace std;
 #define GIGABYTE (1 << 30)
 
 enum eCameraType{
+	e_CameraAll=0,
 	e_CameraOne=1,
 	e_CameraTwo
 };

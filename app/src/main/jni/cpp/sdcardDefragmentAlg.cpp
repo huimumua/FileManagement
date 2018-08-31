@@ -494,7 +494,7 @@ void check_queue_status(int old_date_flag, queue<string>& folder_files_queue){
     return;
 }
 
-int storage_file_in_queue(eFolderType folderType, queue<string>& camera_one_queue, queue<string>& camera_two_queue){
+int storage_file_in_queue(eFolderType folderType, queue<string>& camera_one_queue, queue<string>& camera_two_queue, int flag){
     char file_path[NORULE_SIZE];
     snprintf(file_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
 
@@ -538,6 +538,9 @@ int storage_file_in_queue(eFolderType folderType, queue<string>& camera_one_queu
 
         int rc = detect_filename_format(vector_str);
         if(rc == CAMERA_ONE_FORMAT){
+            if(flag == e_CameraTwo){
+                continue;
+            }
             camera_one_queue.push(*i);
             ALOGD("this is jni call-> camera one format. %s,  \n", vector_str.c_str());
             if(atoi(vector_str.substr(0,2).c_str()) >= 70){
@@ -546,6 +549,9 @@ int storage_file_in_queue(eFolderType folderType, queue<string>& camera_one_queu
             }
         }
         if(rc == CAMERA_TWO_FORMAT){
+            if(flag == e_CameraOne){
+                continue;
+            }
             camera_two_queue.push(*i);
             ALOGD("this is jni call-> camera two format. %s,  \n", vector_str.c_str());
             if(atoi(vector_str.substr(0,2).c_str()) >= 70){
@@ -844,13 +850,13 @@ int FH_Init(char* mount_path){
 
     queue_Release();
 
-    storage_file_in_queue(e_Event, event_camera_one_queue, event_camera_two_queue);
-    storage_file_in_queue(e_Normal, normal_camera_one_queue, normal_camera_two_queue);
-    storage_file_in_queue(e_Picture, picture_camera_one_queue, picture_camera_two_queue);
-    storage_file_in_queue(e_HASH_EVENT, hash_event_camera_one_queue, hash_event_camera_two_queue);
-    storage_file_in_queue(e_HASH_NORMAL, hash_normal_camera_one_queue, hash_normal_camera_two_queue);
-    storage_file_in_queue(e_NMEA_EVENT, nmea_event_camera_one_queue, nmea_event_camera_two_queue);
-    storage_file_in_queue(e_NMEA_NORMAL, nmea_normal_camera_one_queue, nmea_normal_camera_two_queue);
+    storage_file_in_queue(e_Event, event_camera_one_queue, event_camera_two_queue, e_CameraAll);
+    storage_file_in_queue(e_Normal, normal_camera_one_queue, normal_camera_two_queue, e_CameraAll);
+    storage_file_in_queue(e_Picture, picture_camera_one_queue, picture_camera_two_queue, e_CameraAll);
+    storage_file_in_queue(e_HASH_EVENT, hash_event_camera_one_queue, hash_event_camera_two_queue, e_CameraAll);
+    storage_file_in_queue(e_HASH_NORMAL, hash_normal_camera_one_queue, hash_normal_camera_two_queue, e_CameraAll);
+    storage_file_in_queue(e_NMEA_EVENT, nmea_event_camera_one_queue, nmea_event_camera_two_queue, e_CameraAll);
+    storage_file_in_queue(e_NMEA_NORMAL, nmea_normal_camera_one_queue, nmea_normal_camera_two_queue, e_CameraAll);
 
     ALOGD("this is jni call-> before mutex_unlock. Init finish. before unlock_mutex. Out func: %s, line:%d \n", __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
@@ -984,8 +990,6 @@ bool FH_Close(void){
 }
 
 
-
-
 //
 // true = 1, false = 0;
 bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
@@ -1010,115 +1014,199 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
 
     string filename = absolute_filepath;
     string last_filename;
+    string pop_filename;
 
-    /* If fine "Event" string, get last (number).eve in Free folder,
-      then rename absolute_filepath with (number+1).eve in Free folder */
-    if(filename.find("HASH") != -1){
-        i=e_HASH_EVENT;
-    }
-    if(filename.find("NMEA") != -1){
-        i=e_NMEA_EVENT;
-    }
-
-    for(i; i<TABLE_SIZE; i++){
-
-        if(filename.find(FH_Table[i].folder_type) != -1){
-            switch (i) {
-                case e_Event:
-                    if(cameraType == e_CameraOne){
-                        event_camera_one_queue.pop();
-                        break;
-                    }
-                    if(cameraType == e_CameraTwo){
-                        event_camera_two_queue.pop();
-                        break;
-                    }
-                case e_Normal:
-                    if(cameraType == e_CameraOne){
-                        normal_camera_one_queue.pop();
-                        break;
-                    }
-                    if(cameraType == e_CameraTwo){
-                        normal_camera_two_queue.pop();
-                        break;
-                    }
-                case e_Picture:
-                    if(cameraType == e_CameraOne){
-                        picture_camera_one_queue.pop();
-                        break;
-                    }
-                    if(cameraType == e_CameraTwo){
-                        picture_camera_two_queue.pop();
-                        break;
-                    }
-                case e_HASH_EVENT:
-                    if(cameraType == e_CameraOne){
-                        hash_event_camera_one_queue.pop();
-                        break;
-                    }
-                    if(cameraType == e_CameraTwo){
-                        hash_event_camera_two_queue.pop();
-                        break;
-                    }
-                case e_HASH_NORMAL:
-                    if(cameraType == e_CameraOne){
-                        hash_normal_camera_one_queue.pop();
-                        break;
-                    }
-                    if(cameraType == e_CameraTwo){
-                        hash_normal_camera_two_queue.pop();
-                        break;
-                    }
-                case e_NMEA_EVENT:
-                    if(cameraType == e_CameraOne){
-                        nmea_event_camera_one_queue.pop();
-                        break;
-                    }
-                    if(cameraType == e_CameraTwo){
-                        nmea_event_camera_two_queue.pop();
-                        break;
-                    }
-                case e_NMEA_NORMAL:
-                    if(cameraType == e_CameraOne){
-                        nmea_normal_camera_one_queue.pop();
-                        break;
-                    }
-                    if(cameraType == e_CameraTwo){
-                        nmea_normal_camera_two_queue.pop();
-                        break;
-                    }
-                default:
-                    ALOGD("this is jni call -> not find any about folder_type, absolute_filepath = %s. func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
-                    break;
-            }
-            char new_last_file[NORULE_SIZE];
-            if(cameraType == e_CameraOne){
-                last_filename = SDA_get_last_filename(free_path, FH_Table[i].cam1_extension);
-                int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
-                snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, FH_Table[i].cam1_extension);
-                ALOGD("this is jni call -> CAMERA1 TYPE absolute_filepath = %s, new_last_file = %s. func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
-            }
-            if(cameraType == e_CameraTwo){
-                last_filename = SDA_get_last_filename(free_path, FH_Table[i].cam2_extension);
-                int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
-                snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, FH_Table[i].cam2_extension);
-                ALOGD("this is jni call -> CAMERA2 TYPE absolute_filepath = %s, new_last_file = %s. func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
-            }
-
-            // cout << "new last_filename: " << new_last_file << endl;
-            rc = rename(absolute_filepath, new_last_file);
-            ALOGD("this is jni call-> before mutex_unlock. rename [%s] to [%s], Out func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
-            MUTEX_UNLOCK(&g_mutex);
-            ALOGD("this is jni call-> after mutex_unlock. rename [%s] to [%s], Out func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
-            return (rc == 0 ? true : false);
+    char new_last_file[NORULE_SIZE];
+    for(i=0; i<TABLE_SIZE; i++) {
+        if(filename.find(FH_Table[i].folder_type) != -1) {
+            break;
         }
     }
+    if(filename.find("HASH_EVENT") != -1){
+        i=e_HASH_EVENT;
+    }
+    if(filename.find("HASH_NORMAL") != -1){
+        i=e_HASH_NORMAL;
+    }
+    if(filename.find("NMEA/EVENT") != -1){
+        i=e_NMEA_EVENT;
+    }
+    if(filename.find("NMEA/NORMAL") != -1){
+        i=e_NMEA_NORMAL;
+    }
 
-    // not find any about folderType
-    ALOGD("this is jni call-> before mutex_unlock. not find any about folderType. absolute_filepath = %s. Out func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
+    if(cameraType == e_CameraOne){
+        last_filename = SDA_get_last_filename(free_path, FH_Table[i].cam1_extension);
+        int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
+        snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, FH_Table[i].cam1_extension);
+        ALOGD("this is jni call -> CAMERA1 TYPE absolute_filepath = %s, new_last_file = %s. func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
+    }
+    if(cameraType == e_CameraTwo){
+        last_filename = SDA_get_last_filename(free_path, FH_Table[i].cam2_extension);
+        int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
+        snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, FH_Table[i].cam2_extension);
+        ALOGD("this is jni call -> CAMERA2 TYPE absolute_filepath = %s, new_last_file = %s. func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
+    }
+    rc = rename(absolute_filepath, new_last_file);
+
+    ALOGD("this is jni call -> i = %d. func: %s, line:%d \n", i, __func__, __LINE__);
+    switch (i) {
+        case e_Event:
+            if(cameraType == e_CameraOne){
+                pop_filename = event_camera_one_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(event_camera_one_queue);
+                    storage_file_in_queue(e_Event, event_camera_one_queue, event_camera_two_queue, e_CameraOne);
+                }else{
+                    event_camera_one_queue.pop();
+                }
+                break;
+            }
+            if(cameraType == e_CameraTwo){
+                pop_filename = event_camera_two_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(event_camera_two_queue);
+                    storage_file_in_queue(e_Event, event_camera_one_queue, event_camera_two_queue, e_CameraTwo);
+                }else{
+                    event_camera_two_queue.pop();
+                }
+                break;
+            }
+        case e_Normal:
+            if(cameraType == e_CameraOne){
+                pop_filename = normal_camera_one_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(normal_camera_one_queue);
+                    storage_file_in_queue(e_Normal, normal_camera_one_queue, normal_camera_two_queue, e_CameraOne);
+                }else{
+                    normal_camera_one_queue.pop();
+                }
+                break;
+            }
+            if(cameraType == e_CameraTwo){
+                pop_filename = normal_camera_two_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(normal_camera_two_queue);
+                    storage_file_in_queue(e_Normal, normal_camera_one_queue, normal_camera_two_queue, e_CameraTwo);
+                }else{
+                    normal_camera_two_queue.pop();
+                }
+                break;
+            }
+        case e_Picture:
+            if(cameraType == e_CameraOne){
+                pop_filename = picture_camera_one_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(picture_camera_one_queue);
+                    storage_file_in_queue(e_Picture, picture_camera_one_queue, picture_camera_two_queue, e_CameraOne);
+                }else{
+                    picture_camera_one_queue.pop();
+                }
+                break;
+            }
+            if(cameraType == e_CameraTwo){
+                pop_filename = picture_camera_two_queue.front();
+                if(filename.find(pop_filename) != -1){
+                    clear_queue(picture_camera_two_queue);
+                    storage_file_in_queue(e_Picture, picture_camera_one_queue, picture_camera_two_queue, e_CameraTwo);
+                }else{
+                    picture_camera_two_queue.pop();
+                }
+                break;
+            }
+        case e_HASH_EVENT:
+            if(cameraType == e_CameraOne){
+                pop_filename = hash_event_camera_one_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(hash_event_camera_one_queue);
+                    storage_file_in_queue(e_HASH_EVENT, hash_event_camera_one_queue, hash_event_camera_two_queue, e_CameraOne);
+                }else{
+                    hash_event_camera_one_queue.pop();
+                }
+                break;
+            }
+            if(cameraType == e_CameraTwo){
+                pop_filename = hash_event_camera_two_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(hash_event_camera_two_queue);
+                    storage_file_in_queue(e_HASH_EVENT, hash_event_camera_one_queue, hash_event_camera_two_queue, e_CameraTwo);
+                }else{
+                    hash_event_camera_two_queue.pop();
+                }
+                break;
+            }
+        case e_HASH_NORMAL:
+            if(cameraType == e_CameraOne){
+                pop_filename = hash_normal_camera_one_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(hash_normal_camera_one_queue);
+                    storage_file_in_queue(e_HASH_NORMAL, hash_normal_camera_one_queue, hash_normal_camera_two_queue, e_CameraOne);
+                }else{
+                    hash_normal_camera_one_queue.pop();
+                }
+                break;
+            }
+            if(cameraType == e_CameraTwo){
+                pop_filename = hash_normal_camera_two_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(hash_normal_camera_two_queue);
+                    storage_file_in_queue(e_HASH_NORMAL, hash_normal_camera_one_queue, hash_normal_camera_two_queue, e_CameraTwo);
+                }else{
+                    hash_normal_camera_two_queue.pop();
+                }
+                break;
+            }
+        case e_NMEA_EVENT:
+            if(cameraType == e_CameraOne){
+                pop_filename = nmea_event_camera_one_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(nmea_event_camera_one_queue);
+                    storage_file_in_queue(e_NMEA_EVENT, nmea_event_camera_one_queue, nmea_event_camera_two_queue, e_CameraOne);
+                }else{
+                    nmea_event_camera_one_queue.pop();
+                }
+                break;
+            }
+            if(cameraType == e_CameraTwo){
+                pop_filename = nmea_event_camera_two_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(nmea_event_camera_two_queue);
+                    storage_file_in_queue(e_NMEA_EVENT, nmea_event_camera_one_queue, nmea_event_camera_two_queue, e_CameraTwo);
+                }else{
+                    nmea_event_camera_two_queue.pop();
+                }
+                break;
+            }
+        case e_NMEA_NORMAL:
+            if(cameraType == e_CameraOne){
+                pop_filename = nmea_normal_camera_one_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(nmea_normal_camera_one_queue);
+                    storage_file_in_queue(e_NMEA_NORMAL, nmea_normal_camera_one_queue, nmea_normal_camera_two_queue, e_CameraOne);
+                }else{
+                    nmea_normal_camera_one_queue.pop();
+                }
+                break;
+            }
+            if(cameraType == e_CameraTwo){
+                pop_filename = nmea_normal_camera_two_queue.front();
+                if(filename.find(pop_filename) != 0){
+                    clear_queue(nmea_normal_camera_two_queue);
+                    storage_file_in_queue(e_NMEA_NORMAL, nmea_normal_camera_one_queue, nmea_normal_camera_two_queue, e_CameraTwo);
+                }else{
+                    nmea_normal_camera_two_queue.pop();
+                }
+                break;
+            }
+        default:
+            ALOGD("this is jni call -> not find any about folder_type, absolute_filepath = %s. func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
+            break;
+    }
+
+    ALOGD("this is jni call-> before mutex_unlock. rename [%s] to [%s], Out func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
-    ALOGD("this is jni call-> after mutex_unlock. not find any about folderType. absolute_filepath = %s. Out func: %s, line:%d \n", absolute_filepath, __func__, __LINE__);
-    return false;
+    ALOGD("this is jni call-> after mutex_unlock. rename [%s] to [%s], Out func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
+    return (rc == 0 ? true : false);
 }
 
 string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
