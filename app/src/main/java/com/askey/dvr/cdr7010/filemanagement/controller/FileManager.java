@@ -235,7 +235,7 @@ public class FileManager {
             if(null != oldestPath && !"".equals(oldestPath)){
                 Logg.i("getRecoderPath","====deleteFile=======start=======");
                 Logg.i(LOG_TAG,"=====FH_FindOldest====="+oldestPath);
-                boolean deleteResult = MediaScanner.deleteFile(oldestPath,false);
+                boolean deleteResult = MediaScanner.deleteNmeaFile(oldestPath);
                 Logg.i(LOG_TAG,"=====deleteResult====="+deleteResult);
                 Logg.i("getRecoderPath","====deleteFile=======end=======");
                 if(deleteResult && Const.SDCARD_IS_EXIST){

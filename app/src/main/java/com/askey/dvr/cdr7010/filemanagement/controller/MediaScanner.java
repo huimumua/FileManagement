@@ -507,7 +507,7 @@ public class MediaScanner {
     public static boolean deleteFileByGroup(List <String> pathArray) {
         if(pathArray.size()>0){
             for (String path : pathArray){
-                if(!deleteFile(path,true)){
+                if(!deleteFile(path)){
                     return false;
                 }
             }
@@ -516,6 +516,7 @@ public class MediaScanner {
         return false;
     }
 
+
     /**
      * 删除单个文件
      *
@@ -523,7 +524,7 @@ public class MediaScanner {
      *            要删除的文件的文件名
      * @return 单个文件删除成功返回true，否则返回false
      */
-    public static boolean deleteFile(String fileName,boolean isSync) {
+    public static boolean deleteFile(String fileName) {
         File file = new File(fileName);
         // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
         if (file.exists() && file.isFile()) {
@@ -546,6 +547,8 @@ public class MediaScanner {
                     nmeaPath = fileName.replaceAll("mp4", "nmea").replaceAll("NORMAL", "SYSTEM/NMEA/NORMAL");
                     hashPath = fileName.replaceAll("mp4", "hash").replaceAll("NORMAL", "HASH_NORMAL");
                 }
+                Logg.i(TAG,"-->deleteFile --> deleteNmeaFile=nmeaPath="+nmeaPath);
+                Logg.i(TAG,"-->deleteFile --> deleteNmeaFile=hashPath="+hashPath);
                 //SYSTEM/NMEA/NORMAL
                 deleteNmeaFile(nmeaPath);
                 //这里还需要删除所创建的hash文件
@@ -555,9 +558,7 @@ public class MediaScanner {
             if (result) {
                 //这里清除ContentProvader数据库
                 try {
-                    if(isSync){
-                        FileManager.getSingInstance().FH_Sync();
-                    }
+                    FileManager.getSingInstance().FH_Sync();
                     syncDeleteFile(filePath);
 //                scanFileAsync(FileManagerApplication.getAppContext(),fileName);
                 }catch (Exception e){
@@ -579,20 +580,20 @@ public class MediaScanner {
     public static boolean deleteFile(String fileName,String type) {
         if(type.equals(Const.NORMAL_1_DIR)){
             if(!fileName.contains("_2")){
-                return deleteFile(fileName,true) ;
+                return deleteFile(fileName) ;
             }
             return true;
         }
         if(type.equals(Const.NORMAL_2_DIR)){
             if(fileName.contains("_2")){
-                return deleteFile(fileName,true) ;
+                return deleteFile(fileName) ;
             }
             return true;
         }
-        return deleteFile(fileName,true) ;
+        return deleteFile(fileName) ;
     }
 
-    private static void deleteNmeaFile(String filePath) {
+    public static boolean deleteNmeaFile(String filePath) {
         boolean fileResult = false;
         if(filePath!=null){
             File mFile = new File(filePath);
@@ -607,6 +608,7 @@ public class MediaScanner {
             }
             Logg.i(TAG,"-->deleteFile --> FH_Delete filePath"+filePath+" fileResult =="+fileResult);
         }
+        return fileResult;
     }
 
     public static void syncDeleteFile(String filePath) {

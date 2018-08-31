@@ -68,7 +68,7 @@ interface IFileManagerAidlInterface {
      boolean checkNewSystemVersion();
 
         /**
-        * sdcard状态
+         * sdcard状态
          * show_sdcard_not_supported   0
          * show_sdcard_unrecognizable  1
          * show_sdcard_not_exist       2
