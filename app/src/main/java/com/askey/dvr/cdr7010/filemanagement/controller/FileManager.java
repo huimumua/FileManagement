@@ -284,7 +284,7 @@ public class FileManager {
         }else if(filename.contains(".nmea")){
             filename = getRecoderPathByType(filename,NmeaFileTime,false);
         }else if(filename.contains(".hash")){
-            filename = getRecoderPathByType(filename,HashFileTime,false);
+//            filename = getRecoderPathByType(filename,HashFileTime,false);
         }
         Logg.i("getRecoderPath","====openSdcard=jni=start=filename="+filename+"==type="+type);
         String filePath = FH_Open(filename,type);
