@@ -36,9 +36,9 @@ import org.json.JSONObject;
  * 修改时间：2018/5/24 13:43
  * 修改备注：
  */
-public class AskeySettingsService extends Service {
+public class AskeySettingsService extends Service implements AskeySettingSyncTask.AskeySettingSyncCallback{
 
-    private static final String LOG_TAG = AskeySettingsService.class.getSimpleName();
+    private static final String TAG = AskeySettingsService.class.getSimpleName();
     private ICommunication mCommunication;
     private ContentResolver contentResolver;
     private TelephonyManager mPhoneManager;
@@ -70,34 +70,41 @@ public class AskeySettingsService extends Service {
         @Override
         public void init(String userId) throws RemoteException {
             if (null != userId && !"".equals(userId)) {
-                Logg.i(LOG_TAG, "init-> userId = " + userId);
+                Logg.i(TAG, "init-> userId = " + userId);
                 AskeySettingInitAsyncTask askeySettingInitAsyncTask = new AskeySettingInitAsyncTask();
                 askeySettingInitAsyncTask.execute(userId);
             } else {
-                Logg.e(LOG_TAG, "init-> userId = " + userId);
+                Logg.e(TAG, "init-> userId = " + userId);
             }
         }
 
         @Override
         public void sync() throws RemoteException {
             //用户自己手动设置
-            AskeySettingSyncTask askeySettingSyncTask = new AskeySettingSyncTask();
+            Log.d(TAG, "sync: ");
+            AskeySettingSyncTask askeySettingSyncTask = new AskeySettingSyncTask(AskeySettingsService.this);
             askeySettingSyncTask.execute();
-            Intent intent = new Intent();
-            intent.setAction("jvcmodule.local.CommuicationService");
-            intent.setPackage("com.askey.dvr.cdr7010.dashcam");
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
 
         @Override
         public void write(String key, String value) throws RemoteException {
-            //这里负责处理jvc后台处理的设置  需要改变 user 和 user*两个地方,key应该是带user后缀的那种
+            //这里负责处理jvc后台处理的设置  需要改变 user 和 user*两个地方,key应该是带user后缀的那种，这里时间相关的需用String类型的，暂时没有修改
 
             //带后缀的
             Settings.Global.putInt(contentResolver, key, Integer.parseInt(value));
             //不带后缀的
             Settings.Global.putInt(contentResolver, key.substring(0, key.lastIndexOf("_")), Integer.parseInt(value));
         }
+    }
+    /*
+        sync完成之后会回调这个方法
+     */
+    @Override
+    public void syncSettingsCompleted() {
+        Intent intent = new Intent();
+        intent.setAction("jvcmodule.local.CommuicationService");
+        intent.setPackage("com.askey.dvr.cdr7010.dashcam");
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -107,7 +114,7 @@ public class AskeySettingsService extends Service {
             try {
                 isSettingsBind = true;
                 mCommunication.settingsUpdateRequest(settingsJson());
-                Log.d(LOG_TAG, "onServiceConnected: " + settingsJson());
+                Log.d(TAG, "onServiceConnected: " + settingsJson());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

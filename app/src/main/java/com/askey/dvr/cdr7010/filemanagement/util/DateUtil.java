@@ -229,4 +229,10 @@ public class DateUtil {
         return reStr;
     }
 
+    public static String stamps2Time(long stamps){
+        Date date = new Date(stamps);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        return dateFormat.format(date);
+    }
+
 }

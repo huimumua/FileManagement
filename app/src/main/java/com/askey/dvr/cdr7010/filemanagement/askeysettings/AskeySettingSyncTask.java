@@ -3,8 +3,10 @@ package com.askey.dvr.cdr7010.filemanagement.askeysettings;
 import android.content.ContentResolver;
 import android.os.AsyncTask;
 import android.provider.Settings;
+import android.util.Log;
 
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
+import com.askey.dvr.cdr7010.filemanagement.util.DateUtil;
 import com.askey.platform.AskeySettings;
 
 /**
@@ -17,14 +19,18 @@ import com.askey.platform.AskeySettings;
  * 修改备注：
  */
 public class AskeySettingSyncTask extends AsyncTask<Void, Integer, Boolean> {
-    private static final String LOG_TAG = AskeySettingSyncTask.class.getSimpleName();
+    private static final String TAG = AskeySettingSyncTask.class.getSimpleName();
     private int selectUser;
     private ContentResolver contentResolver;
     private String userId;
+    private AskeySettingSyncCallback askeySettingSyncCallback;
 
-    public AskeySettingSyncTask() {
+    public AskeySettingSyncTask(AskeySettingSyncCallback askeySettingSyncCallback) {
+
         contentResolver = FileManagerApplication.getAppContext().getContentResolver();
         selectUser = Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_SELECT_USER, 0);
+        Log.d(TAG, "selectUser: "+selectUser);
+        this.askeySettingSyncCallback = askeySettingSyncCallback;
     }
 
 
@@ -45,10 +51,21 @@ public class AskeySettingSyncTask extends AsyncTask<Void, Integer, Boolean> {
         return null;
     }
 
+    @Override
+    protected void onPreExecute() {
+        if (null != askeySettingSyncCallback) {
+            askeySettingSyncCallback.syncSettingsCompleted();
+        }
+        super.onPreExecute();
+    }
+
     /*
-        这个userId的格式必须为"_user1、2、3、4、5"
-     */
+            这个userId的格式必须为"_user1、2、3、4、5"
+         */
     private void syncSettings(String userId) {
+        //每次sync都要把通用设置的时间更新一次
+        Settings.Global.putString(contentResolver, AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS, DateUtil.stamps2Time(System.currentTimeMillis()));
+
         Settings.Global.putString(contentResolver, AskeySettings.Global.SYSSET_USER_NAME + userId, Settings.Global.getString(contentResolver, AskeySettings.Global.SYSSET_USER_NAME));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_USER_ID + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_USER_ID, 1));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.ADAS_FCWS + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.ADAS_FCWS, 1));
@@ -76,8 +93,12 @@ public class AskeySettingSyncTask extends AsyncTask<Void, Integer, Boolean> {
         Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_TIME + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_TIME, 10));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_ACTION + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_POWERSAVE_ACTION, 0));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_LANGUAGE + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_LANGUAGE, 0));
-        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS, 0));
+        Settings.Global.putString(contentResolver, AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS + userId, DateUtil.stamps2Time(System.currentTimeMillis()));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.COMM_EMERGENCY_AUTO + userId, Settings.Global.getInt(contentResolver, AskeySettings.Global.COMM_EMERGENCY_AUTO, 0));
+    }
+
+    public interface AskeySettingSyncCallback {
+        void syncSettingsCompleted();
     }
 
 }
