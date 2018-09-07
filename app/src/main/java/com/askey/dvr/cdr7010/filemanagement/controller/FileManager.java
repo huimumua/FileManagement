@@ -249,9 +249,9 @@ public class FileManager {
     }
 
     private String NmeaFileTime = "";
-    private String HashFileTime = "";
-    private String JpgFileTime = "";
-    private int JpgFileCount = 0;
+//    private String HashFileTime = "";
+//    private String JpgFileTime = "";
+//    private int JpgFileCount = 0;
 
     /**
      * 处理文件名称，当系统时间未校正时，名称中需要增加_unkonwn,若已经改变则不需要处理
@@ -263,24 +263,24 @@ public class FileManager {
         Mp4FileTime = ( null == Mp4FileTime ) ? "19700101000000":Mp4FileTime;
 
         NmeaFileTime = Mp4FileTime;
-        HashFileTime = Mp4FileTime;
-        if(type == Const.TYPE_EVENT_DIR){
-            JpgFileTime = Mp4FileTime;
-        }
+//        HashFileTime = Mp4FileTime;
+//        if(type == Const.TYPE_EVENT_DIR){
+//            JpgFileTime = Mp4FileTime;
+//        }
         if(filename.contains(".mp4")){
             filename = getRecoderPathByType(filename,Mp4FileTime,true);
         }else if(filename.contains(".jpg")){
-            JpgFileCount = JpgFileCount+1;
-            if(JpgFileCount == 1){
-                filename = getRecoderPathByType(filename,JpgFileTime,-3);
-            }
-            if(JpgFileCount == 2){
-                filename = getRecoderPathByType(filename,JpgFileTime,0);
-            }
-            if(JpgFileCount == 3){
-                filename = getRecoderPathByType(filename,JpgFileTime,3);
-                JpgFileCount = 0;
-            }
+//            JpgFileCount = JpgFileCount+1;
+//            if(JpgFileCount == 1){
+//                filename = getRecoderPathByType(filename,JpgFileTime,-3);
+//            }
+//            if(JpgFileCount == 2){
+//                filename = getRecoderPathByType(filename,JpgFileTime,0);
+//            }
+//            if(JpgFileCount == 3){
+//                filename = getRecoderPathByType(filename,JpgFileTime,3);
+//                JpgFileCount = 0;
+//            }
         }else if(filename.contains(".nmea")){
             filename = getRecoderPathByType(filename,NmeaFileTime,false);
         }else if(filename.contains(".hash")){
