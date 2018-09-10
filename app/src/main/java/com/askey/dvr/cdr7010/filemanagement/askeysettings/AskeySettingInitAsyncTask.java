@@ -55,6 +55,7 @@ public class AskeySettingInitAsyncTask extends AsyncTask<String, Integer, Boolea
         这个userId的格式必须为"_user1、2、3、4、5"
      */
     private void initSettings(String userId) {
+        Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_SELECT_USER, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_USER_ID + userId, 1));
         Settings.Global.putString(contentResolver, AskeySettings.Global.SYSSET_USER_NAME, Settings.Global.getString(contentResolver, AskeySettings.Global.SYSSET_USER_NAME + userId));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.SYSSET_USER_ID, Settings.Global.getInt(contentResolver, AskeySettings.Global.SYSSET_USER_ID + userId, 1));
         Settings.Global.putInt(contentResolver, AskeySettings.Global.ADAS_FCWS, Settings.Global.getInt(contentResolver, AskeySettings.Global.ADAS_FCWS + userId, 1));

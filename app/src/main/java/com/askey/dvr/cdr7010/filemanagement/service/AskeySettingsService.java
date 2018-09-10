@@ -101,10 +101,19 @@ public class AskeySettingsService extends Service implements AskeySettingSyncTas
      */
     @Override
     public void syncSettingsCompleted() {
-        Intent intent = new Intent();
-        intent.setAction("jvcmodule.local.CommuicationService");
-        intent.setPackage("com.askey.dvr.cdr7010.dashcam");
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        if (null == mCommunication) {
+            Intent intent = new Intent();
+            intent.setAction("jvcmodule.local.CommuicationService");
+            intent.setPackage("com.askey.dvr.cdr7010.dashcam");
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            return;
+        }
+        try {
+            mCommunication.settingsUpdateRequest(settingsJson());
+            Log.d(TAG, "onServiceConnected_0: " + settingsJson());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -114,7 +123,7 @@ public class AskeySettingsService extends Service implements AskeySettingSyncTas
             try {
                 isSettingsBind = true;
                 mCommunication.settingsUpdateRequest(settingsJson());
-                Log.d(TAG, "onServiceConnected: " + settingsJson());
+                Log.d(TAG, "onServiceConnected_1: " + settingsJson());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -191,7 +200,7 @@ public class AskeySettingsService extends Service implements AskeySettingSyncTas
         userNum.put("lang", getIntSettingValue(AskeySettings.Global.SYSSET_LANGUAGE + userTag + num, 0));
         userNum.put("set_update_day", getStringSettingValue(AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS + userTag + num));
         userNum.put("outbound_call", getIntSettingValue(AskeySettings.Global.COMM_EMERGENCY_AUTO + userTag + num, 1));
-
+        userNum.put("lastupdate", getStringSettingValue(AskeySettings.Global.SYSSET_SET_LASTUPDATE_DAYS + userTag + num));
         setting.put("user0" + num, userNum);
     }
 
@@ -205,6 +214,7 @@ public class AskeySettingsService extends Service implements AskeySettingSyncTas
 
     @Override
     public boolean onUnbind(Intent intent) {
+        Log.d(TAG, "onUnbind: ");
         if (isSettingsBind) {
             unbindService(mConnection);
         }
@@ -214,7 +224,8 @@ public class AskeySettingsService extends Service implements AskeySettingSyncTas
     @Override
     public void onDestroy() {
         super.onDestroy();
-        contentResolver.unregisterContentObserver(myObserver);
+        Log.d(TAG, "onDestroy: ");
+//        contentResolver.unregisterContentObserver(myObserver);
     }
 
     private String getImei(TelephonyManager manager) {
