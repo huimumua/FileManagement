@@ -54,6 +54,15 @@
                 <action android:name="com.askey.askeysettingservice.action" />
             </intent-filter>
         </service>
+        <service
+            android:name=".service.ContentObserverService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.askey.contentobserverservice.action" />
+                <action android:name="com.askey.contentobserverservice.action" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

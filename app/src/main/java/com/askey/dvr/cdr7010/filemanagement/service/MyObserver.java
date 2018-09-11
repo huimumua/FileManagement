@@ -1,15 +1,22 @@
 package com.askey.dvr.cdr7010.filemanagement.service;
 
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.askey.dvr.cdr7010.dashcam.ICommunication;
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
+import com.askey.dvr.cdr7010.filemanagement.util.JsonUtil;
 import com.askey.platform.AskeySettings;
 
 import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT;
@@ -21,17 +28,19 @@ public class MyObserver extends ContentObserver {
     private static final String SCREEN_BRIGHTNESS = "content://settings/global/SYSSET_monitor_brightness";
     private static final String SYSTEM_POWERSAVE_TIME = "content://settings/global/SYSSET_powersave_time";
     private static final String SYSTEM_POWERSAVE_ACTION = "content://settings/global/SYSSET_powersave_action";
+    private static final String RECSET_VOCIE_RECORD = "content://settings/global/RECSET_voice_record";
 
     private ContentResolver contentResolver;
     private Context context;
     private AudioManager audioManager;
+    private ICommunication mCommunication;
 
     /**
      * Creates a content observer.
      *
      * @param handler The handler to run {@link #onChange} on, or null if none.
      */
-    public MyObserver(Handler handler) {
+    MyObserver(Handler handler) {
         super(handler);
         contentResolver = FileManagerApplication.getAppContext().getContentResolver();
         context = FileManagerApplication.getAppContext();
@@ -41,7 +50,6 @@ public class MyObserver extends ContentObserver {
     @Override
     public void onChange(boolean selfChange, Uri uri) {
         super.onChange(selfChange, uri);
-        Log.d(TAG, "onChange: " + uri);
         switch (uri.toString()) {
             case SYSTEM_NOTIFY_VOL:
                 if (null != audioManager) {
@@ -84,6 +92,21 @@ public class MyObserver extends ContentObserver {
                         break;
                 }
                 break;
+            case RECSET_VOCIE_RECORD:
+                if (null == mCommunication) {
+                    Intent intent = new Intent();
+                    intent.setAction("jvcmodule.local.CommuicationService");
+                    intent.setPackage("com.askey.dvr.cdr7010.dashcam");
+                    context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+                } else {
+                    try {
+                        Log.d(TAG, "onServiceConnected: " + JsonUtil.settingsJson(FileManagerApplication.getAppContext()));
+                        mCommunication.settingsUpdateRequest(JsonUtil.settingsJson(context));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
         }
     }
 
@@ -101,4 +124,22 @@ public class MyObserver extends ContentObserver {
         android.provider.Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
         resolver.notifyChange(uri, null);
     }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mCommunication = ICommunication.Stub.asInterface(service);
+            try {
+                mCommunication.settingsUpdateRequest(JsonUtil.settingsJson(FileManagerApplication.getAppContext()));
+                Log.d(TAG, "onServiceConnected: " + JsonUtil.settingsJson(FileManagerApplication.getAppContext()));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 }

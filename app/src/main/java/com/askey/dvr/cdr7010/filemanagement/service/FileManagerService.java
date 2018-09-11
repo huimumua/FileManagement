@@ -12,14 +12,10 @@ import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
 import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
 import com.askey.dvr.cdr7010.filemanagement.controller.SdcardManager;
-import com.askey.dvr.cdr7010.filemanagement.util.BroadcastUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
-import com.askey.dvr.cdr7010.filemanagement.util.FileUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
-import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtils;
 
-import java.io.File;
 import java.util.List;
 
 public class FileManagerService extends Service {
@@ -36,6 +32,9 @@ public class FileManagerService extends Service {
 
         Intent startIntent = new Intent(this, SdcardService.class);
         startService(startIntent);
+        //启动监听器的service
+        Intent observerIntent = new Intent(this, ContentObserverService.class);
+        startService(observerIntent);
 
         Const.SDCARD_IS_EXIST = SdcardUtil.checkSdcardExist();
         if(Const.SDCARD_IS_EXIST){
@@ -319,6 +318,8 @@ public class FileManagerService extends Service {
         super.onDestroy();
         Intent stopIntent = new Intent(this, SdcardService.class);
         stopService(stopIntent);
+        Intent observerIntent = new Intent(this, ContentObserverService.class);
+        stopService(observerIntent);
         Logg.i(LOG_TAG, "onDestroy:");
     }
 
