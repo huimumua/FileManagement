@@ -1054,7 +1054,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
         case e_Event:
             if(cameraType == e_CameraOne){
                 pop_filename = event_camera_one_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(event_camera_one_queue);
                     storage_file_in_queue(e_Event, event_camera_one_queue, event_camera_two_queue, e_CameraOne);
                 }else{
@@ -1064,7 +1064,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 pop_filename = event_camera_two_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(event_camera_two_queue);
                     storage_file_in_queue(e_Event, event_camera_one_queue, event_camera_two_queue, e_CameraTwo);
                 }else{
@@ -1075,7 +1075,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
         case e_Normal:
             if(cameraType == e_CameraOne){
                 pop_filename = normal_camera_one_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(normal_camera_one_queue);
                     storage_file_in_queue(e_Normal, normal_camera_one_queue, normal_camera_two_queue, e_CameraOne);
                 }else{
@@ -1085,7 +1085,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 pop_filename = normal_camera_two_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(normal_camera_two_queue);
                     storage_file_in_queue(e_Normal, normal_camera_one_queue, normal_camera_two_queue, e_CameraTwo);
                 }else{
@@ -1096,7 +1096,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
         case e_Picture:
             if(cameraType == e_CameraOne){
                 pop_filename = picture_camera_one_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(picture_camera_one_queue);
                     storage_file_in_queue(e_Picture, picture_camera_one_queue, picture_camera_two_queue, e_CameraOne);
                 }else{
@@ -1106,7 +1106,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 pop_filename = picture_camera_two_queue.front();
-                if(filename.find(pop_filename) != -1){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(picture_camera_two_queue);
                     storage_file_in_queue(e_Picture, picture_camera_one_queue, picture_camera_two_queue, e_CameraTwo);
                 }else{
@@ -1117,7 +1117,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
         case e_HASH_EVENT:
             if(cameraType == e_CameraOne){
                 pop_filename = hash_event_camera_one_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(hash_event_camera_one_queue);
                     storage_file_in_queue(e_HASH_EVENT, hash_event_camera_one_queue, hash_event_camera_two_queue, e_CameraOne);
                 }else{
@@ -1127,7 +1127,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 pop_filename = hash_event_camera_two_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(hash_event_camera_two_queue);
                     storage_file_in_queue(e_HASH_EVENT, hash_event_camera_one_queue, hash_event_camera_two_queue, e_CameraTwo);
                 }else{
@@ -1138,7 +1138,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
         case e_HASH_NORMAL:
             if(cameraType == e_CameraOne){
                 pop_filename = hash_normal_camera_one_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(hash_normal_camera_one_queue);
                     storage_file_in_queue(e_HASH_NORMAL, hash_normal_camera_one_queue, hash_normal_camera_two_queue, e_CameraOne);
                 }else{
@@ -1148,7 +1148,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 pop_filename = hash_normal_camera_two_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(hash_normal_camera_two_queue);
                     storage_file_in_queue(e_HASH_NORMAL, hash_normal_camera_one_queue, hash_normal_camera_two_queue, e_CameraTwo);
                 }else{
@@ -1159,7 +1159,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
         case e_NMEA_EVENT:
             if(cameraType == e_CameraOne){
                 pop_filename = nmea_event_camera_one_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(nmea_event_camera_one_queue);
                     storage_file_in_queue(e_NMEA_EVENT, nmea_event_camera_one_queue, nmea_event_camera_two_queue, e_CameraOne);
                 }else{
@@ -1169,7 +1169,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 pop_filename = nmea_event_camera_two_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(nmea_event_camera_two_queue);
                     storage_file_in_queue(e_NMEA_EVENT, nmea_event_camera_one_queue, nmea_event_camera_two_queue, e_CameraTwo);
                 }else{
@@ -1180,7 +1180,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
         case e_NMEA_NORMAL:
             if(cameraType == e_CameraOne){
                 pop_filename = nmea_normal_camera_one_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(nmea_normal_camera_one_queue);
                     storage_file_in_queue(e_NMEA_NORMAL, nmea_normal_camera_one_queue, nmea_normal_camera_two_queue, e_CameraOne);
                 }else{
@@ -1190,7 +1190,7 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
             }
             if(cameraType == e_CameraTwo){
                 pop_filename = nmea_normal_camera_two_queue.front();
-                if(filename.find(pop_filename) != 0){
+                if(filename.find(pop_filename) == -1){
                     clear_queue(nmea_normal_camera_two_queue);
                     storage_file_in_queue(e_NMEA_NORMAL, nmea_normal_camera_one_queue, nmea_normal_camera_two_queue, e_CameraTwo);
                 }else{
