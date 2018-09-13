@@ -4,7 +4,7 @@
 #include <queue>
 
 #define CFG_NAME "table.config"
-const char TABLE_VERSION = 0x05;
+const char TABLE_VERSION = 0x06;
 
 #define LOG_TAG "sdcardDefragmentAlg.cpp"
 
@@ -77,8 +77,8 @@ struct file_struct FH_Table[TABLE_SIZE] = {{0, 0, 0, 0.07, 20*MEGABYTE, 0, "EVEN
                                            {0, 0, 0, 0.82, 76*MEGABYTE, 0, "NORMAL",  ".1nor", ".2nor"}, // normal
                                            {0, 0, 0, 0.01,  1*MEGABYTE, 0, "PICTURE", ".1pic", ".2pic"}, // picture
                                            {0, 0, 0, 0.1,  76*MEGABYTE, 0, "SYSTEM",  ".1sys", ".2sys"}, // system
-                                           {0, 0, 1, 0,    25*KILOBYTE, 0, "HASH_EVENT", ".1ehash", ".2ehash"},
-                                           {0, 0, 1, 0,    25*KILOBYTE, 0, "HASH_NORMAL",".1nhash", ".2nhash"},
+                                           {0, 0, 1, 0,    25*KILOBYTE, 0, ".HASH_EVENT", ".1ehash", ".2ehash"},
+                                           {0, 0, 1, 0,    25*KILOBYTE, 0, ".HASH_NORMAL",".1nhash", ".2nhash"},
                                            {0, 0, 1, 0,   100*KILOBYTE, 0, "SYSTEM/NMEA/EVENT", ".1neve", ".2neve"},
                                            {0, 0, 1, 0,   100*KILOBYTE, 0, "SYSTEM/NMEA/NORMAL",".1nnor", ".1nnor"}};
 
