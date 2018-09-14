@@ -495,12 +495,12 @@ void check_queue_status(int old_date_flag, queue<string>& folder_files_queue){
 }
 
 int storage_file_in_queue(eFolderType folderType, queue<string>& camera_one_queue, queue<string>& camera_two_queue, int flag){
-    char file_path[NORULE_SIZE];
-    snprintf(file_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
+    char folder_path[NORULE_SIZE];
+    snprintf(folder_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
 
     vector<string> files = vector<string>();
 
-    DIR *dp = opendir(file_path);
+    DIR *dp = opendir(folder_path);
     struct dirent *dirp;
 
     int camera_one_old_date_flag = 0;
@@ -514,7 +514,12 @@ int storage_file_in_queue(eFolderType folderType, queue<string>& camera_one_queu
     while ((dirp = readdir(dp)) != NULL) {
 
         string inPath_filename = dirp->d_name;
-        // cout << inPath_filename << endl;
+        char file_path[NORULE_SIZE];
+        snprintf(file_path, NORULE_SIZE, "%s/%s", folder_path, dirp->d_name);
+        int ret = SDA_file_exists(file_path);
+        if(ret != 0){
+            continue;
+        }
         int rc = detect_filename_format(inPath_filename);
         if(rc == -1){
             continue;
