@@ -17,20 +17,26 @@ typedef struct {
 static context_t sVMContext = {NULL};
 
 jboolean FileManager_FH_ValidFormat(JNIEnv *env, jclass object,jstring mount_path){
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     char *infoPath = (char *) env->GetStringUTFChars(mount_path, 0);
     jboolean result = (jboolean)FH_ValidFormat(infoPath);
     env->ReleaseStringUTFChars(mount_path, infoPath);
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
     return result;
 }
 
 jint FileManager_FH_Init(JNIEnv *env, jclass object,jstring mount_path, jint cameraNum, jint proportionOfCamera){
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     char *infoPath = (char *) env->GetStringUTFChars(mount_path, 0);
-     return FH_Init(infoPath, cameraNum, (eProportion_of_camone_camtwo)proportionOfCamera);
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
+    return FH_Init(infoPath, cameraNum, (eProportion_of_camone_camtwo)proportionOfCamera);
 }
 
 jstring FileManager_FH_Open(JNIEnv *env, jclass object, jstring file_name, jint type){
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     char *filename = (char *) env->GetStringUTFChars(file_name, 0);
     string result = FH_Open(filename,(eFolderType)type);
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
     return env->NewStringUTF(result.c_str());
 //     char* str = FH_Open(filename,(eFolderType)type);
 //    if(str !=NULL ){
@@ -42,22 +48,28 @@ jstring FileManager_FH_Open(JNIEnv *env, jclass object, jstring file_name, jint 
  }
 
 jboolean FileManager_FH_Close(JNIEnv *env, jclass object){
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     return (jboolean)FH_Close();
 }
 
 void  FileManager_FH_Sync(JNIEnv *env, jclass object){
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     return FH_Sync();
 }
 
 jboolean  FileManager_FH_Delete(JNIEnv *env, jclass object,jstring absolute_filepath,jint cameraType){
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     char *absoluteFilePath = (char *) env->GetStringUTFChars(absolute_filepath, 0);
     jboolean result = (jboolean)FH_Delete(absoluteFilePath,(eCameraType)cameraType);
     env->ReleaseStringUTFChars(absolute_filepath, absoluteFilePath);
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
     return result;
 }
 
 jstring FileManager_FH_FindOldest(JNIEnv *env, jclass object,jint type,jint cameraType){
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     string result = FH_FindOldest((eFolderType)type,(eCameraType)cameraType);
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
     return env->NewStringUTF(result.c_str());
 }
 
@@ -96,13 +108,18 @@ jboolean FileManager_FH_unlock(JNIEnv *env, jclass object,jlong file_pointer){
 
 
 static void FileManager_init_native(JNIEnv *env, jclass clazz) {
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     sVMContext.env = env;
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
 }
 
 static void FileManager_native_init(JNIEnv *env, jobject thiz) {
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     if (!sVMContext.cb) {
+        ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
         sVMContext.cb = env->NewGlobalRef(thiz);
     }
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
 }
 
 static const JNINativeMethod gMethods[] = {
@@ -124,21 +141,24 @@ static const JNINativeMethod gMethods[] = {
 static int registerNativeMethods(JNIEnv* env, const char* className,
                                  const JNINativeMethod* methods, int numMethods)
 {
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     jclass clazz;
     clazz = env->FindClass(className);
 
     if (clazz == NULL)
     {
+        ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
         return JNI_FALSE;
     }
 
     if (env->RegisterNatives(clazz, methods, numMethods) < 0)
     {
+        ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
         return JNI_FALSE;
     }
 
     env->DeleteLocalRef(clazz);
-
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
     return JNI_TRUE;
 }
 
@@ -151,7 +171,9 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         goto error;
     }
 
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     result = registerNativeMethods(env, "com/askey/dvr/cdr7010/filemanagement/controller/FileManager", gMethods, NELEM(gMethods));
+    ALOGD("this is jni call-> result = %d. Out func: %s, line:%d \n", result, __func__, __LINE__);
     if (result < 0) {
         goto error;
     }
@@ -160,6 +182,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     result = JNI_VERSION_1_4;
 
     error:
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
     return result;
 }
 
