@@ -1,9 +1,11 @@
 package com.askey.dvr.cdr7010.filemanagement.controller;
 
 import android.content.Context;
+import android.hardware.Camera;
 import android.os.Environment;
 
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
+import com.askey.dvr.cdr7010.filemanagement.bean.ProportionOfCamera;
 import com.askey.dvr.cdr7010.filemanagement.util.BroadcastUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
 import com.askey.dvr.cdr7010.filemanagement.util.ContentResolverUtil;
@@ -55,7 +57,7 @@ public class FileManager {
 // Input:  mount path
 // Output: bool, true = 1, false = 0;
 // ** If SDCARD not clear, return false **
-    public native int FH_Init(String mount_path);
+    public native int FH_Init(String mount_path, int cameraNum, int proportionOfCamera);
 
 //
 // Purpose: 1.Choice folderType to openfile
@@ -151,8 +153,13 @@ public class FileManager {
         int result = 2;
         if(Const.SDCARD_IS_EXIST){
             Const.SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
-            result = FH_Init(Const.SDCARD_PATH);
-            Logg.i(LOG_TAG,"==sdcardInit=FH_Init="+result);
+            if(Camera.getNumberOfCameras() == 2){
+                result = FH_Init(Const.SDCARD_PATH, 2, ProportionOfCamera.e_five_to_five.getIndex());
+                Logg.i(LOG_TAG,"sdcardInit: two camera. FH_Init="+result);
+            }else {
+                result = FH_Init(Const.SDCARD_PATH, 1, ProportionOfCamera.e_ten_to_zero.getIndex());
+                Logg.i(LOG_TAG,"sdcardInit: one camera. FH_Init="+result);
+            }
         }
         return result;
     }

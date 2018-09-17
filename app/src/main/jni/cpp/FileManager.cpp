@@ -23,9 +23,9 @@ jboolean FileManager_FH_ValidFormat(JNIEnv *env, jclass object,jstring mount_pat
     return result;
 }
 
-jint FileManager_FH_Init(JNIEnv *env, jclass object,jstring mount_path){
+jint FileManager_FH_Init(JNIEnv *env, jclass object,jstring mount_path, jint cameraNum, jint proportionOfCamera){
     char *infoPath = (char *) env->GetStringUTFChars(mount_path, 0);
-     return FH_Init(infoPath);
+     return FH_Init(infoPath, cameraNum, (eProportion_of_camone_camtwo)proportionOfCamera);
 }
 
 jstring FileManager_FH_Open(JNIEnv *env, jclass object, jstring file_name, jint type){
@@ -108,7 +108,7 @@ static void FileManager_native_init(JNIEnv *env, jobject thiz) {
 static const JNINativeMethod gMethods[] = {
         { "init_native", "()V", (void *)FileManager_init_native },
         { "FH_ValidFormat", "(Ljava/lang/String;)Z", (void *)FileManager_FH_ValidFormat },
-        { "FH_Init", "(Ljava/lang/String;)I", (void *)FileManager_FH_Init },
+        { "FH_Init", "(Ljava/lang/String;II)I", (void *)FileManager_FH_Init },
         { "FH_Open", "(Ljava/lang/String;I)Ljava/lang/String;", (void *)FileManager_FH_Open },
         { "FH_Close", "()Z", (void *)FileManager_FH_Close },
         { "FH_Sync", "()V", (void *)FileManager_FH_Sync },
