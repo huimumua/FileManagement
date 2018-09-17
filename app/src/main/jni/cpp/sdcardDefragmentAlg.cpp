@@ -26,7 +26,7 @@ int file_lock()
     if ( NULL == f )
     {
         ALOGD("this is jni call-> open /sdcard/.sddefrag.lock error. In func: %s, line:%d \n", __func__, __LINE__);
-                return -1;
+        return -1;
     }
     if(0 == flock(fileno(f), LOCK_EX))
     {
@@ -77,10 +77,26 @@ struct file_struct FH_Table[TABLE_SIZE] = {{0, 0, 0, 0.07, 20*MEGABYTE, 0, "EVEN
                                            {0, 0, 0, 0.82, 76*MEGABYTE, 0, "NORMAL",  ".1nor", ".2nor"}, // normal
                                            {0, 0, 0, 0.01,  1*MEGABYTE, 0, "PICTURE", ".1pic", ".2pic"}, // picture
                                            {0, 0, 0, 0.1,  76*MEGABYTE, 0, "SYSTEM",  ".1sys", ".2sys"}, // system
-                                           {0, 0, 1, 0,    25*KILOBYTE, 0, ".HASH_EVENT", ".1ehash", ".2ehash"},
-                                           {0, 0, 1, 0,    25*KILOBYTE, 0, ".HASH_NORMAL",".1nhash", ".2nhash"},
-                                           {0, 0, 1, 0,   100*KILOBYTE, 0, "SYSTEM/NMEA/EVENT", ".1neve", ".2neve"},
-                                           {0, 0, 1, 0,   100*KILOBYTE, 0, "SYSTEM/NMEA/NORMAL",".1nnor", ".1nnor"}};
+                                           {0, 0, 1, 0,    25*KILOBYTE, 0, ".HASH_EVENT", ".1ehash", ".2ehash"}, // hash event
+                                           {0, 0, 1, 0,    25*KILOBYTE, 0, ".HASH_NORMAL",".1nhash", ".2nhash"}, // hash normal
+                                           {0, 0, 1, 0,   100*KILOBYTE, 0, "SYSTEM/NMEA/EVENT", ".1neve", ".2neve"},  // nmea event
+                                           {0, 0, 1, 0,   100*KILOBYTE, 0, "SYSTEM/NMEA/NORMAL",".1nnor", ".1nnor"}}; // nmea normal
+
+struct cameraNum{
+    int cameraOne_num;
+    int cameraTwo_num;
+};
+
+
+struct cameraNum cameraNumber[TABLE_SIZE] = {{0, 0},  // event
+                                             {0, 0},  // normal
+                                             {0, 0},  // picture
+                                             {0, 0},  // system
+                                             {0, 0},  // hash event
+                                             {0, 0},  // hash normal
+                                             {0, 0},  // nmea event
+                                             {0, 0}}; // nmea normal
+
 
 queue<string> event_camera_one_queue;
 queue<string> event_camera_two_queue;
@@ -167,9 +183,13 @@ int detect_filename_format(string str){
     return CAMERA_ONE_FORMAT;
 }
 
-int SDA_get_recoder_file_num(char* path){
-    ALOGD("this is jni call-> path = %s. In func: %s, line:%d \n", path, __func__, __LINE__);
-    DIR *dp = opendir(path);
+int SDA_get_recoder_file_num(eFolderType folderType, int camera_format){
+    ALOGD("this is jni call-> folderType = %d, camera_format = %d. In func: %s, line:%d \n", folderType, camera_format, __func__, __LINE__);
+
+    char folder_path[NORULE_SIZE];
+    snprintf(folder_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
+
+    DIR *dp = opendir(folder_path);
     struct dirent *dirp;
 
     if (dp == NULL){
@@ -183,16 +203,13 @@ int SDA_get_recoder_file_num(char* path){
         string filterFile = dirp->d_name;
 
         int rc = detect_filename_format(filterFile);
-        if(rc == -1){
-            continue;
+        if(rc == camera_format){
+            file_number++;
         }
-
-        file_number++;
     }
     closedir(dp);
 
-    // cout << "filenumber= " << file_number << endl;
-    ALOGD("this is jni call-> path = %s, file_number = %d. In func: %s, line:%d \n", path, file_number, __func__, __LINE__);
+    ALOGD("this is jni call-> folderType = %d, camera_format = %d, file_number = %d. In func: %s, line:%d \n", folderType, camera_format, file_number, __func__, __LINE__);
     return file_number;
 }
 
@@ -231,7 +248,7 @@ string SDA_get_first_filename(const char* file_path, char* file_extension){
     return string(first_filename);
 }
 
-string SDA_get_last_filename(const char* file_path, const char* file_extension){
+string SDA_get_free_ext_last_filename(const char* file_path, const char* file_extension){
 
     vector<int> files = vector<int>();
 
@@ -266,14 +283,50 @@ string SDA_get_last_filename(const char* file_path, const char* file_extension){
     return string(last_filename);
 }
 
-int SDA_get_free_extension_filenumber(eFolderType folderType){
+string SDA_get_last_filename(eFolderType folderType, int cam_format){
+
+    char folder_path[NORULE_SIZE];
+    snprintf(folder_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
+    vector<string> files = vector<string>();
+
+    DIR *dp = opendir(folder_path);
+    struct dirent *dirp;
+
+    if (dp == NULL){
+        cout << "Error opening " << endl;
+        return "";
+    }
+
+    while ((dirp = readdir(dp)) != NULL) {
+
+        string filterFile = dirp->d_name;
+        int rc = detect_filename_format(filterFile);
+        if(rc != cam_format){
+            continue;
+        }
+        files.push_back(filterFile);
+//        ALOGD("this is jni call-> filename = %s. In func: %s, line:%d \n", filterFile.c_str(), __func__, __LINE__);
+    }
+
+    closedir(dp);
+
+    if(files.empty() == true){
+        return "";
+    }
+
+    sort (files.begin(), files.end());
+
+    string last_filename = files.back();
+
+    return last_filename;
+}
+
+int SDA_get_free_extension_filenumber(eFolderType folderType, int camera_format){
 
     int extension_number = 0;
 
     char file_path[NORULE_SIZE];
     snprintf(file_path, NORULE_SIZE, "%s/SYSTEM/FREE", g_mount_path);
-
-    // cout << "file_path: " << file_path << endl;
 
     DIR *dp = opendir(file_path);
     struct dirent *dirp;
@@ -286,15 +339,24 @@ int SDA_get_free_extension_filenumber(eFolderType folderType){
     while ((dirp = readdir(dp)) != NULL) {
 
         string filterFile = dirp->d_name;
-        if(filterFile.find(FH_Table[folderType].cam1_extension) != -1){
-            extension_number++;
-        }
-        if(filterFile.find(FH_Table[folderType].cam2_extension) != -1){
-            extension_number++;
+        switch(camera_format){
+            case CAMERA_ONE_FORMAT:
+                if(filterFile.find(FH_Table[folderType].cam1_extension) != -1){
+                    extension_number++;
+                }
+            case CAMERA_TWO_FORMAT:
+                if(filterFile.find(FH_Table[folderType].cam2_extension) != -1){
+                    extension_number++;
+                }
+            default:
+                if(filterFile.find(FH_Table[folderType].cam1_extension) != -1){
+                    extension_number++;
+                }
+                if(filterFile.find(FH_Table[folderType].cam2_extension) != -1){
+                    extension_number++;
+                }
         }
     }
-    // cout << "extension_number: " << extension_number << endl;
-
     closedir(dp);
     return extension_number;
 }
@@ -309,7 +371,6 @@ int SDA_write_table_in_config(char* mount_path){
         return -1;
     }
 
-    // cout << FH_Table[0].every_block_space << endl;
     fwrite(&TABLE_VERSION, 1 , 1, fp);
     for(i=0; i<TABLE_SIZE; i++){
         fwrite(&FH_Table[i], sizeof(struct file_struct), 1, fp);
@@ -566,16 +627,112 @@ int storage_file_in_queue(eFolderType folderType, queue<string>& camera_one_queu
         }
     }
 
-
     string first_file_name = files.front();
-
-    cout << "first_filename = " << first_file_name << endl;
 
     check_queue_status(camera_one_old_date_flag, camera_one_queue);
     check_queue_status(camera_two_old_date_flag, camera_two_queue);
 
     ALOGD("this is jni call-> folderType = %d, Out func: %s, line:%d \n", folderType, __func__, __LINE__);
     return 0;
+}
+
+int remove_file(eFolderType folderType, string filename){
+    ALOGD("this is jni call-> folderType = %d, filename = %s. In func: %s, line:%d \n", folderType, filename.c_str(), __func__, __LINE__);
+    int rc;
+    char file_path[NORULE_SIZE];
+    snprintf(file_path, NORULE_SIZE, "%s/%s/%s", g_mount_path, FH_Table[folderType].folder_type, filename.c_str());
+    rc = remove(file_path);
+    ALOGD("this is jni call-> folderType = %d, filepath = %s. Out func: %s, line:%d \n", folderType, file_path, __func__, __LINE__);
+
+    return (rc == 0 ? 0 : -1);
+}
+
+void checkFileNumberOverOrNot(){
+    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
+    eFolderType i;
+    for(i=e_Event; i!=e_NMEA_NORMAL; i=eFolderType(i+1)){
+        ALOGD("this is jni call-> i = %d, Out func: %s, line:%d \n", i, __func__, __LINE__);
+        if(i == e_System){
+            continue;
+        }
+        int cam_one_num = SDA_get_recoder_file_num(i, CAMERA_ONE_FORMAT);
+        int cam_two_num = SDA_get_recoder_file_num(i, CAMERA_TWO_FORMAT);
+        while(cam_one_num > cameraNumber[i].cameraOne_num){
+            string filename = SDA_get_last_filename(i, CAMERA_ONE_FORMAT);
+            remove_file(i, filename);
+            cam_one_num = SDA_get_recoder_file_num(i, CAMERA_ONE_FORMAT);
+        }
+        while(cam_two_num > cameraNumber[i].cameraTwo_num){
+            string filename = SDA_get_last_filename(i, CAMERA_TWO_FORMAT);
+            remove_file(i, filename);
+            cam_two_num = SDA_get_recoder_file_num(i, CAMERA_TWO_FORMAT);
+        }
+    }
+    ALOGD("this is jni call-> Out func: %s, line:%d \n", __func__, __LINE__);
+}
+
+
+
+void setCameraLimitNum(int camera_id, eProportion_of_camone_camtwo ePercentage){
+    ALOGD("this is jni call-> camera_num = %d, percentage = %d. Out func: %s, line:%d \n", camera_id, ePercentage, __func__, __LINE__);
+    eFolderType i;
+    if(camera_id == e_CameraTwo){
+        if(ePercentage == e_seven_to_three){
+            for(i=e_Event; i<e_NMEA_NORMAL; i=eFolderType(i+1)){
+                if(i == e_System){
+                    continue;
+                }
+                cameraNumber[i].cameraOne_num = FH_Table[i].file_num * 0.7;
+                cameraNumber[i].cameraTwo_num = FH_Table[i].file_num * 0.3;
+            }
+            checkFileNumberOverOrNot();
+
+        }
+        if(ePercentage == e_six_to_four){
+            for(i=e_Event; i<e_NMEA_NORMAL; i=eFolderType(i+1)){
+                if(i == e_System){
+                    continue;
+                }
+                cameraNumber[i].cameraOne_num = FH_Table[i].file_num * 0.6;
+                cameraNumber[i].cameraTwo_num = FH_Table[i].file_num * 0.4;
+            }
+            checkFileNumberOverOrNot();
+
+        }
+        if(ePercentage == e_five_to_five){
+            for(i=e_Event; i<e_NMEA_NORMAL; i=eFolderType(i+1)){
+                if(i == e_System){
+                    continue;
+                }
+                cameraNumber[i].cameraOne_num = FH_Table[i].file_num * 0.5;
+                cameraNumber[i].cameraTwo_num = FH_Table[i].file_num * 0.5;
+            }
+            checkFileNumberOverOrNot();
+        }
+    }
+
+    if(camera_id == e_CameraOne){
+        for(i=e_Event; i<e_NMEA_NORMAL; i=eFolderType(i+1)){
+            if(i == e_System){
+                continue;
+            }
+            int cam_two_num = SDA_get_recoder_file_num(i, CAMERA_TWO_FORMAT);
+            int cam_ext_num = SDA_get_free_extension_filenumber(i, CAMERA_TWO_FORMAT);
+            cameraNumber[i].cameraTwo_num = cam_two_num + cam_ext_num;
+            if(cameraNumber[i].cameraTwo_num > FH_Table[i].file_num*0.5){
+                cameraNumber[i].cameraOne_num = FH_Table[i].file_num * 0.5;
+                cameraNumber[i].cameraTwo_num = FH_Table[i].file_num * 0.5;
+            }else{
+                cameraNumber[i].cameraOne_num = FH_Table[i].file_num - cameraNumber[i].cameraTwo_num;
+            }
+        }
+        checkFileNumberOverOrNot();
+    }
+    for(i=e_Event; i<e_NMEA_NORMAL; i=eFolderType(i+1)){
+        ALOGD("this is jni call-> cameraNumber[%d].cameraOne_num = %d, cameraNumber[%d].cameraTwo_num = %d. Out func: %s, line:%d \n", i, cameraNumber[i].cameraOne_num, i, cameraNumber[i].cameraTwo_num, __func__, __LINE__);
+    }
+
+    ALOGD("\nthis is jni call-> camera_id = %d, percentage = %d. Out func: %s, line:%d \n", camera_id, ePercentage, __func__, __LINE__);
 }
 
 int checkTableVersion(char* mount_path){
@@ -644,10 +801,13 @@ void queue_Release(void){
 }
 
 // true = 1, false = 0;
-int FH_Init(char* mount_path){
-    ALOGD("this is jni call-> before mutex_lock. mount_path = %s, g_mutex = %p. In func: %s, line:%d \n", mount_path, g_mutex, __func__, __LINE__);
+int FH_Init(char* mount_path, int camera_num, eProportion_of_camone_camtwo ePercentage){
+    ALOGD("this is jni call-> before mutex_lock. mount_path = %s, camera_num = %d, ePercentage = %d. g_mutex = %p. In func: %s, line:%d \n", mount_path, camera_num, ePercentage, g_mutex, __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
-    ALOGD("this is jni call-> after mutex_lock. mount_path = %s. g_mutex = %p. In func: %s, line:%d \n", mount_path, g_mutex, __func__, __LINE__);
+    ALOGD("this is jni call-> after mutex_lock. mount_path = %s, camera_num = %d, ePercentage = %d. g_mutex = %p. In func: %s, line:%d \n", mount_path, camera_num, ePercentage, g_mutex, __func__, __LINE__);
+    if(camera_num < 0 || camera_num > 2){
+        return CAMERA_NUMBER_ERROR;
+    }
     int i;
     int rc;
 
@@ -855,6 +1015,8 @@ int FH_Init(char* mount_path){
 
     queue_Release();
 
+    setCameraLimitNum(camera_num, ePercentage);
+
     storage_file_in_queue(e_Event, event_camera_one_queue, event_camera_two_queue, e_CameraAll);
     storage_file_in_queue(e_Normal, normal_camera_one_queue, normal_camera_two_queue, e_CameraAll);
     storage_file_in_queue(e_Picture, picture_camera_one_queue, picture_camera_two_queue, e_CameraAll);
@@ -874,34 +1036,40 @@ string open_file_and_save_in_queue(char* filename, eFolderType folderType, queue
     char free_path[NORULE_SIZE];
     snprintf(free_path, NORULE_SIZE, "%s%s", g_mount_path,"/SYSTEM/FREE");
 
-    char folder_path[NORULE_SIZE];
     char purpose_path[NORULE_SIZE];
     string input_filename = filename;
     string first_filename;
 
-    snprintf(folder_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
-    int recoder_file_already_exist_num = SDA_get_recoder_file_num(folder_path);
-    int extension_number = SDA_get_free_extension_filenumber(folderType);
-    int recoder_file_num = recoder_file_already_exist_num + extension_number;
-    ALOGD("this is jni call -> folderType = %d, recoder_file_already_exist_num = %d, extension_number = %d, recoder_file_num = %d. func: %s, line:%d \n", folderType, recoder_file_already_exist_num, extension_number, recoder_file_num, __func__, __LINE__);
+    int already_exist_num;
+    int exist_extension_number;
+    int limit_file_number;
+    int recoder_file_num;
+    ALOGD("this is jni call -> folderType = %d, recoder_file_num = %d. func: %s, line:%d \n", folderType, recoder_file_num, __func__, __LINE__);
 
     int rc = detect_filename_format(input_filename);
     if(rc == CAMERA_ONE_FORMAT){
         first_filename = SDA_get_first_filename(free_path, FH_Table[folderType].cam1_extension);
+        already_exist_num = SDA_get_recoder_file_num(folderType, CAMERA_ONE_FORMAT);
+        exist_extension_number = SDA_get_free_extension_filenumber(folderType, CAMERA_ONE_FORMAT);
+        recoder_file_num = already_exist_num + exist_extension_number;
+        limit_file_number = cameraNumber[folderType].cameraOne_num;
     }
     if(rc == CAMERA_TWO_FORMAT){
         first_filename = SDA_get_first_filename(free_path, FH_Table[folderType].cam2_extension);
+        already_exist_num = SDA_get_recoder_file_num(folderType, CAMERA_TWO_FORMAT);
+        exist_extension_number = SDA_get_free_extension_filenumber(folderType, CAMERA_TWO_FORMAT);
+        recoder_file_num = already_exist_num + exist_extension_number;
+        limit_file_number = cameraNumber[folderType].cameraTwo_num;
     }
     // if free folder have extension file, rename file to purpose filename
     if(first_filename.length() != 0){
         char first_path[NORULE_SIZE];
         snprintf(first_path, NORULE_SIZE, "%s/%s", free_path, first_filename.c_str());
 
-        snprintf(purpose_path, NORULE_SIZE, "%s/%s", folder_path, filename);
+        snprintf(purpose_path, NORULE_SIZE, "%s/%s/%s", g_mount_path, FH_Table[folderType].folder_type, filename);
 
         rename(first_path, purpose_path);
 
-        int rc = detect_filename_format(input_filename);
         if(rc == CAMERA_ONE_FORMAT){
             camera_one_queue.push(input_filename);
         }
@@ -913,11 +1081,10 @@ string open_file_and_save_in_queue(char* filename, eFolderType folderType, queue
         ALOGD("this is jni call-> folderType = %d, exist file in SYSTEM/FREE/%s. exist_file_number = %d, return filename = %s. Out func: %s, line:%d \n", folderType, first_filename.c_str(), exist_file_number, purpose_path, __func__, __LINE__);
         return string(purpose_path);
     }
-    if(recoder_file_num < FH_Table[folderType].file_num){
-        ALOGD("this is jni call-> folderType = %d, recoder_file_num = %d, FH_Table file_num = %d. func: %s, line:%d \n", folderType, recoder_file_num, FH_Table[folderType].file_num, __func__, __LINE__);
-        snprintf(purpose_path, NORULE_SIZE, "%s/%s", folder_path, filename);
+    if(recoder_file_num < limit_file_number){
+        ALOGD("this is jni call-> folderType = %d, recoder_file_num = %d, limit_file_number = %d. func: %s, line:%d \n", folderType, recoder_file_num, limit_file_number, __func__, __LINE__);
+        snprintf(purpose_path, NORULE_SIZE, "%s/%s/%s", g_mount_path, FH_Table[folderType].folder_type, filename);
 
-        int rc = detect_filename_format(input_filename);
         if(rc == CAMERA_ONE_FORMAT){
             camera_one_queue.push(input_filename);
         }
@@ -997,19 +1164,18 @@ bool FH_Close(void){
 
 //
 // true = 1, false = 0;
-bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
+bool FH_Delete(char* absolute_filepath, eCameraType cameraType){
     ALOGD("this is jni call-> before mutex_lock. absolute_filepath = %s, cameraType = %d. In func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
     ALOGD("this is jni call-> after mutex_lock. absolute_filepath = %s, cameraType = %d. In func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
     /* !!!! modify to exist func */
-    int fd = open(absolute_filepath, O_RDWR);
-    if(fd == -1){
+    int ret = SDA_file_exists(absolute_filepath);
+    if(ret == -1){
         ALOGD("this is jni call-> before mutex_unlock. absolute_filepath not exist, absolute_filepath = %s, cameraType = %d. Out func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
         MUTEX_UNLOCK(&g_mutex);
         ALOGD("this is jni call-> after mutex_unlock. absolute_filepath not exist, absolute_filepath = %s, cameraType = %d, Out func: %s, line:%d \n", absolute_filepath, cameraType, __func__, __LINE__);
         return false;
     }
-    close(fd);
 
     int i = 0;
     int rc = -1;
@@ -1041,13 +1207,13 @@ bool FH_Delete(const char* absolute_filepath, eCameraType cameraType){
     }
 
     if(cameraType == e_CameraOne){
-        last_filename = SDA_get_last_filename(free_path, FH_Table[i].cam1_extension);
+        last_filename = SDA_get_free_ext_last_filename(free_path, FH_Table[i].cam1_extension);
         int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
         snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, FH_Table[i].cam1_extension);
         ALOGD("this is jni call -> CAMERA1 TYPE absolute_filepath = %s, new_last_file = %s. func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
     }
     if(cameraType == e_CameraTwo){
-        last_filename = SDA_get_last_filename(free_path, FH_Table[i].cam2_extension);
+        last_filename = SDA_get_free_ext_last_filename(free_path, FH_Table[i].cam2_extension);
         int number_filename = atoi(last_filename.substr(0, last_filename.find(".")).c_str());
         snprintf(new_last_file, sizeof(new_last_file), "%s/%d%s", free_path, number_filename+1, FH_Table[i].cam2_extension);
         ALOGD("this is jni call -> CAMERA2 TYPE absolute_filepath = %s, new_last_file = %s. func: %s, line:%d \n", absolute_filepath, new_last_file, __func__, __LINE__);
@@ -1411,10 +1577,12 @@ int FH_CheckFolderStatus(eFolderType folderType){
     snprintf(folder_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
 
     // Calucate exist recode file number
-    int recoder_file_already_exist_num = SDA_get_recoder_file_num(folder_path);
-    int extension_number = SDA_get_free_extension_filenumber(folderType);
-    int recoder_file_num = recoder_file_already_exist_num + extension_number;
-    ALOGD("this is jni call -> folderType = %d, recoder_file_already_exist_num = %d, extension_number = %d, recoder_file_num = %d. func: %s, line:%d \n", folderType, recoder_file_already_exist_num, extension_number, recoder_file_num, __func__, __LINE__);
+    int cam_one_already_exist_num = SDA_get_recoder_file_num(folderType, CAMERA_ONE_FORMAT);
+    int cam_two_already_exist_num = SDA_get_recoder_file_num(folderType, CAMERA_TWO_FORMAT);
+    int cam_one_extension_number = SDA_get_free_extension_filenumber(folderType, CAMERA_ONE_FORMAT);
+    int cam_two_extension_number = SDA_get_free_extension_filenumber(folderType, CAMERA_TWO_FORMAT);
+    int recoder_file_num = cam_one_already_exist_num + cam_two_already_exist_num + cam_one_extension_number + cam_two_extension_number;
+    ALOGD("this is jni call -> folderType = %d, recoder_file_num = %d. func: %s, line:%d \n", folderType, recoder_file_num, __func__, __LINE__);
 
     // file over limit
     if (recoder_file_num > FH_Table[folderType].file_num){

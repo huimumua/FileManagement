@@ -69,6 +69,12 @@ enum eFolderType{
 	e_NMEA_NORMAL
 };
 
+enum eProportion_of_camone_camtwo{
+	e_five_to_five=1,
+	e_six_to_four,
+	e_seven_to_three
+};
+
 enum eGetNum{
 	e_getLimitNum=0,
 	e_getCurrentNum
@@ -76,16 +82,17 @@ enum eGetNum{
 
 enum FH_Init_error_code{
 	INIT_SUCCESS=0,
-    SDCARD_PATH_ERROR=-1,
-    SDCARD_SPACE_FULL=-2,
+	SDCARD_PATH_ERROR=-1,
+	SDCARD_SPACE_FULL=-2,
 	SDCARD_SIZE_NOT_SUPPORT=-3,
 	TABLE_VERSION_TOO_OLD=-4,
 	TABLE_VERSION_CANNOT_RECOGNIZE=-5,
-	TABLE_READ_ERROR=-6
+	TABLE_READ_ERROR=-6,
+	CAMERA_NUMBER_ERROR=-7
 };
 
 enum FH_CheckFolderStatus_error_code{
-    GLOBAL_SDCARD_PATH_ERROR=-1,
+	GLOBAL_SDCARD_PATH_ERROR=-1,
 	OPEN_FOLDER_ERROR=-2,
 	EXIST_FILE_NUM_OVER_LIMIT=-3,
 	FOLDER_SPACE_OVER_LIMIT=-4,
@@ -105,7 +112,7 @@ bool FH_ValidFormat(char* mount_path);
 // Input:  mount path
 // Output: bool, true = 1, false = 0;
 // ** If SDCARD not clear, return false **
-int FH_Init(char* mount_path);
+int FH_Init(char* mount_path, int camera_num, eProportion_of_camone_camtwo ePercentage);
 
 //
 // Purpose: 1.Choice enum folderType to openfile
@@ -132,7 +139,7 @@ void FH_Sync(void);
 //          2.The file will be change to (number) + folderType extension
 // Input:  Delete file absolute path
 // Output: bool, true = 1, false = 0;
-bool FH_Delete(const char* absolute_filepath, eCameraType cameraType);
+bool FH_Delete(char* absolute_filepath, eCameraType cameraType);
 
 //
 // Purpose: Finding the path oldest file ,and return absolute_filepath string
