@@ -432,6 +432,8 @@ int SDA_write_table_in_config(char* mount_path){
     for(i=0; i<TABLE_SIZE; i++){
         fwrite(&FH_Table[i], sizeof(struct file_struct), 1, fp);
     }
+    fflush(fp);
+    fsync(fileno(fp));
     fclose(fp);
     return 0;
 }
