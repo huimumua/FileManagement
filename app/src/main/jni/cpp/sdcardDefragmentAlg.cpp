@@ -115,6 +115,34 @@ queue<string> nmea_normal_camera_two_queue;
 
 char g_mount_path[NORULE_SIZE] = "\0";
 
+int SDA_file_exists(char* filename)
+{
+    struct stat buf;
+    int i = stat(filename, &buf);
+    /* find file */
+    if (i == 0)
+    {
+        if((buf.st_mode & S_IFMT) == S_IFREG){
+            return 0;
+        }
+    }
+    return -1;
+}
+
+int SDA_folder_exists(char* folder_path)
+{
+    struct stat buf;
+    int i = stat(folder_path, &buf);
+    /* find folder */
+    if (i == 0)
+    {
+        if((buf.st_mode & S_IFMT) == S_IFDIR){
+            return 0;
+        }
+    }
+    return -1;
+}
+
 int check_file_extension(string str){
     int size = 0;
     size = str.find(".");
@@ -201,7 +229,12 @@ int SDA_get_recoder_file_num(eFolderType folderType, int camera_format){
     while ((dirp = readdir(dp)) != NULL) {
 
         string filterFile = dirp->d_name;
-
+        char file_path[NORULE_SIZE];
+        snprintf(file_path, NORULE_SIZE, "%s/%s", folder_path, dirp->d_name);
+        int ret = SDA_file_exists(file_path);
+        if(ret != 0){
+            continue;
+        }
         int rc = detect_filename_format(filterFile);
         if(rc == camera_format){
             file_number++;
@@ -213,11 +246,11 @@ int SDA_get_recoder_file_num(eFolderType folderType, int camera_format){
     return file_number;
 }
 
-string SDA_get_first_filename(const char* file_path, char* file_extension){
+string SDA_get_first_filename(const char* folder_path, char* file_extension){
 
     vector<int> files = vector<int>();
 
-    DIR *dp = opendir(file_path);
+    DIR *dp = opendir(folder_path);
     struct dirent *dirp;
 
     if (dp == NULL){
@@ -228,6 +261,12 @@ string SDA_get_first_filename(const char* file_path, char* file_extension){
     while ((dirp = readdir(dp)) != NULL) {
 
         string filterFile = dirp->d_name;
+        char file_path[NORULE_SIZE];
+        snprintf(file_path, NORULE_SIZE, "%s/%s", folder_path, dirp->d_name);
+        int ret = SDA_file_exists(file_path);
+        if(ret != 0){
+            continue;
+        }
         if(filterFile.find(file_extension) != -1){
             files.push_back(atoi(filterFile.substr(0, filterFile.find(".")).c_str()));
         }
@@ -248,11 +287,11 @@ string SDA_get_first_filename(const char* file_path, char* file_extension){
     return string(first_filename);
 }
 
-string SDA_get_free_ext_last_filename(const char* file_path, const char* file_extension){
+string SDA_get_free_ext_last_filename(const char* folder_path, const char* file_extension){
 
     vector<int> files = vector<int>();
 
-    DIR *dp = opendir(file_path);
+    DIR *dp = opendir(folder_path);
     struct dirent *dirp;
 
     if (dp == NULL){
@@ -263,6 +302,12 @@ string SDA_get_free_ext_last_filename(const char* file_path, const char* file_ex
     while ((dirp = readdir(dp)) != NULL) {
 
         string filterFile = dirp->d_name;
+        char file_path[NORULE_SIZE];
+        snprintf(file_path, NORULE_SIZE, "%s/%s", folder_path, dirp->d_name);
+        int ret = SDA_file_exists(file_path);
+        if(ret != 0){
+            continue;
+        }
         if(filterFile.find(file_extension) != -1){
             files.push_back(atoi(filterFile.substr(0, filterFile.find(".")).c_str()));
         }
@@ -300,6 +345,12 @@ string SDA_get_last_filename(eFolderType folderType, int cam_format){
     while ((dirp = readdir(dp)) != NULL) {
 
         string filterFile = dirp->d_name;
+        char file_path[NORULE_SIZE];
+        snprintf(file_path, NORULE_SIZE, "%s/%s", folder_path, dirp->d_name);
+        int ret = SDA_file_exists(file_path);
+        if(ret != 0){
+            continue;
+        }
         int rc = detect_filename_format(filterFile);
         if(rc != cam_format){
             continue;
@@ -325,10 +376,10 @@ int SDA_get_free_extension_filenumber(eFolderType folderType, int camera_format)
 
     int extension_number = 0;
 
-    char file_path[NORULE_SIZE];
-    snprintf(file_path, NORULE_SIZE, "%s/SYSTEM/FREE", g_mount_path);
+    char folder_path[NORULE_SIZE];
+    snprintf(folder_path, NORULE_SIZE, "%s/SYSTEM/FREE", g_mount_path);
 
-    DIR *dp = opendir(file_path);
+    DIR *dp = opendir(folder_path);
     struct dirent *dirp;
 
     if (dp == NULL){
@@ -339,6 +390,12 @@ int SDA_get_free_extension_filenumber(eFolderType folderType, int camera_format)
     while ((dirp = readdir(dp)) != NULL) {
 
         string filterFile = dirp->d_name;
+        char file_path[NORULE_SIZE];
+        snprintf(file_path, NORULE_SIZE, "%s/%s", folder_path, dirp->d_name);
+        int ret = SDA_file_exists(file_path);
+        if(ret != 0){
+            continue;
+        }
         switch(camera_format){
             case CAMERA_ONE_FORMAT:
                 if(filterFile.find(FH_Table[folderType].cam1_extension) != -1){
@@ -387,18 +444,6 @@ void clear_queue(std::queue<string> &q){
     return;
 }
 
-int SDA_file_exists(char* filename)
-{
-    struct stat buf;
-    int i = stat(filename, &buf);
-    /* find file */
-    if (i == 0)
-    {
-        return 0;
-    }
-    return -1;
-}
-
 int SDA_scan_sdcard_folder_exist(char* mount_path){
 
     int i;
@@ -417,6 +462,12 @@ int SDA_scan_sdcard_folder_exist(char* mount_path){
     while ((dirp = readdir(dp)) != NULL) {
 
         string filterFile = dirp->d_name;
+        char file_path[NORULE_SIZE];
+        snprintf(file_path, NORULE_SIZE, "%s/%s", mount_path, dirp->d_name);
+        int ret = SDA_file_exists(file_path);
+        if(ret != 0){
+            continue;
+        }
 
         if((filterFile.compare(".") == 0) || (filterFile.compare("..") == 0)){
             continue;
@@ -447,6 +498,11 @@ int SDA_get_structure_value_from_config(char* mount_path){
     if ( retlen == 1 )
     {
         ALOGD("this is jni call-> retlen == 1 func: %s, line:%d \n", __func__, __LINE__);
+        if(ver == 0x45){ // 0x45 == 'E'
+            fclose(fp);
+            ALOGD("this is jni call-> table version to old. Out func: %s, line:%d \n", __func__, __LINE__);
+            return TABLE_VERSION_TOO_OLD;
+        }
         if ( ver == TABLE_VERSION )
         {
             for(i=0; i<TABLE_SIZE; i++) {
@@ -470,11 +526,15 @@ int SDA_get_structure_value_from_config(char* mount_path){
                 ALOGD("this is jni call-> retlen = %d func: %s, line:%d \n", retlen, __func__,
                       __LINE__);
                 if (retlen == 1) {
-                    ALOGD("this is jni call-> read func: %s, line:%d \n", __func__, __LINE__);
                     fclose(fp);
+                    ALOGD("this is jni call-> read func: %s, line:%d \n", __func__, __LINE__);
                     return 0;
                 }
             }
+        }else{
+            fclose(fp);
+            ALOGD("this is jni call-> TABLE_VERSION_CANNOT_RECOGNIZE. func: %s, line:%d \n", __func__, __LINE__);
+            return TABLE_VERSION_CANNOT_RECOGNIZE;
         }
     }
 
@@ -650,7 +710,7 @@ int remove_file(eFolderType folderType, string filename){
 void checkFileNumberOverOrNot(){
     ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
     eFolderType i;
-    for(i=e_Event; i!=e_NMEA_NORMAL; i=eFolderType(i+1)){
+    for(i=e_Event; i<=e_NMEA_NORMAL; i=eFolderType(i+1)){
         ALOGD("this is jni call-> i = %d, Out func: %s, line:%d \n", i, __func__, __LINE__);
         if(i == e_System){
             continue;
@@ -678,7 +738,7 @@ void setCameraLimitNum(int camera_id, eProportion_of_camone_camtwo ePercentage){
     eFolderType i;
     if(camera_id == e_CameraTwo){
         if(ePercentage == e_seven_to_three){
-            for(i=e_Event; i<e_NMEA_NORMAL; i=eFolderType(i+1)){
+            for(i=e_Event; i<=e_NMEA_NORMAL; i=eFolderType(i+1)){
                 if(i == e_System){
                     continue;
                 }
@@ -689,7 +749,7 @@ void setCameraLimitNum(int camera_id, eProportion_of_camone_camtwo ePercentage){
 
         }
         if(ePercentage == e_six_to_four){
-            for(i=e_Event; i<e_NMEA_NORMAL; i=eFolderType(i+1)){
+            for(i=e_Event; i<=e_NMEA_NORMAL; i=eFolderType(i+1)){
                 if(i == e_System){
                     continue;
                 }
@@ -700,7 +760,7 @@ void setCameraLimitNum(int camera_id, eProportion_of_camone_camtwo ePercentage){
 
         }
         if(ePercentage == e_five_to_five){
-            for(i=e_Event; i<e_NMEA_NORMAL; i=eFolderType(i+1)){
+            for(i=e_Event; i<=e_NMEA_NORMAL; i=eFolderType(i+1)){
                 if(i == e_System){
                     continue;
                 }
@@ -712,7 +772,7 @@ void setCameraLimitNum(int camera_id, eProportion_of_camone_camtwo ePercentage){
     }
 
     if(camera_id == e_CameraOne){
-        for(i=e_Event; i<e_NMEA_NORMAL; i=eFolderType(i+1)){
+        for(i=e_Event; i<=e_NMEA_NORMAL; i=eFolderType(i+1)){
             if(i == e_System){
                 continue;
             }
@@ -728,41 +788,11 @@ void setCameraLimitNum(int camera_id, eProportion_of_camone_camtwo ePercentage){
         }
         checkFileNumberOverOrNot();
     }
-    for(i=e_Event; i<e_NMEA_NORMAL; i=eFolderType(i+1)){
+    for(i=e_Event; i<=e_NMEA_NORMAL; i=eFolderType(i+1)){
         ALOGD("this is jni call-> cameraNumber[%d].cameraOne_num = %d, cameraNumber[%d].cameraTwo_num = %d. Out func: %s, line:%d \n", i, cameraNumber[i].cameraOne_num, i, cameraNumber[i].cameraTwo_num, __func__, __LINE__);
     }
 
     ALOGD("\nthis is jni call-> camera_id = %d, percentage = %d. Out func: %s, line:%d \n", camera_id, ePercentage, __func__, __LINE__);
-}
-
-int checkTableVersion(char* mount_path){
-    ALOGD("this is jni call-> In func: %s, line:%d \n", __func__, __LINE__);
-    char config_file_path[NORULE_SIZE];
-    snprintf(config_file_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
-
-    FILE* fp = NULL;
-    int n = 0;
-
-    fp=fopen (config_file_path,"rb");
-    if(fp==NULL){
-        ALOGD("this is jni call-> Can't not open table config file. Out func: %s, line:%d \n", __func__, __LINE__);
-        return OPEN_FOLDER_ERROR;
-    }
-    n = fgetc (fp);
-    if(n == 0x45){ // 0x45 == 'E'
-        ALOGD("this is jni call-> table version to old. Out func: %s, line:%d \n", __func__, __LINE__);
-        fclose(fp);
-        return TABLE_VERSION_TOO_OLD;
-    }
-    if(n == TABLE_VERSION){
-        ALOGD("this is jni call-> Right table version, n = %d. Out func: %s, line:%d \n", n, __func__, __LINE__);
-        fclose(fp);
-        return SUCCESS;
-    }
-
-    fclose(fp);
-    ALOGD("this is jni call-> Table version cannot recognize. Out func: %s, line:%d \n", __func__, __LINE__);
-    return TABLE_VERSION_CANNOT_RECOGNIZE;
 }
 
 // true = 1, false = 0;
@@ -853,20 +883,13 @@ int FH_Init(char* mount_path, int camera_num, eProportion_of_camone_camtwo ePerc
     snprintf(config_file_path, NORULE_SIZE, "%s/%s", mount_path, CFG_NAME);
     rc = SDA_file_exists(config_file_path);
     if(rc == 0){
-        rc = checkTableVersion(mount_path);
-        if(rc != SUCCESS){
-            ALOGD("this is jni call-> before mutex_unlock. Sdcard format error. Out func: %s, line:%d \n", __func__, __LINE__);
-            MUTEX_UNLOCK(&g_mutex);
-            ALOGD("this is jni call-> after mutex_unlock. Sdcard format error. Out func: %s, line:%d \n", __func__, __LINE__);
-            return TABLE_VERSION_TOO_OLD;
-        }
         int ret = SDA_get_structure_value_from_config(mount_path);
         if (ret != 0)
         {
             ALOGD("this is jni call-> before mutex_unlock. SDA_get_structure_value_from_config fail. Out func: %s, line:%d \n", __func__, __LINE__);
             MUTEX_UNLOCK(&g_mutex);
             ALOGD("this is jni call-> after mutex_unlock. SDA_get_structure_value_from_config fail. Out func: %s, line:%d \n", __func__, __LINE__);
-            return TABLE_READ_ERROR;
+            return (ret == TABLE_VERSION_CANNOT_RECOGNIZE ? TABLE_VERSION_CANNOT_RECOGNIZE:TABLE_VERSION_TOO_OLD);
         }
     }
 
@@ -966,14 +989,14 @@ int FH_Init(char* mount_path, int camera_num, eProportion_of_camone_camtwo ePerc
     if(FH_Table[e_System].exist_flag == 1){
         char free_folder_path[NORULE_SIZE];
         sprintf(free_folder_path, "%s/SYSTEM/FREE", mount_path);
-        rc = SDA_file_exists(free_folder_path);
+        rc = SDA_folder_exists(free_folder_path);
         if(rc != 0){
             cout << "Create FREE" << endl;
             mkdir(free_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
         }
         char nmea_folder_path[NORULE_SIZE];
         sprintf(nmea_folder_path, "%s/SYSTEM/NMEA", mount_path);
-        rc = SDA_file_exists(nmea_folder_path);
+        rc = SDA_folder_exists(nmea_folder_path);
         if(rc != 0){
             cout << "Create NMEA" << endl;
             mkdir(nmea_folder_path, S_IRWXU | S_IRWXG | S_IROTH |S_IXOTH);
@@ -1387,13 +1410,6 @@ string FH_FindOldest(eFolderType folderType, eCameraType cameraType){
     char finding_path[NORULE_SIZE];
     snprintf(finding_path, NORULE_SIZE, "%s/%s", g_mount_path, FH_Table[folderType].folder_type);
     ALOGD("this is jni call-> finding_path: %s. func: %s, line:%d \n", finding_path, __func__, __LINE__);
-    int rc = SDA_file_exists(finding_path);
-    if(rc != 0){
-        ALOGD("this is jni call-> before mutex_unlock. finding path not exist. folderType: %d, cameraType = %d, finding_path: %s. Out func: %s, line:%d \n", folderType, cameraType, finding_path, __func__, __LINE__);
-        MUTEX_UNLOCK(&g_mutex);
-        ALOGD("this is jni call-> after mutex_unlock. finding path not exist. folderType: %d, cameraType = %d, finding_path: %s. Out func: %s, line:%d \n", folderType, cameraType, finding_path, __func__, __LINE__);
-        return "";
-    }
 
     string oldest_file;
     oldest_file.append(finding_path);
@@ -1614,6 +1630,12 @@ int FH_CheckFolderStatus(eFolderType folderType){
     }
     while (dirp = readdir(dp)) {
         string filename = dirp->d_name;
+        char file_path[NORULE_SIZE];
+        snprintf(file_path, NORULE_SIZE, "%s/%s", folder_path, dirp->d_name);
+        int ret = SDA_file_exists(file_path);
+        if(ret != 0){
+            continue;
+        }
         if ((filename.compare(".") == 0) || (filename.compare("..") == 0)) {
             continue;
         }
