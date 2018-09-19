@@ -28,7 +28,8 @@ public class JsonUtil {
             contentResolver = context.getContentResolver();
             int num = getIntSettingValue(AskeySettings.Global.SYSSET_USER_NUM, 1);
             JSONObject setting = new JSONObject();
-            setting.put("imei", getImei((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)));
+//            setting.put("imei", getImei((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)));
+            setting.put("imei", Settings.Global.getString(contentResolver, AskeySettings.Global.DEVICE_IMEI));
             setting.put("num", num);
             setting.put("selectuserid", getIntSettingValue(AskeySettings.Global.SYSSET_USER_ID, 1));
             setting.put("selectdate", getStringSettingValue(AskeySettings.Global.SYSSET_SELECT_USER_DAYS));
