@@ -31,6 +31,7 @@ interface IFileManagerAidlInterface {
 
     /**
     * Type : NORMAL_1  NORMAL_2  EVENT PARKING PICTURE SYSTEM
+    * NORMAL :查看列表
     * */
    List <ItemData> getAllFileByType(String type);
 

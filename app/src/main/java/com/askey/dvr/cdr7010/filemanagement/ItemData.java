@@ -21,6 +21,7 @@ public class ItemData implements Parcelable {
     private boolean disabled;
 
     private boolean isDir;
+    private String fileType;
     private int mediaID;
     private String filePath;
     private String fileName;
@@ -49,6 +50,14 @@ public class ItemData implements Parcelable {
         isDir = dir;
     }
 
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
     public String getFilePath() {
         return filePath;
     }
@@ -73,12 +82,12 @@ public class ItemData implements Parcelable {
         this.fileTime = fileTime;
     }
 
-    public void setDirFileItem(List<ItemData> dirFileItem) {
-        this.dirFileItem = dirFileItem;
-    }
-
     public List<ItemData> getDirFileItem() {
         return dirFileItem;
+    }
+
+    public void setDirFileItem(List<ItemData> dirFileItem) {
+        this.dirFileItem = dirFileItem;
     }
 
     public boolean isDisabled() {
@@ -101,6 +110,7 @@ public class ItemData implements Parcelable {
     public String toString() {
         return "ItemData{" +
                 ", isDir=" + isDir +
+                ", fileType=" + fileType +
                 ", mediaID=" + mediaID +
                 ", filePath='" + filePath + '\'' +
                 ", fileName='" + fileName + '\'' +
@@ -117,6 +127,7 @@ public class ItemData implements Parcelable {
         disabled = in.readByte() != 0;
 
         isDir = in.readByte() != 0; //isDir == true if byte != 0
+        fileType = in.readString();
         mediaID = in.readInt();
         filePath = in.readString();
         fileName = in.readString();
@@ -150,6 +161,7 @@ public class ItemData implements Parcelable {
         dest.writeByte((byte) (disabled ? 1 : 0));
 
         dest.writeByte((byte) (isDir ? 1 : 0)); //if isDir == true, byte == 1
+        dest.writeString(fileType);
         dest.writeInt(mediaID);
         dest.writeString(filePath);
         dest.writeString(fileName);
