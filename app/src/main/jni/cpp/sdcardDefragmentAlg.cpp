@@ -464,12 +464,6 @@ int SDA_scan_sdcard_folder_exist(char* mount_path){
     while ((dirp = readdir(dp)) != NULL) {
 
         string filterFile = dirp->d_name;
-        char file_path[NORULE_SIZE];
-        snprintf(file_path, NORULE_SIZE, "%s/%s", mount_path, dirp->d_name);
-        int ret = SDA_file_exists(file_path);
-        if(ret != 0){
-            continue;
-        }
 
         if((filterFile.compare(".") == 0) || (filterFile.compare("..") == 0)){
             continue;
@@ -477,6 +471,12 @@ int SDA_scan_sdcard_folder_exist(char* mount_path){
 
         for(i=0; i<TABLE_SIZE; i++){
             if(filterFile.compare(FH_Table[i].folder_type) == 0){
+                char folder_path[NORULE_SIZE];
+                snprintf(folder_path, NORULE_SIZE, "%s/%s", mount_path, dirp->d_name);
+                int ret = SDA_folder_exists(folder_path);
+                if(ret != 0){
+                    continue;
+                }
                 FH_Table[i].exist_flag = 1;
             }
         }
