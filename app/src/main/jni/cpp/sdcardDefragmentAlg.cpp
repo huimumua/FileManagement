@@ -373,7 +373,7 @@ string SDA_get_last_filename(eFolderType folderType, int cam_format){
 }
 
 int SDA_get_free_extension_filenumber(eFolderType folderType, int camera_format){
-
+    ALOGD("this is jni call-> folderType = %d, camera_format = %d. In func: %s, line:%d \n", folderType, camera_format, __func__, __LINE__);
     int extension_number = 0;
 
     char folder_path[NORULE_SIZE];
@@ -406,15 +406,11 @@ int SDA_get_free_extension_filenumber(eFolderType folderType, int camera_format)
                     extension_number++;
                 }
             default:
-                if(filterFile.find(FH_Table[folderType].cam1_extension) != -1){
-                    extension_number++;
-                }
-                if(filterFile.find(FH_Table[folderType].cam2_extension) != -1){
-                    extension_number++;
-                }
+                break;
         }
     }
     closedir(dp);
+    ALOGD("this is jni call-> folderType = %d, camera_format = %d, extension_number = %d. In func: %s, line:%d \n", folderType, camera_format, extension_number, __func__, __LINE__);
     return extension_number;
 }
 
