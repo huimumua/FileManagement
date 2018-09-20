@@ -3,21 +3,13 @@ package com.askey.dvr.cdr7010.filemanagement.broadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
-import android.os.StatFs;
-import android.text.format.Formatter;
 
 import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.controller.FileManager;
-import com.askey.dvr.cdr7010.filemanagement.controller.MediaScanner;
-import com.askey.dvr.cdr7010.filemanagement.controller.SDCardListener;
 import com.askey.dvr.cdr7010.filemanagement.util.BroadcastUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Const;
-import com.askey.dvr.cdr7010.filemanagement.util.FileUtils;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
 import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtil;
-
-import java.io.File;
 
 public class SdCardReceiver extends BroadcastReceiver {
 
@@ -28,7 +20,9 @@ public class SdCardReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         Logg.i(TAG,"===action==="+action);
-        if (action.equals(Intent.ACTION_MEDIA_MOUNTED)){// SD卡已经成功挂载
+        if(action.equals(Intent.ACTION_MEDIA_CHECKING)){
+            Const.SDCARD_INSERTED = true;
+        }else if (action.equals(Intent.ACTION_MEDIA_MOUNTED)){// SD卡已经成功挂载
 //            SDCardListener.getSingInstance(Const.SDCARD_PATH).startWatche();
             sendOnce = true;
             initSdcard(context);
@@ -37,6 +31,8 @@ public class SdCardReceiver extends BroadcastReceiver {
                 || action.equals(Intent.ACTION_MEDIA_BAD_REMOVAL)
                 || action.equals(Intent.ACTION_MEDIA_EJECT)
                 ) {
+            Const.SDCARD_INSERTED = false;
+
             Const.SDCARD_IS_EXIST = false;
             Const.SDCARD_INIT_SUCCESS=false;
             Const.IS_SDCARD_FULL_LIMIT = false;
@@ -58,17 +54,21 @@ public class SdCardReceiver extends BroadcastReceiver {
 //            在收到android.intent.action.MEDIA_UNMOUNTABLE,取得fsType的值,若是ntfs就可判為不支持的卡,
 //                    若fsType為其它情況(如空值或exfat)..,則該卡被判為異常.
             String fsType = intent.getStringExtra("fsType");
-            Logg.i(TAG,"==fsType=="+fsType);
+            Logg.i(TAG,"==fsType=="+fsType + ",   " + Const.SDCARD_IS_EXIST);
             if("ntfs".equals(fsType) /*|| "vfat".equals(fsType)*/ ){
                 sendOnce = true;
-                Const.SDCARD_NOT_SUPPORTED = true;
-                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
-                        Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
+                if(Const.SDCARD_INSERTED){ //add by Mark ,如果sd卡被拔出了就不更新该状态了
+                    Const.SDCARD_NOT_SUPPORTED = true;
+                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                            Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_NOT_SUPPORTED);
+                }
             }else{
                 sendOnce = true;
-                Const.SDCARD_UNRECOGNIZABLE = true;
-                BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
-                        Const.ACTION_SDCARD_STATUS,Const.CMD_SHOW_SDCARD_UNRECOGNIZABLE);
+                if(Const.SDCARD_INSERTED) { //add by Mark ,如果sd卡被拔出了就不更新该状态了
+                    Const.SDCARD_UNRECOGNIZABLE = true;
+                    BroadcastUtils.sendMyBroadcast(FileManagerApplication.getAppContext(),
+                            Const.ACTION_SDCARD_STATUS, Const.CMD_SHOW_SDCARD_UNRECOGNIZABLE);
+                }
             }
         }
     }

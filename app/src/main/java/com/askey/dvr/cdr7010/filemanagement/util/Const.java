@@ -23,6 +23,8 @@ public class Const {
 
     public static final String BACK_SLASH_1= "/";
 
+    public static boolean SDCARD_INSERTED = false;
+
     public static boolean SDCARD_IS_EXIST = false;
     public static boolean SDCARD_INIT_SUCCESS = false;
     public static boolean SDCARD_NOT_SUPPORTED = false;

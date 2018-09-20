@@ -1,16 +1,12 @@
 package com.askey.dvr.cdr7010.filemanagement.service;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 
-import com.askey.dvr.cdr7010.filemanagement.application.FileManagerApplication;
 import com.askey.dvr.cdr7010.filemanagement.broadcast.SdCardReceiver;
 import com.askey.dvr.cdr7010.filemanagement.util.Logg;
-import com.askey.dvr.cdr7010.filemanagement.util.SdcardUtils;
 
 public class SdcardService extends Service {
 
@@ -49,6 +45,7 @@ public class SdcardService extends Service {
         intentFilter.addAction(Intent.ACTION_MEDIA_BAD_REMOVAL);// sd卡已经从sd卡插槽拔出，但是挂载点还没解除
         intentFilter.addAction(Intent.ACTION_MEDIA_SCANNER_STARTED);// 开始扫描
         intentFilter.addAction(Intent.ACTION_MEDIA_SCANNER_FINISHED);// 扫描完成
+        intentFilter.addAction(Intent.ACTION_MEDIA_CHECKING);// 正在检查存储媒体
         intentFilter.addDataScheme("file");
         registerReceiver(sdCardReceiver, intentFilter);// 注册监听函数
 
