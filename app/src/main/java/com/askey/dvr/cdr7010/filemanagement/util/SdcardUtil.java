@@ -39,7 +39,7 @@ public class SdcardUtil {
         return false;
     }
 
-    public static String formatSize(Context context ,String target_size) {
+    private static String formatSize(Context context ,String target_size) {
         return Formatter.formatFileSize(context, Long.valueOf(target_size));
     }
 
@@ -54,10 +54,10 @@ public class SdcardUtil {
                 //硬盘的描述类
                 StatFs statFs = new StatFs(directory.getAbsolutePath());
                 //每块的大小
-                long blockSize = statFs.getBlockSize();
+                long blockSize = statFs.getBlockSizeLong();
                 Logg.i(TAG,"==blockSize=="+blockSize);
                 //可用块的数量
-                int availableBlocks = statFs.getAvailableBlocks();
+                long availableBlocks = statFs.getAvailableBlocksLong();
                 Logg.i(TAG,"==availableBlocks=="+availableBlocks);
                 //可用空间      以字节为单位
                 long availableSdcardSize = blockSize*availableBlocks;
@@ -73,6 +73,7 @@ public class SdcardUtil {
     }
 
     public static int getCurentSdcardInfo(Context context ) {
+        int totalSize = -1;
         try {
             //找到sdcard的位置
             File directory = Environment.getExternalStorageDirectory();
@@ -80,11 +81,11 @@ public class SdcardUtil {
                 //硬盘的描述类
                 StatFs statFs = new StatFs(directory.getAbsolutePath());
                 //获取硬盘分的块的数量
-                int blockCount = statFs.getBlockCount();
+                long blockCount = statFs.getBlockCountLong();
                 //每块的大小
-                long blockSize = statFs.getBlockSize();
+                long blockSize = statFs.getBlockSizeLong();
                 //可用块的数量
-                int availableBlocks = statFs.getAvailableBlocks();
+                long availableBlocks = statFs.getAvailableBlocksLong();
                 //sdcard的总容量   以字节为单位
                 long sdcardSize = blockCount*blockSize;
                 String currentSdcardSize = SdcardUtil.formatSize(context, String.valueOf(sdcardSize));
@@ -93,7 +94,6 @@ public class SdcardUtil {
                 String availableSize = SdcardUtil.formatSize(context, String.valueOf(availableSdcardSize));
                 Logg.i(TAG,"==availableSdcardSize==" + availableSize );
 
-                int totalSize = -1;
                 float totalSdcardSize = Float.parseFloat(currentSdcardSize.substring(0,currentSdcardSize.length()-2));
                 Logg.i(TAG,"==totalSdcardSize==" + totalSdcardSize );
                 if( totalSdcardSize<3){
@@ -116,7 +116,7 @@ public class SdcardUtil {
         }catch (Exception e){
             Logg.e(TAG,"-> getCurentSdcardInfo -> Exception"+e.getMessage());
         }
-        return 0;
+        return totalSize;
     }
 
 
