@@ -401,10 +401,12 @@ int SDA_get_free_extension_filenumber(eFolderType folderType, int camera_format)
                 if(filterFile.find(FH_Table[folderType].cam1_extension) != -1){
                     extension_number++;
                 }
+                break;
             case CAMERA_TWO_FORMAT:
                 if(filterFile.find(FH_Table[folderType].cam2_extension) != -1){
                     extension_number++;
                 }
+                break;
             default:
                 break;
         }
@@ -1766,10 +1768,11 @@ void FH_Sync(void){
     ALOGD("this is jni call-> before mutex_lock. In func: %s, line:%d \n", __func__, __LINE__);
     MUTEX_LOCK(&g_mutex);
     ALOGD("this is jni call-> after mutex_lock. In func: %s, line:%d \n", __func__, __LINE__);
-    sync();
+//    sync();
     ALOGD("this is jni call-> before mutex_unlock. Out func: %s, line:%d \n", __func__, __LINE__);
     MUTEX_UNLOCK(&g_mutex);
     ALOGD("this is jni call-> after mutex_unlock. Out func: %s, line:%d \n", __func__, __LINE__);
+    return;
 }
 
 //
