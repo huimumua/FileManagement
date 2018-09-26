@@ -31,7 +31,6 @@ import java.util.Map;
 public class MediaScanner {
 
     private static final String TAG = MediaScanner.class.getSimpleName();
-
     /**
      * Intent.ACTION_MEDIA_SCANNER_SCAN_FILE：
      * 扫描指定文件
@@ -174,6 +173,7 @@ public class MediaScanner {
     private static ArrayList<ItemData> dealNormal() {
         ArrayList<ItemData> result = new ArrayList<>();
         List<ItemData> allData = getAllVideos(Const.NORMAL_DIR);
+        Logg.i(TAG,"==allData.size()=="+allData.size() );
         ItemData temp1Data = new ItemData();
         temp1Data.setDir(true);
         temp1Data.setFileType(Const.NORMAL_1_DIR);
@@ -311,7 +311,7 @@ public class MediaScanner {
         List<ItemData> allData = getAllVideos(Const.NORMAL_DIR);
         ArrayList<ItemData> fileList = new ArrayList<>();
         List<ItemData> group = new ArrayList<>();
-
+        Logg.i(TAG,"==allData.size()=="+allData.size() );
         String currentYYYYMMDD = "1970";
         for (ItemData data : allData) {
             String name = data.getFileName();
@@ -335,6 +335,7 @@ public class MediaScanner {
 
     private static ArrayList<ItemData> dealOther(String type) {
         List<ItemData> allData = getAllVideos(type);
+        Logg.i(TAG,"==allData.size()=="+allData.size() );
         ArrayList<ItemData> fileList = new ArrayList<>();
         for (ItemData data : allData) {
             String path = data.getFilePath();
@@ -672,6 +673,9 @@ public class MediaScanner {
                 }
             }
             Logg.i(TAG, "-->deleteFile --> FH_Delete filePath" + filePath + " fileResult ==" + fileResult);
+            if(fileResult){
+                syncDeleteFile(filePath);
+            }
         }
         return fileResult;
     }

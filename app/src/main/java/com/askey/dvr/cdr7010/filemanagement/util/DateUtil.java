@@ -21,11 +21,9 @@ public class DateUtil {
      * 获取文件的创建时间  DATE_ADDED可能不准确有待讨论
      * */
     public static long getFileCreateTime(String name) {
-        Logg.i(TAG,"=====name==1111==="+name);
         if(name.contains("_UNKNOWN")){
             name = name.replace("_UNKNOWN","");
         }
-        Logg.i(TAG,"=====name==2222==="+name);
         String time;
         if(name.contains("_2")){
             time = name.split("_2")[0];
@@ -41,7 +39,6 @@ public class DateUtil {
                 }else{
                     time = "20"+time;//强行固定20世纪
                 }
-                Logg.i(TAG,"=====time====="+time);
                 result = Long.valueOf(dateToStamp(time));
             }else if(time.length()==14){
 //                result = stringToLong(time,"yyyyMMddHHmmss");
@@ -58,11 +55,9 @@ public class DateUtil {
      * 获取文件的创建时间  DATE_ADDED可能不准确有待讨论
      * */
     public static long getFileCreateTime(String name,String DATE_ADDED) {
-        Logg.i(TAG,"=====name==1111==="+name);
         if(name.contains("_UNKNOWN")){
             name = name.replace("_UNKNOWN","");
         }
-        Logg.i(TAG,"=====name==2222==="+name);
         String time;
         if(name.contains("_2")){
             time = name.split("_2")[0];
@@ -74,10 +69,8 @@ public class DateUtil {
             if(time.length()==12){
 //                result = stringToLong(time,"yyyyMMddHHmmss");
                 String createTime = longToString(Long.valueOf(DATE_ADDED),"yyyyMMddHHmmss");
-                Logg.i(TAG,"=====createTime====="+createTime);
                 time = createTime.substring(0,2)+time;
 //                time = "20"+time;//强行固定20世纪
-                Logg.i(TAG,"=====time====="+time);
                 result = Long.valueOf(dateToStamp(time));
             }else if(time.length()==14){
 //                result = stringToLong(time,"yyyyMMddHHmmss");
